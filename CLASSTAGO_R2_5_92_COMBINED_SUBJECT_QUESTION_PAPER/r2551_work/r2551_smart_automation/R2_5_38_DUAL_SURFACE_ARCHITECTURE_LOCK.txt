@@ -1,0 +1,40 @@
+EDUNIXO R2.5.38 — PREMIUM WEB + APP DUAL-SURFACE ARCHITECTURE LOCK
+
+Purpose
+-------
+Lock EDUNIXO into a seamless multi-school architecture where the desktop/laptop experience is website-first while the Android/mobile experience is app-first, without duplicating ERP data or role logic.
+
+Corporate platform website
+--------------------------
+- Premium EDUNIXO public website remains a distinct public surface.
+- Direct secure login on the corporate platform is reserved for Platform/Super Admin only.
+- Main navigation now includes About, Plans, Gallery, School Finder and Contact.
+- Existing institution registration and live-demo enquiry workflows remain available.
+- A read-only public plan catalogue now exposes only active + published + non-custom platform plans.
+- School-specific negotiated subscription records remain private.
+
+School website flow
+-------------------
+- School Finder opens the selected school's premium public website first.
+- School website retains its own banners, About, Academics, Admissions, Gallery, Notices, Contact and public admission flow.
+- Headmaster, Clerk, Teacher/Class Teacher, Student, Parent and Peon use the School Login entrance from their own school website.
+- School login now passes the exact resolved school UUID to AuthService.
+- The canonical cloud profile must belong to that exact school or login is rejected.
+
+Surface isolation
+-----------------
+- A school-role session cannot turn the corporate platform root into a school ERP workspace.
+- A Platform Super Admin session cannot turn a school public URL into the Platform Console.
+- A school ERP session is restored on a school URL only after the resolved school ID matches the authenticated school membership.
+- Public website and ERP remain visually distinct while sharing the same secure auth/backend/data model.
+
+Native Android/mobile
+---------------------
+- Native app remains app-first: school selector -> school-scoped login -> same role-based ERP.
+- The selected school identity is retained for seamless native/browser continuity.
+
+Safety / preservation
+---------------------
+- No admissions, attendance, timetable, result, communication, Teacher, Clerk, Headmaster, Student, Parent, Peon or Bell workflow was rewritten.
+- No Supabase schema/migration was added, removed or changed.
+- server.ts change is additive only: one read-only /api/public/plans endpoint for the corporate website.

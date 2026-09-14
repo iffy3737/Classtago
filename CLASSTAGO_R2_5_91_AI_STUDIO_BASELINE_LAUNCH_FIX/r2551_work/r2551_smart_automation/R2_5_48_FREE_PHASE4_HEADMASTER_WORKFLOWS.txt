@@ -1,0 +1,32 @@
+EDUNIXO R2.5.48 — FREE PHASE 4 HEADMASTER WORKFLOWS
+
+Baseline: R2.5.47 Free Phase 3.
+
+STABILITY FIXES
+- Global language catalogue preserves English + all 22 Scheduled Indian Languages even when live DB catalogue is only a historical subset.
+- School-specific language restrictions remain respected when allowAllLanguages=false.
+- Phase 2 Translator lists all Scheduled Indian Languages; only actual on-device ML Kit translation models are selectable, unsupported models are shown as UI-only.
+- Temporary live-language fetch failure now falls back silently instead of logging a misleading application warning.
+- Removed direct production probes of obsolete public.classes/public.divisions from signup/teacher-roster reconciliation; canonical school_classes/school_divisions are used.
+
+PHASE 4
+- Student Master detailed profile/guardian fields now persist in server-only edunixo_student_profiles extension while students remains canonical identity/placement record.
+- Admission Confirmation seeds Student Profile extension from the approved application. Failure rolls back the newly-created confirmation event and Student record.
+- Student Lifecycle module root opens lifecycle workspace instead of generic Master Data.
+- Exact lifecycle states (Transferred/Passout/Leaving/Archived) are retained in mandatory audit trail; current minimal students table uses is_active for active/inactive operational scope.
+- Consequential lifecycle state changes require an office reason and explicit confirmation.
+- Lifecycle audit failure rolls back the Student Master state change; no unaudited final lifecycle state is intentionally committed.
+- Existing Clerk lifecycle request -> Headmaster decision path preserved.
+- Existing canonical Class Teacher / Subject Teacher / assignment-validity workspaces preserved; no duplicate duty source introduced.
+- Existing Headmaster Admission Confirmation remains explicit/Headmaster-only.
+- Result Publication now enforces Prepared -> Reviewed -> Final. Publish & Lock is blocked until a canonical Result Book is linked and the Progress Card batch contains student results.
+- Existing final publication mandatory-audit rollback remains preserved.
+- Existing Headmaster analytics, security, statutory register and audit/compliance feature-aware workspaces preserved.
+
+DATABASE
+- Applied additive production migration 20260902140603_free_phase4_student_profile_extension.
+- No existing table or row deleted/reset/migrated.
+- New table is RLS-enabled and direct anon/authenticated access is revoked; server service role is the write/read path.
+
+FREE-ONLY
+- No new paid provider/API/subscription dependency.

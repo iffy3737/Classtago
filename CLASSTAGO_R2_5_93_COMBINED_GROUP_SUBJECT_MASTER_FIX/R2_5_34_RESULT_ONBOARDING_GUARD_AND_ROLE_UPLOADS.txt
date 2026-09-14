@@ -1,0 +1,23 @@
+Classtago R2.5.34 — Result Onboarding Guard + Role-Based Source Uploads
+
+Scope
+- Preserves the existing Result engine and all current Maharashtra/National High School Result flows.
+- Import Existing Result System is onboarding-only for new/unconfigured schools.
+- Schools that existed before the R2.5.34 Dynamic Result onboarding release are grandfathered as existing Result-System schools.
+- Cloud Result signals (Master templates, template mappings, Subject Mark Lists, Result Books, approved active curriculum pack) also mark a school configured.
+- Configured schools do not see the Clerk import feature and server APIs reject a second normal onboarding curriculum.
+- Future curriculum change is intentionally reserved for a protected Result System Migration workflow.
+
+New-school import UX
+1. Upload Mark List / Marks Register
+2. Upload Result Book / Consolidated Sheet
+3. Upload Progress Card / Report Card
+4. Upload Board Rules / Grading Circular
+- Excel, PDF, JPG and PNG supported.
+- Up to 8 files / 7.5 MB combined.
+- Each file carries an explicit documentRole to AI analysis, private source storage, audit metadata and Headmaster review.
+- Returned drafts retain unreplaced source roles when one document role is replaced.
+
+Safety
+- No Supabase schema/migration change.
+- Existing ResultManagement, MasterResultBookEditor, MasterProgressCardTemplateEditor and teacherResultFresh engine are not modified by this release.

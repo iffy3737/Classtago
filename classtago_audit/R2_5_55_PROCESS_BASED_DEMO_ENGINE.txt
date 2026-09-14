@@ -1,0 +1,66 @@
+Classtago R2.5.55 — PROCESS-BASED DEMO ENGINE
+
+Goal
+- Replace the module-first public demo with a process-first sales experience.
+- Let visitors experience how Classtago connects roles and canonical records without cloning every production page.
+- Automate repetitive sample data entry while requiring the visitor to perform the important business decisions.
+
+Main experience
+1. Process Demo is now the primary demo path.
+   - Public demo school page leads to “Explore School Processes”.
+   - Role Explorer remains secondary for module-by-module inspection and multilingual manuals.
+
+2. 25 curated school-process demos.
+   Core interactive processes include:
+   - Admission -> Headmaster approval -> Class Teacher -> Student login -> Parent view
+   - Academic Setup
+   - Class Teacher / Subject Teacher assignment
+   - Timetable generation and publication
+   - Absent teacher / substitute allocation
+   - Student attendance -> Student / Parent visibility
+   - Study Material source selection
+   - AI Year Plan -> Lesson Plan -> Teaching Diary
+   - AI Homework -> Student / Parent
+   - Question Paper -> Review -> Smart Print
+   - Exam Setup
+   - Result Management -> Headmaster publication -> Parent Progress Card
+   - Result templates
+   - Student lifecycle
+   - Staff leave -> timetable impact
+   - Communication
+   - Website / Admission Campaign
+   - Certificates & Smart Print
+   - Feature-level multilingual documents
+   - Student / Parent connected experience
+   Supporting guided processes include Fees, Library, Staff & Accounts, Payroll/HR and Inventory/Registers.
+
+3. Process Runner interaction model.
+   - Each step identifies the real role and highlights a matching production module from ROLE_MODULE_BLUEPRINT.
+   - Sample fields type automatically on screen.
+   - The visitor cannot perform the main action until auto-fill is complete.
+   - The visitor performs the meaningful action: Submit, Approve, Assign, Generate, Publish, etc.
+   - “What just happened” explains the cross-module/cross-role effect.
+   - “Continue as <next role>” moves the visitor to the next stage.
+
+4. Demo-safe shared effects.
+   - Process actions can update isolated temporary demo state used by the existing role explorer for admissions, attendance, homework, results, timetable and messages.
+   - No production school rows are created, updated or deleted.
+   - External delivery/payment/destructive actions remain simulated.
+
+5. Locale-aware demo data.
+   - National/international boards use a broad pan-India sample identity set.
+   - State Board demos follow selected medium/region for fictional school and persona context.
+   - Marathi, Gujarati, Hindi, Urdu, Bengali, Tamil, Telugu, Kannada, Malayalam, Punjabi, Odia and Assamese sample pools are included, with pan-India fallback.
+   - The system does not label or infer anyone’s religion/caste; it uses region/language context only.
+   - Applicant and guardian identities stay internally consistent within the admission demo.
+
+6. Existing curated Feature Library preserved.
+   - Role-specific production module blueprint remains intact.
+   - Live / Guided / Feature Tour depth remains available.
+   - Supporting features retain multilingual manuals whose language is independent of app UI language.
+
+Safety / regression
+- Supabase production schema/data is unchanged by this build.
+- Existing National High School flows are not modified by the Process Demo engine.
+- Platform Academic Core / Board-State isolation remains intact.
+- Demo remains temporary/resettable.

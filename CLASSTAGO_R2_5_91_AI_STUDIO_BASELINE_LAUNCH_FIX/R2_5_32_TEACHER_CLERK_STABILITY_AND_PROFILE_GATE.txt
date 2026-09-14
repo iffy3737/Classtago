@@ -1,0 +1,36 @@
+Classtago R2.5.32 — Teacher & Clerk Stability + Mandatory Teacher Profile Gate
+
+Scope
+-----
+This cumulative release continues from R2.5.31 and preserves the existing Headmaster Subject Teacher parity work. Changes are narrowly scoped to the confirmed Teacher/Clerk audit findings and the requested mandatory Teacher profile completion gate.
+
+Teacher
+-------
+- Mandatory Complete Profile gate for Teacher and Class Teacher login before academic modules can be used.
+- Uses the existing cloud-backed Complete Profile system; no duplicate profile store was introduced.
+- Required profile validation includes name, mobile, photo, gender, DOB, residential address, mother tongue, designation, qualification and joining date.
+- Joining date now mirrors to Teacher Master through the existing server profile-save path.
+- Normal Subject Teacher no longer sees Class Teacher Attendance menus; Class Teacher attendance remains available and server assignment checks remain intact.
+- Homework/academic attachment upload now uses assignment-scoped server authorization plus signed storage upload tickets.
+- Classwork submission listing/review uses assignment-scoped server APIs.
+- Result Book build/consolidation is routed through a server-validated endpoint.
+- Teacher dashboard notifications support Mark as Read through a server API.
+- Approved Teacher/Class Teacher leave can prepare a draft substitute plan from the canonical published timetable; Headmaster review/approval is still required before publication.
+
+Clerk / Headmaster authority alignment
+--------------------------------------
+- Clerk Staff Master menu entry restored to the existing Staff Master handler.
+- Admission Campaign: Clerk prepares/saves campaign data; Headmaster performs final Publish/Close.
+- Result Master templates now use cloud/server data as canonical source; browser storage remains only a compatibility cache/draft.
+- Result Print Queue Mark Printed action is server/audit routed.
+- Admission proposed GR/Admission identifiers are calculated from canonical cloud/server data with a safe local fallback only when server data is unavailable.
+- Academic Setup wording corrected from "Clerk Full Access" to delegated setup access; existing Headmaster-only destructive controls remain protected.
+
+Safety / compatibility
+----------------------
+- No Supabase migration was added.
+- No destructive data rewrite or purge was performed.
+- Existing Headmaster, Clerk, Teacher, Class Teacher, Student, admissions, authentication, timetable, result, communication and deployment architecture is retained.
+- Subject Teacher attendance is hidden at navigation level only; Class Teacher attendance remains unchanged.
+- Headmaster is not blocked by the Teacher Complete Profile gate; it applies only to actual Teacher/Class Teacher logins.
+- Campaign editing and final publication permissions are separated without removing existing campaign data or records.

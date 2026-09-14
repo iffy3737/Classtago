@@ -1,0 +1,247 @@
+/**
+ * Reviewed core-shell translation packs for the active Indian-language
+ * catalogue. Module-specific vocabulary can extend these packs without
+ * changing the language or font architecture.
+ */
+export const catalogueCoreTranslations: Record<string, Record<string, string>> = {
+  as: {
+    website: 'চৰকাৰী ৱেবছাইট', erpPortal: 'ইআৰপি প’ৰ্টেল', login: 'লগ ইন', logout: 'লগ আউট', dashboard: 'ডেশ্বব’ৰ্ড',
+    headmaster: 'প্ৰধান শিক্ষক', clerk: 'কেৰাণী', teacher: 'শিক্ষক', student: 'শিক্ষাৰ্থী', dbSetupShort: 'ডেটাবেছ ছেটআপ',
+    portalOverview: 'প’ৰ্টেল পৰ্যালোচনা', manageStaffAccounts: 'কৰ্মচাৰী একাউণ্ট পৰিচালনা', academicSetupConfig: 'শৈক্ষিক ছেটআপ আৰু কনফিগাৰেচন',
+    languageLocalization: 'ভাষা আৰু স্থানীয়কৰণ', smartAiTimetableV2: 'স্মাৰ্ট এআই সময়সূচী V2', beta: 'বিটা', staffMaster: 'কৰ্মচাৰী মাষ্টাৰ',
+    languageSettingsDescription: 'ভাষা বাছনি ডেটা-ভিত্তিক। ফলাফল, প্ৰগতি পত্ৰ, প্ৰমাণপত্ৰ বা মন্তব্য কোনো এটা ভাষাৰ সৈতে স্থায়ীভাৱে আবদ্ধ নহয়।',
+    refresh: 'ৰিফ্ৰেশ', defaultAcademicEntry: 'ডিফল্ট শৈক্ষিক প্ৰৱেশ', defaultDocumentOutput: 'ডিফল্ট নথি আউটপুট', language: 'ভাষা', font: 'ফণ্ট', preview: 'পূৰ্বদৰ্শন',
+    academicSettingsNote: 'মন্তব্য, ফলাফল আৰু শৈক্ষিক তথ্য প্ৰৱেশৰ বাবে ডিফল্ট ভাষা আৰু ফণ্ট।', documentSettingsNote: 'প্ৰগতি পত্ৰ, প্ৰমাণপত্ৰ, প্ৰতিবেদন আৰু মুদ্ৰিত নথিৰ বাবে ডিফল্ট ভাষা আৰু ফণ্ট।',
+    saveAcademicSettings: 'শৈক্ষিক ছেটিং সংৰক্ষণ', saveDocumentSettings: 'নথি ছেটিং সংৰক্ষণ', academicSettingsSaved: 'শৈক্ষিক ভাষা আৰু ফণ্ট সংৰক্ষণ কৰা হ’ল।', documentSettingsSaved: 'নথি ভাষা আৰু ফণ্ট সংৰক্ষণ কৰা হ’ল।',
+    safeForExistingRecords: 'বৰ্তমানৰ ৰেকৰ্ডৰ বাবে সুৰক্ষিত', safeForExistingRecordsNote: 'ডিফল্ট সলনি কৰিলে আগতে সংৰক্ষিত লিখনি মচি নাযায় বা সলনি নহয়।',
+    planAccessActive: 'প্লেন প্ৰৱেশ সক্ৰিয়', onlyEntitledModulesShown: 'আপোনাৰ ভূমিকাৰ বাবে অনুমোদিত প্লেন মডিউলসমূহহে দেখুওৱা হৈছে।'
+  },
+  bn: {
+    website: 'সরকারি ওয়েবসাইট', erpPortal: 'ইআরপি পোর্টাল', login: 'লগ ইন', logout: 'লগ আউট', dashboard: 'ড্যাশবোর্ড',
+    headmaster: 'প্রধান শিক্ষক', clerk: 'কেরানি', teacher: 'শিক্ষক', student: 'শিক্ষার্থী', dbSetupShort: 'ডেটাবেস সেটআপ',
+    portalOverview: 'পোর্টাল পর্যালোচনা', manageStaffAccounts: 'কর্মী অ্যাকাউন্ট পরিচালনা', academicSetupConfig: 'একাডেমিক সেটআপ ও কনফিগারেশন',
+    languageLocalization: 'ভাষা ও স্থানীয়করণ', smartAiTimetableV2: 'স্মার্ট এআই সময়সূচি V2', beta: 'বিটা', staffMaster: 'স্টাফ মাস্টার',
+    languageSettingsDescription: 'ভাষা নির্বাচন ডেটা-ভিত্তিক। ফলাফল, প্রগ্রেস কার্ড, সার্টিফিকেট বা মন্তব্য কোনো একটি ভাষার সঙ্গে স্থায়ীভাবে বাঁধা নয়।',
+    refresh: 'রিফ্রেশ', defaultAcademicEntry: 'ডিফল্ট একাডেমিক এন্ট্রি', defaultDocumentOutput: 'ডিফল্ট ডকুমেন্ট আউটপুট', language: 'ভাষা', font: 'ফন্ট', preview: 'প্রিভিউ',
+    academicSettingsNote: 'মন্তব্য, ফলাফল ও একাডেমিক তথ্য এন্ট্রির জন্য ডিফল্ট ভাষা ও ফন্ট।', documentSettingsNote: 'প্রগ্রেস কার্ড, সার্টিফিকেট, রিপোর্ট ও মুদ্রিত নথির জন্য ডিফল্ট ভাষা ও ফন্ট।',
+    saveAcademicSettings: 'একাডেমিক সেটিং সংরক্ষণ', saveDocumentSettings: 'ডকুমেন্ট সেটিং সংরক্ষণ', academicSettingsSaved: 'একাডেমিক ভাষা ও ফন্ট সংরক্ষিত হয়েছে।', documentSettingsSaved: 'ডকুমেন্ট ভাষা ও ফন্ট সংরক্ষিত হয়েছে।',
+    safeForExistingRecords: 'বিদ্যমান রেকর্ডের জন্য নিরাপদ', safeForExistingRecordsNote: 'ডিফল্ট পরিবর্তন করলে আগে সংরক্ষিত লেখা মুছে যায় না বা ওভাররাইট হয় না।',
+    planAccessActive: 'প্ল্যান অ্যাক্সেস সক্রিয়', onlyEntitledModulesShown: 'আপনার ভূমিকার জন্য অনুমোদিত প্ল্যান মডিউলগুলোই দেখানো হয়েছে।'
+  },
+  brx: {
+    website: 'सरकारी वेबसाइट', erpPortal: 'ईआरपी पोर्टाल', login: 'लग इन', logout: 'लग आउट', dashboard: 'डेसबोर्ड',
+    headmaster: 'गाहाय फोरोंगिरि', clerk: 'क्लार्क', teacher: 'फोरोंगिरि', student: 'फरायसा', dbSetupShort: 'डाटाबेस सेटआप',
+    portalOverview: 'पोर्टाल नायबिजिरनाय', manageStaffAccounts: 'स्टाफ एकाउन्ट सामलायनाय', academicSetupConfig: 'सोलोंथाइ सेटआप आरो कन्फिगारेसन',
+    languageLocalization: 'राव आरो जायगा सेटिं', smartAiTimetableV2: 'स्मार्ट एआई टाइमटेबल V2', beta: 'बेटा', staffMaster: 'स्टाफ मास्टार',
+    languageSettingsDescription: 'राव सायखनाया डाटा-आधारित। रिजाल्ट, प्रग्रेस कार्ड, सार्टिफिकेट एबा रिमार्कखौ मोनसे रावजों जुगामियै नांजाबनाय नङा।',
+    refresh: 'रिफ्रेस', defaultAcademicEntry: 'डिफल्ट सोलोंथाइ एन्ट्री', defaultDocumentOutput: 'डिफल्ट डकुमेन्ट आउटपुट', language: 'राव', font: 'फन्ट', preview: 'आगोल नायनाय',
+    academicSettingsNote: 'रिमार्क, रिजाल्ट आरो सोलोंथाइ डाटा एन्ट्रीनि थाखाय डिफल्ट राव आरो फन्ट।', documentSettingsNote: 'प्रग्रेस कार्ड, सार्टिफिकेट, रिपर्ट आरो प्रिन्ट डकुमेन्टनि थाखाय डिफल्ट राव आरो फन्ट।',
+    saveAcademicSettings: 'सोलोंथाइ सेटिं सेभ', saveDocumentSettings: 'डकुमेन्ट सेटिं सेभ', academicSettingsSaved: 'सोलोंथाइ राव आरो फन्ट सेभ जाबाय।', documentSettingsSaved: 'डकुमेन्ट राव आरो फन्ट सेभ जाबाय।',
+    safeForExistingRecords: 'गोजाम रेकर्डनि थाखाय रैखाथि', safeForExistingRecordsNote: 'डिफल्ट सोलायोब्ला आगोलाव सेभ खालामनाय टेक्स्ट खोमोरनाय एबा ओभरराइट नङा।',
+    planAccessActive: 'प्लान एक्सेस एक्टिभ', onlyEntitledModulesShown: 'नोंथांनि रोलनि थाखाय गनांथि प्लान मोडुलफोरल’ दिन्थिनाय जादों।'
+  },
+  doi: {
+    website: 'सरकारी वेबसाइट', erpPortal: 'ईआरपी पोर्टल', login: 'लॉग इन', logout: 'लॉग आउट', dashboard: 'डैशबोर्ड',
+    headmaster: 'मुख्य अध्यापक', clerk: 'क्लर्क', teacher: 'अध्यापक', student: 'विद्यार्थी', dbSetupShort: 'डेटाबेस सेटअप',
+    portalOverview: 'पोर्टल जायजा', manageStaffAccounts: 'स्टाफ खाते संभालो', academicSetupConfig: 'अकादमिक सेटअप ते कॉन्फ़िगरेशन',
+    languageLocalization: 'भाशा ते स्थानीयकरण', smartAiTimetableV2: 'स्मार्ट एआई टाइमटेबल V2', beta: 'बीटा', staffMaster: 'स्टाफ मास्टर',
+    languageSettingsDescription: 'भाशा दी चोन डेटा-आधारित ऐ। नतीजा, प्रोग्रेस कार्ड, सर्टिफिकेट जां टिप्पणी कुसै इक भाशा कन्नै पक्के तौर पर नेईं बंधी।',
+    refresh: 'रिफ्रेश', defaultAcademicEntry: 'डिफॉल्ट अकादमिक एंट्री', defaultDocumentOutput: 'डिफॉल्ट दस्तावेज़ आउटपुट', language: 'भाशा', font: 'फॉन्ट', preview: 'पूर्वावलोकन',
+    academicSettingsNote: 'टिप्पणी, नतीजें ते अकादमिक डेटा एंट्री लेई डिफॉल्ट भाशा ते फॉन्ट।', documentSettingsNote: 'प्रोग्रेस कार्ड, सर्टिफिकेट, रिपोर्ट ते प्रिंट दस्तावेज़ें लेई डिफॉल्ट भाशा ते फॉन्ट।',
+    saveAcademicSettings: 'अकादमिक सेटिंग सहेजो', saveDocumentSettings: 'दस्तावेज़ सेटिंग सहेजो', academicSettingsSaved: 'अकादमिक भाशा ते फॉन्ट सहेजे गे।', documentSettingsSaved: 'दस्तावेज़ भाशा ते फॉन्ट सहेजे गे।',
+    safeForExistingRecords: 'मौजूदा रिकॉर्डें लेई सुरक्षित', safeForExistingRecordsNote: 'डिफॉल्ट बदलने कन्नै पैह्लें सहेजा लिखत मिटदी जां ओवरराइट नेईं होंदी।',
+    planAccessActive: 'प्लान पहुंच सक्रिय ऐ', onlyEntitledModulesShown: 'तुंदे रोल लेई मंजूर प्लान मॉड्यूल गै दस्से गेदे न।'
+  },
+  gu: {
+    website: 'સત્તાવાર વેબસાઇટ', erpPortal: 'ઇઆરપી પોર્ટલ', login: 'લૉગ ઇન', logout: 'લૉગ આઉટ', dashboard: 'ડેશબોર્ડ',
+    headmaster: 'આચાર્ય', clerk: 'ક્લાર્ક', teacher: 'શિક્ષક', student: 'વિદ્યાર્થી', dbSetupShort: 'ડેટાબેસ સેટઅપ',
+    portalOverview: 'પોર્ટલ અવલોકન', manageStaffAccounts: 'સ્ટાફ એકાઉન્ટ સંચાલન', academicSetupConfig: 'શૈક્ષણિક સેટઅપ અને કન્ફિગરેશન',
+    languageLocalization: 'ભાષા અને સ્થાનિકીકરણ', smartAiTimetableV2: 'સ્માર્ટ એઆઈ સમયપત્રક V2', beta: 'બીટા', staffMaster: 'સ્ટાફ માસ્ટર',
+    languageSettingsDescription: 'ભાષાની પસંદગી ડેટા આધારિત છે. પરિણામ, પ્રગતિપત્રક, પ્રમાણપત્ર અથવા નોંધ કોઈ એક ભાષા સાથે કાયમી રીતે બંધાયેલ નથી.',
+    refresh: 'રિફ્રેશ', defaultAcademicEntry: 'ડિફૉલ્ટ શૈક્ષણિક એન્ટ્રી', defaultDocumentOutput: 'ડિફૉલ્ટ દસ્તાવેજ આઉટપુટ', language: 'ભાષા', font: 'ફૉન્ટ', preview: 'પૂર્વદર્શન',
+    academicSettingsNote: 'નોંધ, પરિણામ અને શૈક્ષણિક માહિતી દાખલ કરવા માટેની ડિફૉલ્ટ ભાષા અને ફૉન્ટ.', documentSettingsNote: 'પ્રગતિપત્રક, પ્રમાણપત્ર, અહેવાલ અને છાપેલ દસ્તાવેજ માટેની ડિફૉલ્ટ ભાષા અને ફૉન્ટ.',
+    saveAcademicSettings: 'શૈક્ષણિક સેટિંગ સાચવો', saveDocumentSettings: 'દસ્તાવેજ સેટિંગ સાચવો', academicSettingsSaved: 'શૈક્ષણિક ભાષા અને ફૉન્ટ સાચવાયા.', documentSettingsSaved: 'દસ્તાવેજ ભાષા અને ફૉન્ટ સાચવાયા.',
+    safeForExistingRecords: 'હાલના રેકોર્ડ માટે સુરક્ષિત', safeForExistingRecordsNote: 'ડિફૉલ્ટ બદલવાથી પહેલેથી સાચવેલ લખાણ કાઢી નાખાતું કે ઓવરરાઇટ થતું નથી.',
+    planAccessActive: 'પ્લાન ઍક્સેસ સક્રિય છે', onlyEntitledModulesShown: 'તમારી ભૂમિકા માટે મંજૂર પ્લાન મોડ્યુલ જ બતાવવામાં આવ્યા છે.'
+  },
+  kn: {
+    website: 'ಅಧಿಕೃತ ಜಾಲತಾಣ', erpPortal: 'ಇಆರ್‌ಪಿ ಪೋರ್ಟಲ್', login: 'ಲಾಗಿನ್', logout: 'ಲಾಗ್ ಔಟ್', dashboard: 'ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
+    headmaster: 'ಮುಖ್ಯೋಪಾಧ್ಯಾಯರು', clerk: 'ಲಿಪಿಕ', teacher: 'ಶಿಕ್ಷಕ', student: 'ವಿದ್ಯಾರ್ಥಿ', dbSetupShort: 'ಡೇಟಾಬೇಸ್ ಸೆಟಪ್',
+    portalOverview: 'ಪೋರ್ಟಲ್ ಅವಲೋಕನ', manageStaffAccounts: 'ಸಿಬ್ಬಂದಿ ಖಾತೆ ನಿರ್ವಹಣೆ', academicSetupConfig: 'ಶೈಕ್ಷಣಿಕ ಸೆಟಪ್ ಮತ್ತು ಸಂರಚನೆ',
+    languageLocalization: 'ಭಾಷೆ ಮತ್ತು ಸ್ಥಳೀಕರಣ', smartAiTimetableV2: 'ಸ್ಮಾರ್ಟ್ ಎಐ ವೇಳಾಪಟ್ಟಿ V2', beta: 'ಬೀಟಾ', staffMaster: 'ಸಿಬ್ಬಂದಿ ಮಾಸ್ಟರ್',
+    languageSettingsDescription: 'ಭಾಷೆ ಆಯ್ಕೆ ಡೇಟಾ ಆಧಾರಿತವಾಗಿದೆ. ಫಲಿತಾಂಶ, ಪ್ರಗತಿ ಪತ್ರ, ಪ್ರಮಾಣಪತ್ರ ಅಥವಾ ಟಿಪ್ಪಣಿ ಯಾವುದೇ ಒಂದು ಭಾಷೆಗೆ ಶಾಶ್ವತವಾಗಿ ಬಂಧಿತವಾಗಿಲ್ಲ.',
+    refresh: 'ರಿಫ್ರೆಶ್', defaultAcademicEntry: 'ಡೀಫಾಲ್ಟ್ ಶೈಕ್ಷಣಿಕ ನಮೂದು', defaultDocumentOutput: 'ಡೀಫಾಲ್ಟ್ ದಾಖಲೆ ಔಟ್‌ಪುಟ್', language: 'ಭಾಷೆ', font: 'ಫಾಂಟ್', preview: 'ಮುನ್ನೋಟ',
+    academicSettingsNote: 'ಟಿಪ್ಪಣಿಗಳು, ಫಲಿತಾಂಶಗಳು ಮತ್ತು ಶೈಕ್ಷಣಿಕ ಮಾಹಿತಿ ನಮೂದಿಗೆ ಡೀಫಾಲ್ಟ್ ಭಾಷೆ ಮತ್ತು ಫಾಂಟ್.', documentSettingsNote: 'ಪ್ರಗತಿ ಪತ್ರ, ಪ್ರಮಾಣಪತ್ರ, ವರದಿ ಮತ್ತು ಮುದ್ರಿತ ದಾಖಲೆಗಳಿಗೆ ಡೀಫಾಲ್ಟ್ ಭಾಷೆ ಮತ್ತು ಫಾಂಟ್.',
+    saveAcademicSettings: 'ಶೈಕ್ಷಣಿಕ ಸೆಟ್ಟಿಂಗ್ ಉಳಿಸಿ', saveDocumentSettings: 'ದಾಖಲೆ ಸೆಟ್ಟಿಂಗ್ ಉಳಿಸಿ', academicSettingsSaved: 'ಶೈಕ್ಷಣಿಕ ಭಾಷೆ ಮತ್ತು ಫಾಂಟ್ ಉಳಿಸಲಾಗಿದೆ.', documentSettingsSaved: 'ದಾಖಲೆ ಭಾಷೆ ಮತ್ತು ಫಾಂಟ್ ಉಳಿಸಲಾಗಿದೆ.',
+    safeForExistingRecords: 'ಈಗಿನ ದಾಖಲೆಗಳಿಗೆ ಸುರಕ್ಷಿತ', safeForExistingRecordsNote: 'ಡೀಫಾಲ್ಟ್ ಬದಲಿಸಿದರೂ ಈಗಾಗಲೇ ಉಳಿಸಿದ ಪಠ್ಯ ಅಳಿಯುವುದಿಲ್ಲ ಅಥವಾ ಮೇಲ್ಮರೆ ಆಗುವುದಿಲ್ಲ.',
+    planAccessActive: 'ಯೋಜನೆ ಪ್ರವೇಶ ಸಕ್ರಿಯವಾಗಿದೆ', onlyEntitledModulesShown: 'ನಿಮ್ಮ ಪಾತ್ರಕ್ಕೆ ಅನುಮತಿಸಲಾದ ಯೋಜನೆ ಘಟಕಗಳನ್ನಷ್ಟೇ ತೋರಿಸಲಾಗಿದೆ.'
+  },
+  ks: {
+    website: 'سرکاری ویب سایٹ', erpPortal: 'ای آر پی پورٹل', login: 'لاگ اِن', logout: 'لاگ آؤٹ', dashboard: 'ڈیش بورڈ',
+    headmaster: 'ہیڈ ماسٹر', clerk: 'کلرک', teacher: 'اُستاد', student: 'طالب علم', dbSetupShort: 'ڈیٹا بیس سیٹ اپ',
+    portalOverview: 'پورٹل جائزہ', manageStaffAccounts: 'عملہ اکاؤنٹ انتظام', academicSetupConfig: 'تعلیمی سیٹ اپ تہٕ کنفیگریشن',
+    languageLocalization: 'زبان تہٕ علاقائی ترتیبات', smartAiTimetableV2: 'سمارٹ اے آئی ٹائم ٹیبل V2', beta: 'بیٹا', staffMaster: 'اسٹاف ماسٹر',
+    languageSettingsDescription: 'زبان چُنُن چھُ ڈیٹا پٮ۪ٹھ مبنی۔ نتیجہ، پروگریس کارڈ، سرٹیفکیٹ یا ریمارک چھُ نہٕ کانہہ اَکھ زبانس سۭتۍ مستقل طور بند۔',
+    refresh: 'تازہ کریں', defaultAcademicEntry: 'ڈیفالٹ تعلیمی اندراج', defaultDocumentOutput: 'ڈیفالٹ دستاویزی آؤٹ پٹ', language: 'زبان', font: 'فونٹ', preview: 'پیش منظر',
+    academicSettingsNote: 'ریمارک، نتیجہ تہٕ تعلیمی ڈیٹا اندراج خٲطرٕ ڈیفالٹ زبان تہٕ فونٹ۔', documentSettingsNote: 'پروگریس کارڈ، سرٹیفکیٹ، رپورٹ تہٕ پرنٹ دستاویز خٲطرٕ ڈیفالٹ زبان تہٕ فونٹ۔',
+    saveAcademicSettings: 'تعلیمی ترتیبات محفوظ کریں', saveDocumentSettings: 'دستاویزی ترتیبات محفوظ کریں', academicSettingsSaved: 'تعلیمی زبان تہٕ فونٹ محفوظ گٔے۔', documentSettingsSaved: 'دستاویزی زبان تہٕ فونٹ محفوظ گٔے۔',
+    safeForExistingRecords: 'موجودہ ریکارڈ خٲطرٕ محفوظ', safeForExistingRecordsNote: 'ڈیفالٹ بدلاؤنہٕ سۭتۍ پہلے محفوظ متن نہٕ مٹان تہٕ نہٕ اوور رائٹ گژھان۔',
+    planAccessActive: 'پلان رسائی فعال', onlyEntitledModulesShown: 'توہہِ کردار خٲطرٕ اجازت یافتہ پلان ماڈیول چھِ صرف دکھاونہٕ آمُت۔'
+  },
+  kok: {
+    website: 'अधिकृत संकेतस्थळ', erpPortal: 'ईआरपी पोर्टल', login: 'लॉग इन', logout: 'लॉग आउट', dashboard: 'डॅशबोर्ड',
+    headmaster: 'मुख्याध्यापक', clerk: 'लिपिक', teacher: 'शिक्षक', student: 'विद्यार्थी', dbSetupShort: 'डेटाबेस सेटअप',
+    portalOverview: 'पोर्टल आढावो', manageStaffAccounts: 'कर्मचारी खाती व्यवस्थापन', academicSetupConfig: 'शैक्षणिक सेटअप आनी कॉन्फिगरेशन',
+    languageLocalization: 'भास आनी स्थानिकीकरण', smartAiTimetableV2: 'स्मार्ट एआय वेळापत्रक V2', beta: 'बीटा', staffMaster: 'कर्मचारी मास्टर',
+    languageSettingsDescription: 'भास निवड डेटा-आधारित आसा. निकाल, प्रगती पत्र, प्रमाणपत्र वा शेरा एकाच भाशेक कायम बांदिल्लो ना.',
+    refresh: 'रिफ्रेश', defaultAcademicEntry: 'डिफॉल्ट शैक्षणिक नोंद', defaultDocumentOutput: 'डिफॉल्ट दस्तावेज आउटपुट', language: 'भास', font: 'फॉन्ट', preview: 'पूर्वदृश्य',
+    academicSettingsNote: 'शेरा, निकाल आनी शैक्षणिक माहिती नोंदणी खातीर डिफॉल्ट भास आनी फॉन्ट.', documentSettingsNote: 'प्रगती पत्र, प्रमाणपत्र, अहवाल आनी छापील दस्तावेज खातीर डिफॉल्ट भास आनी फॉन्ट.',
+    saveAcademicSettings: 'शैक्षणिक सेटिंग जतन करात', saveDocumentSettings: 'दस्तावेज सेटिंग जतन करात', academicSettingsSaved: 'शैक्षणिक भास आनी फॉन्ट जतन जाले.', documentSettingsSaved: 'दस्तावेज भास आनी फॉन्ट जतन जाले.',
+    safeForExistingRecords: 'विद्यमान नोंदी खातीर सुरक्षित', safeForExistingRecordsNote: 'डिफॉल्ट बदलल्यार पयली जतन केल्लो मजकूर वगळना वा ओवरराइट जायना.',
+    planAccessActive: 'प्लॅन प्रवेश सक्रिय', onlyEntitledModulesShown: 'तुमच्या भूमिकेक मंजूर प्लॅन मॉड्यूलच दाखयले आसा.'
+  },
+  mai: {
+    website: 'आधिकारिक वेबसाइट', erpPortal: 'ईआरपी पोर्टल', login: 'लॉग इन', logout: 'लॉग आउट', dashboard: 'डैशबोर्ड',
+    headmaster: 'प्रधानाध्यापक', clerk: 'लिपिक', teacher: 'शिक्षक', student: 'विद्यार्थी', dbSetupShort: 'डेटाबेस सेटअप',
+    portalOverview: 'पोर्टल अवलोकन', manageStaffAccounts: 'कर्मचारी खाता प्रबंधन', academicSetupConfig: 'शैक्षणिक सेटअप आ विन्यास',
+    languageLocalization: 'भाषा आ स्थानीयकरण', smartAiTimetableV2: 'स्मार्ट एआई समय-सारणी V2', beta: 'बीटा', staffMaster: 'कर्मचारी मास्टर',
+    languageSettingsDescription: 'भाषा चयन डेटा-आधारित अछि। परिणाम, प्रगति-पत्र, प्रमाणपत्र वा टिप्पणी कोनो एक भाषा सँ स्थायी रूपेँ बान्हल नहि अछि।',
+    refresh: 'ताज़ा करू', defaultAcademicEntry: 'डिफॉल्ट शैक्षणिक प्रविष्टि', defaultDocumentOutput: 'डिफॉल्ट दस्तावेज आउटपुट', language: 'भाषा', font: 'फॉन्ट', preview: 'पूर्वावलोकन',
+    academicSettingsNote: 'टिप्पणी, परिणाम आ शैक्षणिक डेटा प्रविष्टि लेल डिफॉल्ट भाषा आ फॉन्ट।', documentSettingsNote: 'प्रगति-पत्र, प्रमाणपत्र, रिपोर्ट आ मुद्रित दस्तावेज लेल डिफॉल्ट भाषा आ फॉन्ट।',
+    saveAcademicSettings: 'शैक्षणिक सेटिंग सहेजू', saveDocumentSettings: 'दस्तावेज सेटिंग सहेजू', academicSettingsSaved: 'शैक्षणिक भाषा आ फॉन्ट सहेजल गेल।', documentSettingsSaved: 'दस्तावेज भाषा आ फॉन्ट सहेजल गेल।',
+    safeForExistingRecords: 'मौजूदा रिकॉर्ड लेल सुरक्षित', safeForExistingRecordsNote: 'डिफॉल्ट बदलला सँ पहिने सहेजल पाठ मेटैत वा ओवरराइट नहि होइत अछि।',
+    planAccessActive: 'प्लान पहुँच सक्रिय अछि', onlyEntitledModulesShown: 'अहाँक भूमिका लेल अनुमत प्लान मॉड्यूल मात्र देखाओल गेल अछि।'
+  },
+  ml: {
+    website: 'ഔദ്യോഗിക വെബ്സൈറ്റ്', erpPortal: 'ഇആർപി പോർട്ടൽ', login: 'ലോഗിൻ', logout: 'ലോഗ് ഔട്ട്', dashboard: 'ഡാഷ്ബോർഡ്',
+    headmaster: 'പ്രധാനാധ്യാപകൻ', clerk: 'ക്ലാർക്ക്', teacher: 'അധ്യാപകൻ', student: 'വിദ്യാർത്ഥി', dbSetupShort: 'ഡാറ്റാബേസ് സെറ്റപ്പ്',
+    portalOverview: 'പോർട്ടൽ അവലോകനം', manageStaffAccounts: 'സ്റ്റാഫ് അക്കൗണ്ട് മാനേജ്മെന്റ്', academicSetupConfig: 'അക്കാദമിക് സെറ്റപ്പും ക്രമീകരണവും',
+    languageLocalization: 'ഭാഷയും പ്രാദേശികവൽക്കരണവും', smartAiTimetableV2: 'സ്മാർട്ട് എഐ ടൈംടേബിൾ V2', beta: 'ബീറ്റ', staffMaster: 'സ്റ്റാഫ് മാസ്റ്റർ',
+    languageSettingsDescription: 'ഭാഷാ തിരഞ്ഞെടുപ്പ് ഡാറ്റ അടിസ്ഥാനമാക്കിയതാണ്. ഫലം, പ്രോഗ്രസ് കാർഡ്, സർട്ടിഫിക്കറ്റ് അല്ലെങ്കിൽ കുറിപ്പ് ഏതെങ്കിലും ഒരു ഭാഷയുമായി സ്ഥിരമായി ബന്ധിപ്പിച്ചിട്ടില്ല.',
+    refresh: 'പുതുക്കുക', defaultAcademicEntry: 'ഡീഫോൾട്ട് അക്കാദമിക് എൻട്രി', defaultDocumentOutput: 'ഡീഫോൾട്ട് ഡോക്യുമെന്റ് ഔട്ട്പുട്ട്', language: 'ഭാഷ', font: 'ഫോണ്ട്', preview: 'മുൻകാഴ്ച',
+    academicSettingsNote: 'കുറിപ്പുകൾ, ഫലങ്ങൾ, അക്കാദമിക് ഡാറ്റ എൻട്രി എന്നിവയ്ക്കുള്ള ഡീഫോൾട്ട് ഭാഷയും ഫോണ്ടും.', documentSettingsNote: 'പ്രോഗ്രസ് കാർഡ്, സർട്ടിഫിക്കറ്റ്, റിപ്പോർട്ട്, അച്ചടിച്ച രേഖകൾ എന്നിവയ്ക്കുള്ള ഡീഫോൾട്ട് ഭാഷയും ഫോണ്ടും.',
+    saveAcademicSettings: 'അക്കാദമിക് ക്രമീകരണം സംരക്ഷിക്കുക', saveDocumentSettings: 'ഡോക്യുമെന്റ് ക്രമീകരണം സംരക്ഷിക്കുക', academicSettingsSaved: 'അക്കാദമിക് ഭാഷയും ഫോണ്ടും സംരക്ഷിച്ചു.', documentSettingsSaved: 'ഡോക്യുമെന്റ് ഭാഷയും ഫോണ്ടും സംരക്ഷിച്ചു.',
+    safeForExistingRecords: 'നിലവിലെ രേഖകൾക്ക് സുരക്ഷിതം', safeForExistingRecordsNote: 'ഡീഫോൾട്ട് മാറ്റിയാലും മുമ്പ് സംരക്ഷിച്ച എഴുത്ത് ഇല്ലാതാകുകയോ ഓവർറൈറ്റ് ആകുകയോ ഇല്ല.',
+    planAccessActive: 'പ്ലാൻ ആക്സസ് സജീവമാണ്', onlyEntitledModulesShown: 'നിങ്ങളുടെ ചുമതലയ്ക്ക് അനുവദിച്ച പ്ലാൻ മോഡ്യൂളുകൾ മാത്രം കാണിക്കുന്നു.'
+  },
+  mni: {
+    website: 'ꯂꯩꯉꯥꯛꯀꯤ ꯋꯦꯕꯁꯥꯏꯠ', erpPortal: 'ꯏꯑꯥꯔꯄꯤ ꯄꯣꯔꯇꯦꯜ', login: 'ꯂꯣꯒꯏꯟ', logout: 'ꯂꯣꯒꯑꯥꯎꯠ', dashboard: 'ꯗꯦꯁꯕꯣꯔꯗ',
+    headmaster: 'ꯍꯦꯗꯃꯥꯁꯇꯔ', clerk: 'ꯀ꯭ꯂꯥꯔꯛ', teacher: 'ꯑꯣꯖꯥ', student: 'ꯃꯍꯩꯔꯣꯏ', dbSetupShort: 'ꯗꯦꯇꯥꯕꯦꯁ ꯁꯦꯇꯑꯞ',
+    portalOverview: 'ꯄꯣꯔꯇꯦꯜ ꯌꯦꯡꯁꯤꯟꯕ', manageStaffAccounts: 'ꯁ꯭ꯇꯥꯐ ꯑꯦꯀꯥꯎꯟꯠ ꯃꯦꯅꯦꯖꯃꯦꯟꯠ', academicSetupConfig: 'ꯃꯍꯩ ꯁꯦꯇꯑꯞ ꯑꯃꯁꯨꯡ ꯀꯟꯐꯤꯒꯔꯦꯁꯟ',
+    languageLocalization: 'ꯂꯣꯜ ꯑꯃꯁꯨꯡ ꯂꯣꯀꯦꯂꯥꯏꯖꯦꯁꯟ', smartAiTimetableV2: 'ꯁ꯭ꯃꯥꯔꯠ ꯑꯦꯑꯥꯏ ꯇꯥꯏꯝꯇꯦꯕꯜ V2', beta: 'ꯕꯦꯇꯥ', staffMaster: 'ꯁ꯭ꯇꯥꯐ ꯃꯥꯁꯇꯔ',
+    languageSettingsDescription: 'ꯂꯣꯜ ꯈꯟꯕꯁꯤ ꯗꯦꯇꯥꯗ ꯌꯨꯝꯐꯝ ꯑꯣꯏꯕꯅꯤ꯫ ꯔꯤꯖꯜꯠ, ꯄ꯭ꯔꯣꯒ꯭ꯔꯦꯁ ꯀꯥꯔꯗ, ꯁꯔꯇꯤꯐꯤꯀꯦꯠ ꯅꯠꯇ꯭ꯔꯒ ꯔꯤꯃꯥꯔꯛ ꯑꯃꯥ ꯂꯣꯜ ꯑꯃꯈꯛꯇꯗ ꯂꯦꯞꯅꯥ ꯄꯨꯟꯁꯤꯜꯂꯤꯕ ꯅꯠꯇꯦ꯫',
+    refresh: 'ꯔꯤꯐ꯭ꯔꯦꯁ', defaultAcademicEntry: 'ꯗꯤꯐꯣꯜꯠ ꯑꯀꯥꯗꯦꯃꯤꯛ ꯑꯦꯟꯇ꯭ꯔꯤ', defaultDocumentOutput: 'ꯗꯤꯐꯣꯜꯠ ꯗꯣꯀꯨꯃꯦꯟꯠ ꯑꯥꯎꯠꯄꯨꯠ', language: 'ꯂꯣꯜ', font: 'ꯐꯣꯟꯠ', preview: 'ꯃꯃꯥꯡ ꯌꯦꯡꯕ',
+    academicSettingsNote: 'ꯔꯤꯃꯥꯔꯛ, ꯔꯤꯖꯜꯠ ꯑꯃꯁꯨꯡ ꯃꯍꯩ ꯗꯦꯇꯥ ꯑꯦꯟꯇ꯭ꯔꯤꯒꯤ ꯗꯤꯐꯣꯜꯠ ꯂꯣꯜ ꯑꯃꯁꯨꯡ ꯐꯣꯟꯠ꯫', documentSettingsNote: 'ꯄ꯭ꯔꯣꯒ꯭ꯔꯦꯁ ꯀꯥꯔꯗ, ꯁꯔꯇꯤꯐꯤꯀꯦꯠ, ꯔꯤꯄꯣꯔꯠ ꯑꯃꯁꯨꯡ ꯄ꯭ꯔꯤꯟꯠ ꯗꯣꯀꯨꯃꯦꯟꯠꯀꯤ ꯗꯤꯐꯣꯜꯠ ꯂꯣꯜ ꯑꯃꯁꯨꯡ ꯐꯣꯟꯠ꯫',
+    saveAcademicSettings: 'ꯑꯀꯥꯗꯦꯃꯤꯛ ꯁꯦꯇꯤꯡ ꯁꯦꯕ', saveDocumentSettings: 'ꯗꯣꯀꯨꯃꯦꯟꯠ ꯁꯦꯇꯤꯡ ꯁꯦꯕ', academicSettingsSaved: 'ꯑꯀꯥꯗꯦꯃꯤꯛ ꯂꯣꯜ ꯑꯃꯁꯨꯡ ꯐꯣꯟꯠ ꯁꯦꯕ ꯇꯧꯔꯦ꯫', documentSettingsSaved: 'ꯗꯣꯀꯨꯃꯦꯟꯠ ꯂꯣꯜ ꯑꯃꯁꯨꯡ ꯐꯣꯟꯠ ꯁꯦꯕ ꯇꯧꯔꯦ꯫',
+    safeForExistingRecords: 'ꯂꯩꯔꯤꯕ ꯔꯦꯀꯣꯔꯗꯁꯤꯡꯒꯤ ꯁꯦꯐ', safeForExistingRecordsNote: 'ꯗꯤꯐꯣꯜꯠ ꯍꯣꯡꯗꯣꯀꯄꯗ ꯃꯃꯥꯡꯗ ꯁꯦꯕ ꯇꯧꯔꯕ ꯇꯦꯛꯁ ꯃꯨꯠꯂꯣꯏ ꯅꯠꯇ꯭ꯔꯒ ꯑꯣꯚꯔꯔꯥꯏꯠ ꯇꯧꯔꯣꯏ꯫',
+    planAccessActive: 'ꯄ꯭ꯂꯥꯟ ꯑꯦꯛꯁꯦꯁ ꯑꯦꯛꯇꯤꯚ', onlyEntitledModulesShown: 'ꯅꯍꯥꯛꯀꯤ ꯔꯣꯜꯒꯤ ꯑꯌꯥꯕ ꯄ꯭ꯂꯥꯟ ꯃꯣꯗꯨꯜꯁꯤꯡꯈꯛ ꯎꯠꯂꯤ꯫'
+  },
+  mr: {
+    website: 'अधिकृत संकेतस्थळ', erpPortal: 'ईआरपी पोर्टल', login: 'लॉग इन', logout: 'लॉग आउट', dashboard: 'डॅशबोर्ड',
+    headmaster: 'मुख्याध्यापक', clerk: 'लिपिक', teacher: 'शिक्षक', student: 'विद्यार्थी', dbSetupShort: 'डेटाबेस सेटअप',
+    portalOverview: 'पोर्टल आढावा', manageStaffAccounts: 'कर्मचारी खाती व्यवस्थापन', academicSetupConfig: 'शैक्षणिक सेटअप आणि कॉन्फिगरेशन',
+    languageLocalization: 'भाषा आणि स्थानिकीकरण', smartAiTimetableV2: 'स्मार्ट एआय वेळापत्रक V2', beta: 'बीटा', staffMaster: 'कर्मचारी मास्टर',
+    languageSettingsDescription: 'भाषा निवड डेटा-आधारित आहे. निकाल, प्रगतीपत्रक, प्रमाणपत्र किंवा शेरा कोणत्याही एका भाषेशी कायमस्वरूपी जोडलेला नाही.',
+    refresh: 'रिफ्रेश', defaultAcademicEntry: 'डीफॉल्ट शैक्षणिक नोंद', defaultDocumentOutput: 'डीफॉल्ट दस्तऐवज आउटपुट', language: 'भाषा', font: 'फॉन्ट', preview: 'पूर्वदृश्य',
+    academicSettingsNote: 'शेरा, निकाल आणि शैक्षणिक माहिती नोंदणीसाठी डीफॉल्ट भाषा व फॉन्ट.', documentSettingsNote: 'प्रगतीपत्रक, प्रमाणपत्र, अहवाल आणि मुद्रित दस्तऐवजांसाठी डीफॉल्ट भाषा व फॉन्ट.',
+    saveAcademicSettings: 'शैक्षणिक सेटिंग जतन करा', saveDocumentSettings: 'दस्तऐवज सेटिंग जतन करा', academicSettingsSaved: 'शैक्षणिक भाषा आणि फॉन्ट जतन झाले.', documentSettingsSaved: 'दस्तऐवज भाषा आणि फॉन्ट जतन झाले.',
+    safeForExistingRecords: 'विद्यमान नोंदींसाठी सुरक्षित', safeForExistingRecordsNote: 'डीफॉल्ट बदलल्याने आधी जतन केलेला मजकूर हटत किंवा ओव्हरराइट होत नाही.',
+    planAccessActive: 'प्लॅन प्रवेश सक्रिय आहे', onlyEntitledModulesShown: 'तुमच्या भूमिकेसाठी मंजूर प्लॅन मॉड्यूलच दाखवले आहेत.'
+  },
+  ne: {
+    website: 'आधिकारिक वेबसाइट', erpPortal: 'ईआरपी पोर्टल', login: 'लग इन', logout: 'लग आउट', dashboard: 'ड्यासबोर्ड',
+    headmaster: 'प्रधानाध्यापक', clerk: 'लिपिक', teacher: 'शिक्षक', student: 'विद्यार्थी', dbSetupShort: 'डेटाबेस सेटअप',
+    portalOverview: 'पोर्टल अवलोकन', manageStaffAccounts: 'कर्मचारी खाता व्यवस्थापन', academicSetupConfig: 'शैक्षिक सेटअप र कन्फिगरेसन',
+    languageLocalization: 'भाषा र स्थानीयकरण', smartAiTimetableV2: 'स्मार्ट एआई समयतालिका V2', beta: 'बिटा', staffMaster: 'कर्मचारी मास्टर',
+    languageSettingsDescription: 'भाषा छनोट डाटा-आधारित छ। नतिजा, प्रगति पत्र, प्रमाणपत्र वा टिप्पणी कुनै एउटै भाषासँग स्थायी रूपमा बाँधिएको छैन।',
+    refresh: 'रिफ्रेस', defaultAcademicEntry: 'पूर्वनिर्धारित शैक्षिक प्रविष्टि', defaultDocumentOutput: 'पूर्वनिर्धारित कागजात आउटपुट', language: 'भाषा', font: 'फन्ट', preview: 'पूर्वावलोकन',
+    academicSettingsNote: 'टिप्पणी, नतिजा र शैक्षिक डाटा प्रविष्टिका लागि पूर्वनिर्धारित भाषा र फन्ट।', documentSettingsNote: 'प्रगति पत्र, प्रमाणपत्र, प्रतिवेदन र मुद्रित कागजातका लागि पूर्वनिर्धारित भाषा र फन्ट।',
+    saveAcademicSettings: 'शैक्षिक सेटिङ सुरक्षित गर्नुहोस्', saveDocumentSettings: 'कागजात सेटिङ सुरक्षित गर्नुहोस्', academicSettingsSaved: 'शैक्षिक भाषा र फन्ट सुरक्षित भयो।', documentSettingsSaved: 'कागजात भाषा र फन्ट सुरक्षित भयो।',
+    safeForExistingRecords: 'हालका अभिलेखका लागि सुरक्षित', safeForExistingRecordsNote: 'पूर्वनिर्धारित परिवर्तन गर्दा पहिले सुरक्षित गरिएको पाठ मेटिँदैन वा ओभरराइट हुँदैन।',
+    planAccessActive: 'योजना पहुँच सक्रिय छ', onlyEntitledModulesShown: 'तपाईंको भूमिकाका लागि अनुमति प्राप्त योजना मोड्युल मात्र देखाइएका छन्।'
+  },
+  or: {
+    website: 'ସରକାରୀ ୱେବସାଇଟ୍', erpPortal: 'ଇଆରପି ପୋର୍ଟାଲ୍', login: 'ଲଗ୍ ଇନ୍', logout: 'ଲଗ୍ ଆଉଟ୍', dashboard: 'ଡ୍ୟାସବୋର୍ଡ',
+    headmaster: 'ପ୍ରଧାନ ଶିକ୍ଷକ', clerk: 'କିରାଣୀ', teacher: 'ଶିକ୍ଷକ', student: 'ଛାତ୍ର', dbSetupShort: 'ଡାଟାବେସ୍ ସେଟଅପ୍',
+    portalOverview: 'ପୋର୍ଟାଲ୍ ଅବଲୋକନ', manageStaffAccounts: 'କର୍ମଚାରୀ ଖାତା ପରିଚାଳନା', academicSetupConfig: 'ଶିକ୍ଷାଗତ ସେଟଅପ୍ ଓ ବିନ୍ୟାସ',
+    languageLocalization: 'ଭାଷା ଓ ସ୍ଥାନୀୟକରଣ', smartAiTimetableV2: 'ସ୍ମାର୍ଟ ଏଆଇ ସମୟସାରଣୀ V2', beta: 'ବିଟା', staffMaster: 'କର୍ମଚାରୀ ମାଷ୍ଟର',
+    languageSettingsDescription: 'ଭାଷା ଚୟନ ଡାଟା-ଆଧାରିତ। ଫଳାଫଳ, ପ୍ରଗତି ପତ୍ର, ପ୍ରମାଣପତ୍ର କିମ୍ବା ମତାମତ କୌଣସି ଗୋଟିଏ ଭାଷା ସହ ସ୍ଥାୟୀ ଭାବେ ବନ୍ଧା ନୁହେଁ।',
+    refresh: 'ରିଫ୍ରେଶ୍', defaultAcademicEntry: 'ଡିଫଲ୍ଟ ଶିକ୍ଷାଗତ ଏଣ୍ଟ୍ରି', defaultDocumentOutput: 'ଡିଫଲ୍ଟ ଡକ୍ୟୁମେଣ୍ଟ ଆଉଟପୁଟ୍', language: 'ଭାଷା', font: 'ଫଣ୍ଟ', preview: 'ପୂର୍ବଦର୍ଶନ',
+    academicSettingsNote: 'ମତାମତ, ଫଳାଫଳ ଓ ଶିକ୍ଷାଗତ ଡାଟା ଏଣ୍ଟ୍ରି ପାଇଁ ଡିଫଲ୍ଟ ଭାଷା ଓ ଫଣ୍ଟ।', documentSettingsNote: 'ପ୍ରଗତି ପତ୍ର, ପ୍ରମାଣପତ୍ର, ରିପୋର୍ଟ ଓ ମୁଦ୍ରିତ ଡକ୍ୟୁମେଣ୍ଟ ପାଇଁ ଡିଫଲ୍ଟ ଭାଷା ଓ ଫଣ୍ଟ।',
+    saveAcademicSettings: 'ଶିକ୍ଷାଗତ ସେଟିଂ ସଂରକ୍ଷଣ', saveDocumentSettings: 'ଡକ୍ୟୁମେଣ୍ଟ ସେଟିଂ ସଂରକ୍ଷଣ', academicSettingsSaved: 'ଶିକ୍ଷାଗତ ଭାଷା ଓ ଫଣ୍ଟ ସଂରକ୍ଷିତ ହେଲା।', documentSettingsSaved: 'ଡକ୍ୟୁମେଣ୍ଟ ଭାଷା ଓ ଫଣ୍ଟ ସଂରକ୍ଷିତ ହେଲା।',
+    safeForExistingRecords: 'ବର୍ତ୍ତମାନର ରେକର୍ଡ ପାଇଁ ସୁରକ୍ଷିତ', safeForExistingRecordsNote: 'ଡିଫଲ୍ଟ ବଦଳିଲେ ପୂର୍ବରୁ ସଂରକ୍ଷିତ ଲେଖା ମିଟେ ନାହିଁ କିମ୍ବା ଓଭରରାଇଟ୍ ହୁଏ ନାହିଁ।',
+    planAccessActive: 'ପ୍ଲାନ୍ ପ୍ରବେଶ ସକ୍ରିୟ', onlyEntitledModulesShown: 'ଆପଣଙ୍କ ଭୂମିକା ପାଇଁ ଅନୁମୋଦିତ ପ୍ଲାନ୍ ମଡ୍ୟୁଲ୍ ମାତ୍ର ଦେଖାଯାଇଛି।'
+  },
+  pa: {
+    website: 'ਸਰਕਾਰੀ ਵੈੱਬਸਾਈਟ', erpPortal: 'ਈਆਰਪੀ ਪੋਰਟਲ', login: 'ਲਾਗ ਇਨ', logout: 'ਲਾਗ ਆਉਟ', dashboard: 'ਡੈਸ਼ਬੋਰਡ',
+    headmaster: 'ਮੁੱਖ ਅਧਿਆਪਕ', clerk: 'ਕਲਰਕ', teacher: 'ਅਧਿਆਪਕ', student: 'ਵਿਦਿਆਰਥੀ', dbSetupShort: 'ਡਾਟਾਬੇਸ ਸੈਟਅਪ',
+    portalOverview: 'ਪੋਰਟਲ ਝਲਕ', manageStaffAccounts: 'ਸਟਾਫ ਖਾਤਾ ਪ੍ਰਬੰਧਨ', academicSetupConfig: 'ਅਕਾਦਮਿਕ ਸੈਟਅਪ ਅਤੇ ਸੰਰਚਨਾ',
+    languageLocalization: 'ਭਾਸ਼ਾ ਅਤੇ ਸਥਾਨਕੀਕਰਨ', smartAiTimetableV2: 'ਸਮਾਰਟ ਏਆਈ ਸਮਾਂ-ਸਾਰਣੀ V2', beta: 'ਬੀਟਾ', staffMaster: 'ਸਟਾਫ ਮਾਸਟਰ',
+    languageSettingsDescription: 'ਭਾਸ਼ਾ ਦੀ ਚੋਣ ਡਾਟਾ-ਅਧਾਰਿਤ ਹੈ। ਨਤੀਜਾ, ਪ੍ਰਗਤੀ ਪੱਤਰ, ਸਰਟੀਫਿਕੇਟ ਜਾਂ ਟਿੱਪਣੀ ਕਿਸੇ ਇੱਕ ਭਾਸ਼ਾ ਨਾਲ ਸਥਾਈ ਤੌਰ ਤੇ ਨਹੀਂ ਬੱਝੀ।',
+    refresh: 'ਰਿਫ੍ਰੈਸ਼', defaultAcademicEntry: 'ਡਿਫਾਲਟ ਅਕਾਦਮਿਕ ਐਂਟਰੀ', defaultDocumentOutput: 'ਡਿਫਾਲਟ ਦਸਤਾਵੇਜ਼ ਆਉਟਪੁੱਟ', language: 'ਭਾਸ਼ਾ', font: 'ਫੋਂਟ', preview: 'ਝਲਕ',
+    academicSettingsNote: 'ਟਿੱਪਣੀਆਂ, ਨਤੀਜਿਆਂ ਅਤੇ ਅਕਾਦਮਿਕ ਡਾਟਾ ਐਂਟਰੀ ਲਈ ਡਿਫਾਲਟ ਭਾਸ਼ਾ ਅਤੇ ਫੋਂਟ।', documentSettingsNote: 'ਪ੍ਰਗਤੀ ਪੱਤਰ, ਸਰਟੀਫਿਕੇਟ, ਰਿਪੋਰਟ ਅਤੇ ਛਪੇ ਦਸਤਾਵੇਜ਼ ਲਈ ਡਿਫਾਲਟ ਭਾਸ਼ਾ ਅਤੇ ਫੋਂਟ।',
+    saveAcademicSettings: 'ਅਕਾਦਮਿਕ ਸੈਟਿੰਗ ਸੰਭਾਲੋ', saveDocumentSettings: 'ਦਸਤਾਵੇਜ਼ ਸੈਟਿੰਗ ਸੰਭਾਲੋ', academicSettingsSaved: 'ਅਕਾਦਮਿਕ ਭਾਸ਼ਾ ਅਤੇ ਫੋਂਟ ਸੰਭਾਲੇ ਗਏ।', documentSettingsSaved: 'ਦਸਤਾਵੇਜ਼ ਭਾਸ਼ਾ ਅਤੇ ਫੋਂਟ ਸੰਭਾਲੇ ਗਏ।',
+    safeForExistingRecords: 'ਮੌਜੂਦਾ ਰਿਕਾਰਡ ਲਈ ਸੁਰੱਖਿਅਤ', safeForExistingRecordsNote: 'ਡਿਫਾਲਟ ਬਦਲਣ ਨਾਲ ਪਹਿਲਾਂ ਸੰਭਾਲਿਆ ਪਾਠ ਮਿਟਦਾ ਜਾਂ ਓਵਰਰਾਈਟ ਨਹੀਂ ਹੁੰਦਾ।',
+    planAccessActive: 'ਪਲਾਨ ਪਹੁੰਚ ਸਰਗਰਮ ਹੈ', onlyEntitledModulesShown: 'ਤੁਹਾਡੀ ਭੂਮਿਕਾ ਲਈ ਮਨਜ਼ੂਰ ਪਲਾਨ ਮੋਡੀਊਲ ਹੀ ਦਿਖਾਏ ਗਏ ਹਨ।'
+  },
+  sa: {
+    website: 'आधिकारिकं जालपुटम्', erpPortal: 'ईआरपी प्रवेशद्वारम्', login: 'प्रवेशः', logout: 'निर्गमनम्', dashboard: 'नियन्त्रणपट्टम्',
+    headmaster: 'प्रधानाचार्यः', clerk: 'लिपिकः', teacher: 'शिक्षकः', student: 'विद्यार्थी', dbSetupShort: 'दत्तांशभाण्डार विन्यासः',
+    portalOverview: 'प्रवेशद्वार अवलोकनम्', manageStaffAccounts: 'कर्मचारी खात प्रबन्धनम्', academicSetupConfig: 'शैक्षिक विन्यासः तथा संरचना',
+    languageLocalization: 'भाषा तथा स्थानीयकरणम्', smartAiTimetableV2: 'स्मार्ट एआई समयसारिणी V2', beta: 'बीटा', staffMaster: 'कर्मचारी मूलसूची',
+    languageSettingsDescription: 'भाषाचयनं दत्तांशाधारितम् अस्ति। परिणामः, प्रगतिपत्रम्, प्रमाणपत्रम् अथवा टिप्पणी कस्यापि एकस्याः भाषायाः सह स्थायिरूपेण न बद्धम्।',
+    refresh: 'पुनर्ताजगीकरणम्', defaultAcademicEntry: 'पूर्वनिर्धारित शैक्षिक प्रविष्टिः', defaultDocumentOutput: 'पूर्वनिर्धारित दस्तावेज निर्गमः', language: 'भाषा', font: 'लिपिशैली', preview: 'पूर्वदर्शनम्',
+    academicSettingsNote: 'टिप्पणी, परिणाम तथा शैक्षिक दत्तांश प्रविष्टये पूर्वनिर्धारित भाषा लिपिशैली च।', documentSettingsNote: 'प्रगतिपत्र, प्रमाणपत्र, प्रतिवेदन तथा मुद्रित दस्तावेजानां पूर्वनिर्धारित भाषा लिपिशैली च।',
+    saveAcademicSettings: 'शैक्षिक विन्यासं रक्षतु', saveDocumentSettings: 'दस्तावेज विन्यासं रक्षतु', academicSettingsSaved: 'शैक्षिक भाषा लिपिशैली च रक्षिता।', documentSettingsSaved: 'दस्तावेज भाषा लिपिशैली च रक्षिता।',
+    safeForExistingRecords: 'विद्यमान अभिलेखानां कृते सुरक्षितम्', safeForExistingRecordsNote: 'पूर्वनिर्धारितं परिवर्तयित्वा पूर्वरक्षितः पाठः न नश्यति न च अधिलेख्यते।',
+    planAccessActive: 'योजना प्रवेशः सक्रियः', onlyEntitledModulesShown: 'भवतः भूमिकायै अनुमोदिताः योजना-मॉड्यूलाः एव दर्शिताः।'
+  },
+  sat: {
+    website: 'ᱥᱚᱨᱠᱟᱨᱤ ᱣᱮᱵᱽᱥᱟᱭᱤᱴ', erpPortal: 'ᱤᱟᱨᱯᱤ ᱯᱚᱨᱴᱟᱞ', login: 'ᱞᱚᱜᱤᱱ', logout: 'ᱞᱚᱜᱽᱟᱣᱩᱴ', dashboard: 'ᱰᱮᱥᱵᱚᱨᱰ',
+    headmaster: 'ᱢᱩᱬᱩᱛ ᱥᱤᱠᱷᱱᱟᱹᱛ', clerk: 'ᱠᱞᱟᱨᱠ', teacher: 'ᱥᱤᱠᱷᱱᱟᱹᱛ', student: 'ᱯᱟᱹᱴᱷᱩᱣᱟᱹ', dbSetupShort: 'ᱰᱟᱴᱟᱵᱮᱥ ᱥᱮᱴᱟᱯ',
+    portalOverview: 'ᱯᱚᱨᱴᱟᱞ ᱧᱮᱞ', manageStaffAccounts: 'ᱥᱴᱟᱯᱷ ᱮᱠᱟᱣᱩᱱᱴ ᱥᱟᱢᱲᱟᱣ', academicSetupConfig: 'ᱥᱮᱪᱮᱫ ᱥᱮᱴᱟᱯ ᱟᱨ ᱠᱚᱱᱯᱷᱤᱜᱟᱨᱮᱥᱚᱱ',
+    languageLocalization: 'ᱯᱟᱹᱨᱥᱤ ᱟᱨ ᱴᱷᱟᱶ ᱥᱮᱴᱤᱝ', smartAiTimetableV2: 'ᱥᱢᱟᱨᱴ ᱮᱟᱭ ᱚᱠᱛᱚ ᱪᱟᱨᱴ V2', beta: 'ᱵᱮᱴᱟ', staffMaster: 'ᱥᱴᱟᱯᱷ ᱢᱟᱥᱴᱟᱨ',
+    languageSettingsDescription: 'ᱯᱟᱹᱨᱥᱤ ᱵᱟᱪᱷᱟᱣ ᱫᱚ ᱰᱟᱴᱟ-ᱵᱷᱤᱛᱤᱠ ᱠᱟᱱᱟ। ᱨᱤᱡᱟᱞᱴ, ᱯᱨᱚᱜᱨᱮᱥ ᱠᱟᱨᱰ, ᱥᱟᱨᱴᱤᱯᱷᱤᱠᱮᱴ ᱵᱟᱝᱠᱷᱟᱱ ᱨᱤᱢᱟᱨᱠ ᱡᱟᱦᱟᱱ ᱢᱤᱫ ᱯᱟᱹᱨᱥᱤ ᱥᱟᱶ ᱡᱟᱣᱜᱮ ᱵᱟᱭ ᱛᱚᱞᱟᱠᱟᱱᱟ।',
+    refresh: 'ᱨᱤᱯᱷᱨᱮᱥ', defaultAcademicEntry: 'ᱰᱤᱯᱷᱚᱞᱴ ᱥᱮᱪᱮᱫ ᱮᱱᱴᱨᱤ', defaultDocumentOutput: 'ᱰᱤᱯᱷᱚᱞᱴ ᱫᱚᱞᱤᱞ ᱚᱣᱩᱴᱯᱩᱴ', language: 'ᱯᱟᱹᱨᱥᱤ', font: 'ᱯᱷᱚᱱᱴ', preview: 'ᱢᱟᱲᱟᱝ ᱧᱮᱞ',
+    academicSettingsNote: 'ᱨᱤᱢᱟᱨᱠ, ᱨᱤᱡᱟᱞᱴ ᱟᱨ ᱥᱮᱪᱮᱫ ᱰᱟᱴᱟ ᱮᱱᱴᱨᱤ ᱞᱟᱹᱜᱤᱫ ᱰᱤᱯᱷᱚᱞᱴ ᱯᱟᱹᱨᱥᱤ ᱟᱨ ᱯᱷᱚᱱᱴ।', documentSettingsNote: 'ᱯᱨᱚᱜᱨᱮᱥ ᱠᱟᱨᱰ, ᱥᱟᱨᱴᱤᱯᱷᱤᱠᱮᱴ, ᱨᱤᱯᱚᱨᱴ ᱟᱨ ᱪᱷᱟᱯᱟ ᱫᱚᱞᱤᱞ ᱞᱟᱹᱜᱤᱫ ᱰᱤᱯᱷᱚᱞᱴ ᱯᱟᱹᱨᱥᱤ ᱟᱨ ᱯᱷᱚᱱᱴ।',
+    saveAcademicSettings: 'ᱥᱮᱪᱮᱫ ᱥᱮᱴᱤᱝ ᱥᱟᱧᱪᱟᱣ', saveDocumentSettings: 'ᱫᱚᱞᱤᱞ ᱥᱮᱴᱤᱝ ᱥᱟᱧᱪᱟᱣ', academicSettingsSaved: 'ᱥᱮᱪᱮᱫ ᱯᱟᱹᱨᱥᱤ ᱟᱨ ᱯᱷᱚᱱᱴ ᱥᱟᱧᱪᱟᱣ ᱮᱱᱟ।', documentSettingsSaved: 'ᱫᱚᱞᱤᱞ ᱯᱟᱹᱨᱥᱤ ᱟᱨ ᱯᱷᱚᱱᱴ ᱥᱟᱧᱪᱟᱣ ᱮᱱᱟ।',
+    safeForExistingRecords: 'ᱢᱮᱱᱟᱜ ᱨᱮᱠᱚᱨᱰ ᱞᱟᱹᱜᱤᱫ ᱥᱩᱨᱩᱠᱷᱤᱛ', safeForExistingRecordsNote: 'ᱰᱤᱯᱷᱚᱞᱴ ᱵᱚᱫᱚᱞ ᱠᱟᱛᱮ ᱢᱟᱲᱟᱝ ᱥᱟᱧᱪᱟᱣ ᱚᱞ ᱵᱟᱭ ᱢᱮᱴᱟᱜ ᱵᱟᱝᱠᱷᱟᱱ ᱚᱵᱷᱟᱨᱨᱟᱭᱤᱴ ᱟᱜ।',
+    planAccessActive: 'ᱯᱞᱟᱱ ᱮᱠᱥᱮᱥ ᱪᱟᱹᱞᱩ', onlyEntitledModulesShown: 'ᱟᱢᱟᱜ ᱨᱚᱞ ᱞᱟᱹᱜᱤᱫ ᱢᱟᱱᱡᱩᱨ ᱯᱞᱟᱱ ᱢᱚᱰᱩᱞ ᱜᱮ ᱩᱫᱩᱜ ᱟᱠᱟᱱᱟ।'
+  },
+  sd: {
+    website: 'سرڪاري ويب سائيٽ', erpPortal: 'اي آر پي پورٽل', login: 'لاگ اِن', logout: 'لاگ آئوٽ', dashboard: 'ڊيش بورڊ',
+    headmaster: 'هيڊ ماسٽر', clerk: 'ڪلرڪ', teacher: 'استاد', student: 'شاگرد', dbSetupShort: 'ڊيٽابيس سيٽ اپ',
+    portalOverview: 'پورٽل جائزو', manageStaffAccounts: 'عملي جا اڪائونٽ سنڀاليو', academicSetupConfig: 'تعليمي سيٽ اپ ۽ ترتيب',
+    languageLocalization: 'ٻولي ۽ مقامي ترتيب', smartAiTimetableV2: 'سمارٽ اي آءِ ٽائيم ٽيبل V2', beta: 'بيٽا', staffMaster: 'اسٽاف ماسٽر',
+    languageSettingsDescription: 'ٻولي جي چونڊ ڊيٽا تي ٻڌل آهي. نتيجو، پروگريس ڪارڊ، سرٽيفڪيٽ يا رمارڪ ڪنهن هڪ ٻولي سان مستقل طور ٻڌل ناهي.',
+    refresh: 'تازو ڪريو', defaultAcademicEntry: 'ڊفالٽ تعليمي داخلا', defaultDocumentOutput: 'ڊفالٽ دستاويزي آئوٽ پُٽ', language: 'ٻولي', font: 'فونٽ', preview: 'اڳيون ڏيک',
+    academicSettingsNote: 'رمارڪ، نتيجن ۽ تعليمي ڊيٽا داخلا لاءِ ڊفالٽ ٻولي ۽ فونٽ.', documentSettingsNote: 'پروگريس ڪارڊ، سرٽيفڪيٽ، رپورٽ ۽ ڇپيل دستاويزن لاءِ ڊفالٽ ٻولي ۽ فونٽ.',
+    saveAcademicSettings: 'تعليمي سيٽنگ محفوظ ڪريو', saveDocumentSettings: 'دستاويزي سيٽنگ محفوظ ڪريو', academicSettingsSaved: 'تعليمي ٻولي ۽ فونٽ محفوظ ٿيا.', documentSettingsSaved: 'دستاويزي ٻولي ۽ فونٽ محفوظ ٿيا.',
+    safeForExistingRecords: 'موجوده رڪارڊن لاءِ محفوظ', safeForExistingRecordsNote: 'ڊفالٽ بدلائڻ سان اڳ ۾ محفوظ ٿيل متن ختم يا اوور رائيٽ نٿو ٿئي.',
+    planAccessActive: 'پلان رسائي فعال آهي', onlyEntitledModulesShown: 'توهان جي ڪردار لاءِ منظور ٿيل پلان ماڊيول ئي ڏيکاريا ويا آهن.'
+  },
+  ta: {
+    website: 'அதிகாரப்பூர்வ இணையதளம்', erpPortal: 'ஈஆர்பி தளம்', login: 'உள்நுழை', logout: 'வெளியேறு', dashboard: 'முகப்புப் பலகை',
+    headmaster: 'தலைமை ஆசிரியர்', clerk: 'எழுத்தர்', teacher: 'ஆசிரியர்', student: 'மாணவர்', dbSetupShort: 'தரவுத்தள அமைப்பு',
+    portalOverview: 'தள மேலோட்டம்', manageStaffAccounts: 'பணியாளர் கணக்கு மேலாண்மை', academicSetupConfig: 'கல்வி அமைப்பு மற்றும் கட்டமைப்பு',
+    languageLocalization: 'மொழி மற்றும் உள்ளூர்மயமாக்கல்', smartAiTimetableV2: 'ஸ்மார்ட் ஏஐ கால அட்டவணை V2', beta: 'பீட்டா', staffMaster: 'பணியாளர் முதன்மைப் பதிவு',
+    languageSettingsDescription: 'மொழித் தேர்வு தரவு அடிப்படையிலானது. முடிவு, முன்னேற்ற அட்டை, சான்றிதழ் அல்லது குறிப்பு எந்த ஒரு மொழியுடனும் நிரந்தரமாக இணைக்கப்படவில்லை.',
+    refresh: 'புதுப்பி', defaultAcademicEntry: 'இயல்புநிலை கல்விப் பதிவு', defaultDocumentOutput: 'இயல்புநிலை ஆவண வெளியீடு', language: 'மொழி', font: 'எழுத்துரு', preview: 'முன்னோட்டம்',
+    academicSettingsNote: 'குறிப்புகள், முடிவுகள் மற்றும் கல்வித் தரவு பதிவிற்கான இயல்புநிலை மொழி மற்றும் எழுத்துரு.', documentSettingsNote: 'முன்னேற்ற அட்டை, சான்றிதழ், அறிக்கை மற்றும் அச்சு ஆவணங்களுக்கான இயல்புநிலை மொழி மற்றும் எழுத்துரு.',
+    saveAcademicSettings: 'கல்வி அமைப்பை சேமி', saveDocumentSettings: 'ஆவண அமைப்பை சேமி', academicSettingsSaved: 'கல்வி மொழி மற்றும் எழுத்துரு சேமிக்கப்பட்டது.', documentSettingsSaved: 'ஆவண மொழி மற்றும் எழுத்துரு சேமிக்கப்பட்டது.',
+    safeForExistingRecords: 'தற்போதைய பதிவுகளுக்கு பாதுகாப்பானது', safeForExistingRecordsNote: 'இயல்புநிலையை மாற்றினாலும் முன்பு சேமித்த உரை அழிக்கப்படாது அல்லது மேலெழுதப்படாது.',
+    planAccessActive: 'திட்ட அணுகல் செயலில் உள்ளது', onlyEntitledModulesShown: 'உங்கள் பொறுப்பிற்கு அனுமதிக்கப்பட்ட திட்டத் தொகுதிகள் மட்டும் காட்டப்படுகின்றன.'
+  },
+  te: {
+    website: 'అధికారిక వెబ్‌సైట్', erpPortal: 'ఈఆర్‌పీ పోర్టల్', login: 'లాగిన్', logout: 'లాగ్ అవుట్', dashboard: 'డ్యాష్‌బోర్డ్',
+    headmaster: 'ప్రధానోపాధ్యాయుడు', clerk: 'క్లర్క్', teacher: 'ఉపాధ్యాయుడు', student: 'విద్యార్థి', dbSetupShort: 'డేటాబేస్ సెటప్',
+    portalOverview: 'పోర్టల్ అవలోకనం', manageStaffAccounts: 'సిబ్బంది ఖాతా నిర్వహణ', academicSetupConfig: 'విద్యా సెటప్ మరియు ఆకృతీకరణ',
+    languageLocalization: 'భాష మరియు స్థానికీకరణ', smartAiTimetableV2: 'స్మార్ట్ ఏఐ టైమ్‌టేబుల్ V2', beta: 'బీటా', staffMaster: 'సిబ్బంది మాస్టర్',
+    languageSettingsDescription: 'భాష ఎంపిక డేటా ఆధారితం. ఫలితం, ప్రోగ్రెస్ కార్డ్, సర్టిఫికేట్ లేదా వ్యాఖ్య ఏ ఒక్క భాషతోనూ శాశ్వతంగా కట్టుబడి ఉండదు.',
+    refresh: 'రిఫ్రెష్', defaultAcademicEntry: 'డిఫాల్ట్ విద్యా నమోదు', defaultDocumentOutput: 'డిఫాల్ట్ పత్ర అవుట్‌పుట్', language: 'భాష', font: 'ఫాంట్', preview: 'ముందస్తు వీక్షణ',
+    academicSettingsNote: 'వ్యాఖ్యలు, ఫలితాలు మరియు విద్యా డేటా నమోదు కోసం డిఫాల్ట్ భాష మరియు ఫాంట్.', documentSettingsNote: 'ప్రోగ్రెస్ కార్డ్, సర్టిఫికేట్, నివేదిక మరియు ముద్రిత పత్రాల కోసం డిఫాల్ట్ భాష మరియు ఫాంట్.',
+    saveAcademicSettings: 'విద్యా సెట్టింగ్ సేవ్ చేయండి', saveDocumentSettings: 'పత్ర సెట్టింగ్ సేవ్ చేయండి', academicSettingsSaved: 'విద్యా భాష మరియు ఫాంట్ సేవ్ అయ్యాయి.', documentSettingsSaved: 'పత్ర భాష మరియు ఫాంట్ సేవ్ అయ్యాయి.',
+    safeForExistingRecords: 'ప్రస్తుత రికార్డులకు సురక్షితం', safeForExistingRecordsNote: 'డిఫాల్ట్ మార్చినా ముందుగా సేవ్ చేసిన వచనం తొలగించబడదు లేదా ఓవర్‌రైట్ కాదు.',
+    planAccessActive: 'ప్లాన్ యాక్సెస్ సక్రియంగా ఉంది', onlyEntitledModulesShown: 'మీ పాత్రకు అనుమతించిన ప్లాన్ మాడ్యూల్స్ మాత్రమే చూపబడుతున్నాయి.'
+  }
+};

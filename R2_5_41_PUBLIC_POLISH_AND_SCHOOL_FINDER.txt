@@ -1,0 +1,30 @@
+Classtago R2.5.41 — PUBLIC POLISH + SCHOOL FINDER RESTORE
+
+Scope
+- Public Classtago platform landing readability/contrast repair.
+- School-specific public portal retained and hardened for light/aurora theme readability.
+- School Finder restored to live search from the first typed character.
+- Last opened school is remembered on the same device and surfaced above Finder for quick access.
+- Mobile app school discovery aligned to first-character live search.
+- Public school directory adds a short 30-second server cache to avoid repeated full directory reads while typing.
+
+Preservation
+- No SQL migration.
+- No Student/Teacher/Result/Admission/Auth record changes.
+- Supabase canonical assignments unchanged.
+- Teacher AI Homework/Question Paper R2.5.40 speed path unchanged.
+- Render start/build architecture unchanged.
+- R2/Backblaze remains optional; current Supabase Storage fallback remains available.
+
+Readability fixes
+- Light/aurora public surfaces now remap pale cyan/emerald/sky/violet/amber/rose text to deeper readable tones.
+- Explicit dark public surfaces opt out and retain light text.
+- School hero remains high-contrast.
+- Placeholder text contrast strengthened.
+
+School Finder behavior
+- 180ms debounced live search from 1 character.
+- Manual Find button still works.
+- Stale requests cannot overwrite newer results.
+- Recently opened school is stored only as device convenience; cloud authorization remains authoritative.
+- Directory backend snapshot is cached for 30 seconds to reduce Supabase reads during live typing.

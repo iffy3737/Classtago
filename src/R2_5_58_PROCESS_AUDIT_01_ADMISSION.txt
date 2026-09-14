@@ -1,0 +1,11 @@
+Classtago R2.5.58 — DEMO PROCESS AUDIT 01 / ADMISSION CANONICAL FLOW
+
+- Based on R2.5.57.
+- Production ERP/Supabase/auth logic unchanged.
+- Admission demo audited against current Clerk, Headmaster, Student Signup, Class Teacher approval, Parent Signup and Parent approval source surfaces.
+- Removed incorrect demo shortcut where Clerk appeared to create/activate Student login.
+- Admission Process Demo now follows 16 canonical connected stages.
+- Added explicit per-field demo control fidelity: text, textarea, number, date, dropdown/select, radio, checkbox, file, password, status and read-only.
+- Explicit per-step interaction mode: form, selection, review, view.
+- Review/approval screens never fake typing.
+- Student/Parent role views remain read-only.

@@ -1,0 +1,41 @@
+import type { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  appId: 'com.classtago.app',
+  appName: 'Classtago',
+  webDir: 'mobile-dist',
+  server: {
+    androidScheme: 'https',
+  },
+  android: {
+    allowMixedContent: false,
+    captureInput: false,
+    webContentsDebuggingEnabled: false,
+  },
+  plugins: {
+    CapacitorHttp: {
+      enabled: true,
+    },
+    SystemBars: {
+      insetsHandling: 'css',
+    },
+    SplashScreen: {
+      launchAutoHide: false,
+      launchShowDuration: 1200,
+      backgroundColor: '#F7F9FF',
+      showSpinner: false,
+      androidScaleType: 'CENTER_CROP',
+    },
+    StatusBar: {
+      overlaysWebView: false,
+      style: 'DARK',
+      backgroundColor: '#F7F9FF',
+    },
+    Keyboard: {
+      resize: 'body',
+      resizeOnFullScreen: true,
+    },
+  },
+};
+
+export default config;

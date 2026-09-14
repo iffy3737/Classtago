@@ -1,0 +1,27 @@
+Classtago R2.5.35 — STUDENT AUDIT + PARENT PORTAL
+=================================================
+Base: R2.5.34 cumulative project.
+
+Student audit / fixes
+- Student Portal remains canonical-cloud and Student-Master scoped; no localStorage operational source added.
+- Student leave submission now requires a meaningful reason in the Student UI.
+- Headmaster leave decisions now send best-effort personal notifications to the applicant without changing the canonical leave decision workflow.
+- Fee / library compatibility fallback now chooses the first table containing the CURRENT STUDENT, instead of the first school-wide populated table. This prevents another student's row in a newer table from hiding this student's compatible legacy row.
+- Published/final Result Book and Progress Card visibility, Study Material authorization, own attendance, timetable, notices, documents and service requests remain server-scoped.
+
+Parent role
+- Real Parent cloud account signup from registered Parent/Guardian mobile + child GR/PEN, optional DOB verification, school-scoped Headmaster approval.
+- Parent Login ID derives from verified mobile + school code; account stays inactive until Headmaster approval.
+- Multi-child flow: active Parent can request another child; every child requires Student Master evidence + separate Headmaster approval.
+- Parent Portal modules: Home, Children, Attendance, Timetable, Homework/Study Material, Exam Schedule, Results/Progress Cards, Fees, Admission Status, Leave, Certificate Requests, Notices/Messages, Library, Profile/Security.
+- Parent data access reuses the Student canonical snapshot but only for explicitly approved child IDs; no school-wide reads are exposed to the Parent UI.
+- Parent profile mobile is immutable in self-service because it is part of verified Parent-child identity; contact correction must be school-verified.
+- Headmaster Parent desk now revalidates live Parent/Student evidence at approval time and rolls initial-account activation back if the canonical decision cannot be saved.
+- Headmaster can revoke an active Parent-child link with a mandatory reason; history is preserved in audit_logs and the revoked child disappears from Parent access.
+- Teacher website communication no longer treats a revoked Parent-child link as an active Parent Portal recipient.
+- Parent/Student leave decisions notify the actual submitting login while leaving the original Headmaster-only decision workflow unchanged.
+
+Preservation
+- No Supabase schema/migration files changed.
+- Existing Headmaster, Clerk, Teacher, Result, Admission, Timetable and Communication flows are not replaced.
+- Parent role is additive and uses existing users, memberships, role_permissions, audit_logs and notifications infrastructure.

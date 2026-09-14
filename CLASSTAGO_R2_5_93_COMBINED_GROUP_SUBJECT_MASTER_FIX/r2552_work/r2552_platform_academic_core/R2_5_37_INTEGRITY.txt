@@ -1,0 +1,42 @@
+EDUNIXO R2.5.37 INTEGRITY / REGRESSION RECORD
+===================================================
+
+Baseline: R2.5.36 Parent Signup + Peon + Bell + Leave Aware
+Baseline files: 309
+R2.5.37 files before this manifest: 310
+Changed existing files: 7
+New files before this manifest: 1
+Removed files: 0
+
+Changed existing files:
+- android/app/build.gradle                 (version only)
+- package.json                             (version only)
+- src/components/DashboardOverview.tsx     (contrast guard + canonical back routing UI)
+- src/components/MasterProgressCardTemplateEditor.tsx (one low-contrast label)
+- src/components/RoleFeatureContextHeader.tsx (configurable back label)
+- src/components/RoleModuleLanding.tsx     (Back to Dashboard control)
+- src/index.css                            (visual-only contrast containment)
+
+New file before this manifest:
+- R2_5_37_READABILITY_AND_BACK_NAVIGATION.txt
+
+Supabase files: 6
+Supabase combined SHA-256: 3b59a30403543b0489d02322b0d987ac10ea636f0662e7f12f285911b3db1bf3
+R2.5.36 baseline Supabase combined SHA-256: 3b59a30403543b0489d02322b0d987ac10ea636f0662e7f12f285911b3db1bf3
+Supabase schema/migrations: UNCHANGED
+
+Validation:
+- Full TS/TSX syntax parse: PASS
+- CSS structural brace check: PASS
+- App-wide authenticated ERP contrast guard: PASS
+- Unsafe generic dark-to-light mobile wash removed: PASS
+- Command Center light-banner foreground hardening: PASS
+- Canonical Module Home / Dashboard back routing: PASS
+- Deployment doctor: PASS
+- Android project doctor: PASS
+- No existing file removed
+
+Preservation note:
+R2.5.37 is visual/navigation-only. No server.ts route, roleModuleBlueprint permission,
+Supabase migration, auth service, admission, timetable, result, communication,
+Student, Parent, Peon/Bell or business data-flow implementation was changed.

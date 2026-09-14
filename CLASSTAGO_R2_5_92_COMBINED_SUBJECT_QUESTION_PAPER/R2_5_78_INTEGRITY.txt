@@ -1,0 +1,34 @@
+Classtago R2.5.78 INTEGRITY / VALIDATION
+
+Base: EDUNIXO_R2_5_77_VOICE_LANGUAGE_WARM_CONVERSATION_FIX.zip
+Changed existing files only:
+- package.json
+- metadata.json
+- server.ts
+- src/components/AIAssistant.tsx
+
+Added:
+- src/components/RealtimeVoiceAssistant.tsx
+- voice-agent/bot.py
+- voice-agent/pyproject.toml
+- voice-agent/Dockerfile
+- voice-agent/pcc-deploy.toml
+- voice-agent/.env.example
+- voice-agent/README.md
+- R2_5_78_RELEASE_NOTES.md
+- R2_5_78_TEST_CHECKLIST.md
+- R2_5_78_INTEGRITY.txt
+
+No existing file removed.
+
+Validation performed in build workspace:
+- Python bot AST parse: PASS
+- package.json parse: PASS
+- metadata.json parse: PASS
+- pyproject.toml parse: PASS
+- pcc-deploy.toml parse: PASS
+- TypeScript compiler transpile syntax check: PASS for RealtimeVoiceAssistant.tsx, AIAssistant.tsx and server.ts
+- Baseline file diff inspected: only intended existing files changed; no existing file removed
+- Secret scan: example placeholders only; no Pipecat/Google secret embedded
+
+Full npm/Vite build was not executed in this workspace because project node_modules are intentionally not shipped and external npm resolution was unavailable here. Google AI Studio / deployment must install package.json dependencies and run the normal full build before production.

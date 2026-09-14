@@ -1,0 +1,11 @@
+EDUNIXO R2.5.21 — CLERK WEBSITE NAVIGATION CORRECTIVE BUILD
+
+Base: R2.5.20 ROOT
+
+Changes:
+1. Clerk Website Management is now a standalone top-level module directly below Clerk Dashboard.
+2. Clerk Website Management opens Website Design & Content with Page Content, Media & Gallery, Contact Content and Private Preview features.
+3. Admission Campaign Setup is a separate standalone Clerk module.
+4. Admission Applications and Admission Confirmation remain Headmaster-owned.
+5. Clerk website_studio entitlement now follows Clerk master_data entitlement so existing Founding School plans do not silently filter the Clerk-owned Website Management module.
+6. Root-project ZIP layout preserved for Google AI Studio import.

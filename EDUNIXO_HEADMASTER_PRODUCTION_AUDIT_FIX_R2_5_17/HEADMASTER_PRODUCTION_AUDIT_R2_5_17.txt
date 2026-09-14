@@ -1,0 +1,39 @@
+EDUNIXO R2.5.17 — Headmaster Production Audit Fix
+Base: R2.5.16 combined chain
+
+AUDITED SCOPE
+- 32 Headmaster modules and role navigation
+- Headmaster backend authentication/module guards
+- Academic Setup, Timetable, Substitute, Leave, Student Service Requests
+- Staff Accounts security path
+- Exam/Result/Finance/Payroll/Library/Inventory/Communication/Security cloud architecture
+- Key Supabase production tables and RLS presence
+
+CODE FIXES
+1. Smart Timetable now hydrates permanent Academic Setup cloud state on fresh devices.
+2. Auto Substitute now reads approved Teacher leave from cloud; Pending/Student leave cannot trigger substitute allocation.
+3. Multi-day approved leave uses the selected duty date for substitute generation.
+4. Timetable publish resolves Academic Year from cloud and restores the previous published schedule if replacement insert fails.
+5. Substitute publish restores the previous adjustment if replacement insert fails.
+6. Student Service Request Queue and History now honor their separate Headmaster features.
+7. Headmaster Leave holiday list and Rule A/B/C are now canonical cloud settings:
+   - school_holidays for calendar events
+   - school_academic_settings.configuration.leaveRule for leave counting policy
+   Dedicated authenticated Headmaster APIs are included.
+
+SUPABASE SECURITY FIX ALREADY APPLIED TO THE CONNECTED PROJECT
+- public.admin_set_staff_status(uuid,uuid,boolean,uuid)
+  EXECUTE revoked from PUBLIC / anon / authenticated.
+  EXECUTE retained for service_role only.
+  This preserves the authenticated backend Staff Account flow while preventing direct public RPC execution.
+
+VALIDATION
+- 201 TS/TSX files transpile/syntax checked: 0 syntax errors.
+- No production Student/Teacher/Assignment records were deleted or modified during the audit.
+- Full npm/Vite build was not run because project node_modules are not available in this audit container.
+
+STILL REQUIRED BEFORE PUBLIC LAUNCH
+- Deploy the Express backend and configure its production secrets.
+- Set VITE_EDUNIXO_API_BASE_URL to the real HTTPS backend origin.
+- Run final real-login smoke tests for each role on the deployed environment.
+- Global (non-Headmaster-specific) Gemini endpoint/auth hardening remains part of production launch preparation.

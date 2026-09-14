@@ -1,0 +1,36 @@
+EDUNIXO R2.5.20 — ROOT DEPLOYMENT CORRECTIVE BUILD
+27 Aug 2026
+
+1. LOGIN
+- School-user profile loading now uses authenticated SECURITY DEFINER RPC edunixo_current_school_login_profile.
+- Login no longer directly depends on browser SELECT against public.users.
+- Clerk accounts no longer require or create a Teacher Master record.
+- Teacher/Class Teacher accounts still require canonical Teacher Master linkage.
+- Existing logout/login navigation reset remains: a fresh login starts at the role dashboard.
+
+2. ROLE OWNERSHIP
+CLERK ONLY
+- Website Design & Content
+- Admission Campaign Setup
+- Website/campaign media, draft, publish/close operations
+
+HEADMASTER ONLY
+- Admission Applications
+- Admission Confirmation
+- Admission application document review/status/confirmation
+
+Headmaster Website Design and Campaign Setup navigation entries were removed. Direct/stale URL access is also role-gated in the UI and Express API.
+
+3. READABILITY / CONTRAST
+- Semantic dark operational heroes now keep both their dark background and high-contrast foreground in Light/Aurora/Dark appearance modes.
+- Staff Master hero/metrics no longer get converted to a pale card with white text.
+- Executive Dashboard and other edx-dark-contrast-surface headers use deterministic readable colors.
+
+4. PACKAGE LAYOUT
+- This ZIP is intentionally PROJECT-ROOT format.
+- package.json, server.ts, src/, supabase/, android/ are at the ZIP root.
+- This prevents AI Studio from creating a nested R2_5_XX folder while continuing to run the older active project.
+
+5. CLOUD STATE
+- The login RPC migration has already been applied to the connected Supabase project.
+- Testing student/admission cleanup and prior profile synchronization/security fixes remain in place.

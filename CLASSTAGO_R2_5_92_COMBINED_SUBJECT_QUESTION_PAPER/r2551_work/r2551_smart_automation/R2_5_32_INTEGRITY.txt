@@ -1,0 +1,56 @@
+EDUNIXO R2.5.32 — Integrity / Regression Gate
+
+Baseline: R2.5.31 Headmaster Subject Teacher Parity
+Baseline files: 286
+Existing files byte-for-byte unchanged: 266
+Existing files intentionally changed: 20
+Existing files removed: 0
+New files before this integrity manifest: 2
+
+Supabase files in baseline: 6
+Supabase baseline SHA-256: 298107b70ee7f7c2f822410663d150a3be31caee1ecd62479844f717d113d041
+Supabase R2.5.32 SHA-256: 298107b70ee7f7c2f822410663d150a3be31caee1ecd62479844f717d113d041
+Supabase schema/migration changes: NONE
+
+Intentionally changed existing files:
+- android/app/build.gradle
+- package.json
+- server.ts
+- src/App.tsx
+- src/components/AcademicSetupModule.tsx
+- src/components/AdmissionCampaignWorkspace.tsx
+- src/components/ClerkResultPrintCenter.tsx
+- src/components/ClerkWorkspace.tsx
+- src/components/CompleteProfileWorkspace.tsx
+- src/components/ResultManagement.tsx
+- src/components/SmartSubstituteManager.tsx
+- src/lib/roleModuleBlueprint.ts
+- src/lib/roleModuleFocus.ts
+- src/modules/teacherAcademicFresh/services/teacherAcademicService.ts
+- src/modules/teacherFresh/TeacherDashboardFresh.tsx
+- src/modules/teacherFresh/teacherFreshService.ts
+- src/modules/teacherFresh/types.ts
+- src/modules/teacherResultFresh/ClerkResultCloudPrintInbox.tsx
+- src/modules/teacherResultFresh/clerkResultMasterBridge.ts
+- src/modules/teacherResultFresh/teacherResultService.ts
+
+New functional/release files:
+- R2_5_32_TEACHER_CLERK_STABILITY_AND_PROFILE_GATE.txt
+- src/lib/profileCompletion.ts
+
+Validation gates:
+- Changed TS/TSX parse/transpile check: PASS
+- Deployment doctor: PASS (0.2.32)
+- Android project doctor: PASS (version 0.2.32 / code 2532)
+- Teacher/Class Teacher profile gate assertions: PASS
+- Teacher/Class Teacher Attendance role separation assertion: PASS
+- Campaign Clerk-edit / Headmaster-publish authority assertion: PASS
+- Homework signed-upload and assignment-scoped API assertions: PASS
+- Result Book server-build assertion: PASS
+- Teacher notification read API assertion: PASS
+- Approved leave -> draft substitute assertion: PASS
+- Clerk Result Master canonical server API assertion: PASS
+- Clerk Result Print server-write assertion: PASS
+- Canonical cloud admission numbering assertion: PASS
+
+Note: Full npm/Vite production compilation was not certified in this environment because project node_modules are not installed and external package registry availability is not guaranteed. The release uses syntax-level TypeScript validation plus project-specific deployment/native/feature checks.

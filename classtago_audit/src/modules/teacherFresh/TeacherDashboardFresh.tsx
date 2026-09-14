@@ -1,0 +1,282 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import { schoolRelativeDateKey, schoolTodayKey } from '../../lib/schoolDate';
+import {
+  AlertCircle, ArrowRight, Bell, BookOpen, CalendarClock, CheckCircle2,
+  ClipboardCheck, Clock3, FileText, GraduationCap, ListChecks, NotebookPen,
+  ShieldCheck, Users
+} from 'lucide-react';
+import type { TeacherCloudContext, TeacherDashboardCloudFeed, TeacherScopeAssignment } from './types';
+import { loadAttendanceForDate, loadAttendanceRoster, loadTeacherDashboardCloudFeed, markTeacherNotificationRead } from './teacherFreshService';
+import { loadReturnedResultCount } from '../teacherResultFresh/teacherResultService';
+import { loadStudentSignupApprovalQueue } from '../teacherStudentsFresh/TeacherStudentSignupApprovals';
+
+interface Props {
+  context: TeacherCloudContext | null;
+  loading: boolean;
+  error?: string;
+  onNavigate?: (moduleId: string) => void;
+}
+
+type SummaryProps = { icon: any; label: string; value: any; note: string; state?: 'ok'|'warn'|'muted' };
+const SummaryCard = ({ icon: Icon, label, value, note, state='muted' }: SummaryProps) => (
+  <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="flex items-start justify-between gap-3">
+      <div className="min-w-0">
+        <p className="text-[10px] font-black uppercase tracking-wider text-slate-500">{label}</p>
+        <p className={`mt-2 break-words text-xl font-black ${state === 'warn' ? 'text-amber-700' : state === 'ok' ? 'text-emerald-700' : 'text-slate-950'}`}>{value}</p>
+        <p className="mt-1 text-[11px] leading-5 text-slate-500">{note}</p>
+      </div>
+      <div className="rounded-xl bg-slate-950 p-2.5 text-white"><Icon className="h-4 w-4" /></div>
+    </div>
+  </div>
+);
+
+function classScopeKey(a: TeacherScopeAssignment) { return `${a.classId}:${a.divisionId || ''}`; }
+
+function uniqueScopes(assignments: TeacherScopeAssignment[], classTeacherOnly = false) {
+  const map = new Map<string, TeacherScopeAssignment>();
+  for (const a of assignments) {
+    if (classTeacherOnly && !(a.isClassTeacher || a.scopeType === 'class_teacher')) continue;
+    const key = classScopeKey(a);
+    if (!map.has(key) || a.scopeType === 'class_teacher' || a.isClassTeacher) map.set(key, a);
+  }
+  return [...map.values()];
+}
+
+export default function TeacherDashboardFresh({ context, loading, error, onNavigate }: Props) {
+  const [attendancePending, setAttendancePending] = useState<number | null>(null);
+  const [attendanceCheckError, setAttendanceCheckError] = useState('');
+  const [cloudFeed, setCloudFeed] = useState<TeacherDashboardCloudFeed | null>(null);
+  const [cloudFeedError, setCloudFeedError] = useState('');
+  const [noticeWorkingId, setNoticeWorkingId] = useState('');
+  const [returnedResultCount, setReturnedResultCount] = useState<number | null>(null);
+  const [studentSignupPending, setStudentSignupPending] = useState<number | null>(null);
+  const [rosterCounts, setRosterCounts] = useState<Record<string, number>>({});
+  const [rosterCountError, setRosterCountError] = useState('');
+  const today = schoolTodayKey();
+  const tomorrow = schoolRelativeDateKey(1);
+  const [scheduleDate, setScheduleDate] = useState(today);
+
+  const assignments = context?.assignments || [];
+  const subjectAssignments = useMemo(
+    () => (context?.assignments || []).filter(a => a.scopeType === 'subject' && Boolean(a.subjectId)),
+    [context]
+  );
+  const uniqueClassScopes = useMemo(() => uniqueScopes(context?.assignments || []), [context]);
+  const classTeacherScopes = useMemo(() => uniqueScopes(context?.assignments || [], true), [context]);
+  const studentTotal = useMemo(
+    () => uniqueClassScopes.reduce((sum, a) => sum + Number(rosterCounts[classScopeKey(a)] ?? a.studentCount ?? 0), 0),
+    [uniqueClassScopes, rosterCounts]
+  );
+
+  const teachingClassGroups = useMemo(() => {
+    const map = new Map<string, TeacherScopeAssignment[]>();
+    for (const a of context?.assignments || []) {
+      const key = classScopeKey(a);
+      const rows = map.get(key) || [];
+      rows.push(a);
+      map.set(key, rows);
+    }
+    return [...map.entries()].map(([key, rows]) => ({
+      key,
+      rows,
+      representative: rows.find(a => a.scopeType === 'class_teacher') || rows.find(a => a.isClassTeacher) || rows[0],
+      subjects: rows.filter(a => a.scopeType === 'subject' && Boolean(a.subjectId)),
+      isClassTeacher: rows.some(a => a.isClassTeacher || a.scopeType === 'class_teacher'),
+    }));
+  }, [context]);
+
+  useEffect(() => {
+    if (!context || !uniqueClassScopes.length) { setRosterCounts({}); setRosterCountError(''); return; }
+    let cancelled = false;
+    void Promise.all(uniqueClassScopes.map(async scope => [classScopeKey(scope), (await loadAttendanceRoster(scope)).length] as const))
+      .then(rows => { if (!cancelled) { setRosterCounts(Object.fromEntries(rows)); setRosterCountError(''); } })
+      .catch((cause: any) => { if (!cancelled) { setRosterCounts({}); setRosterCountError(cause?.message || 'Student roster count unavailable.'); } });
+    return () => { cancelled = true; };
+  }, [context?.userId, uniqueClassScopes]);
+
+  useEffect(() => {
+    if (!context || !classTeacherScopes.length) { setAttendancePending(0); setAttendanceCheckError(''); return; }
+    let cancelled = false;
+    (async () => {
+      try {
+        let pending = 0;
+        for (const scope of classTeacherScopes) {
+          const [roster, entries] = await Promise.all([loadAttendanceRoster(scope), loadAttendanceForDate(scope, today)]);
+          const active = roster.filter(s => !(s.admissionDate && today < s.admissionDate) && !(s.leavingDate && today > s.leavingDate));
+          if (active.length && entries.filter(e => active.some(s => s.id === e.studentId)).length < active.length) pending += 1;
+        }
+        if (!cancelled) { setAttendancePending(pending); setAttendanceCheckError(''); }
+      } catch (e: any) {
+        if (!cancelled) { setAttendancePending(null); setAttendanceCheckError(e?.message || 'Attendance status unavailable.'); }
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [context, classTeacherScopes, today]);
+
+  useEffect(() => {
+    if (!context) { setReturnedResultCount(null); return; }
+    let cancelled = false;
+    void loadReturnedResultCount(context)
+      .then(count => { if (!cancelled) setReturnedResultCount(count); })
+      .catch(() => { if (!cancelled) setReturnedResultCount(null); });
+    return () => { cancelled = true; };
+  }, [context]);
+
+  useEffect(() => {
+    if (!context || !classTeacherScopes.length) { setStudentSignupPending(0); return; }
+    let cancelled = false;
+    const refresh = () => {
+      void loadStudentSignupApprovalQueue()
+        .then(queue => { if (!cancelled) setStudentSignupPending(queue.requests.length); })
+        .catch(() => { if (!cancelled) setStudentSignupPending(null); });
+    };
+    refresh();
+    const timer = window.setInterval(refresh, 30000);
+    return () => { cancelled = true; window.clearInterval(timer); };
+  }, [context, classTeacherScopes.length]);
+
+  useEffect(() => {
+    if (!context) { setCloudFeed(null); return; }
+    let cancelled = false;
+    void loadTeacherDashboardCloudFeed(context, scheduleDate)
+      .then(feed => { if (!cancelled) { setCloudFeed(feed); setCloudFeedError(''); } })
+      .catch((e: any) => { if (!cancelled) { setCloudFeed(null); setCloudFeedError(e?.message || 'Dashboard cloud feeds could not be loaded.'); } });
+    return () => { cancelled = true; };
+  }, [context, scheduleDate]);
+
+  if (loading) return <div className="rounded-2xl border border-slate-200 bg-white p-8 text-sm font-semibold text-slate-500">Loading Teacher Dashboard from cloud assignments…</div>;
+  if (error || !context) return (
+    <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+      <h2 className="font-black text-amber-900">Teacher Dashboard data connection needs setup</h2>
+      <p className="mt-2 text-sm text-amber-800">{error || 'Teacher cloud profile is not available.'}</p>
+      <p className="mt-2 text-xs text-amber-700">Menus remain available, but Classtago will not invent classes, students, timetable or syllabus values.</p>
+    </div>
+  );
+
+  const groupedSubjectIds = [...new Set(subjectAssignments.map(a => a.subjectId))];
+  const pendingRows = [
+    { title: 'Attendance', detail: classTeacherScopes.length === 0 ? 'No Class Teacher duty assigned' : attendancePending == null ? 'Status unavailable' : attendancePending ? `${attendancePending} Class Teacher class(es) pending today` : 'Class Teacher attendance complete today', route: classTeacherScopes.length ? 'tr-attendance-daily' : undefined, priority: attendancePending ? 'High' : classTeacherScopes.length ? 'Done' : 'Class Teacher only' },
+    { title: 'Student Signup Approvals', detail: classTeacherScopes.length === 0 ? 'Class Teacher duty required' : studentSignupPending == null ? 'Signup approval status unavailable' : studentSignupPending ? `${studentSignupPending} Student Portal signup request(s) waiting` : 'No pending Student signup', route: classTeacherScopes.length ? 'tr-student-signup-approvals' : undefined, priority: studentSignupPending ? 'High' : classTeacherScopes.length ? 'Done' : 'Class Teacher only' },
+    { title: 'Marks', detail: returnedResultCount ? `${returnedResultCount} mark list(s) returned for correction` : 'Open Subject Marks List for term-wise mark entry', route: 'tr-result-subject-marks', priority: returnedResultCount ? 'High' : 'Normal' },
+    { title: 'Result Draft', detail: 'Subject Marks List → Class Teacher review → Result Book', route: 'tr-result-subject-marks', priority: 'Normal' },
+    { title: 'Homework', detail: cloudFeed?.pendingAcademic.homeworkDrafts == null ? 'Open AI Homework to create/publish' : `${cloudFeed.pendingAcademic.homeworkDrafts} draft(s) open`, route: 'tr-ai-homework', priority: cloudFeed?.pendingAcademic.homeworkDrafts ? 'Normal' : 'Done' },
+    { title: 'Lesson Plan', detail: cloudFeed?.pendingAcademic.lessonPlanOpen == null ? 'Plan / update lesson progress' : `${cloudFeed.pendingAcademic.lessonPlanOpen} open plan(s)`, route: 'tr-ai-lesson-plan', priority: cloudFeed?.pendingAcademic.lessonPlanOpen ? 'Normal' : 'Done' },
+    { title: 'Teaching Diary', detail: cloudFeed?.pendingAcademic.teachingDiaryOpen == null ? 'Complete actual daily teaching record' : `${cloudFeed.pendingAcademic.teachingDiaryOpen} open record(s)`, route: 'tr-ai-teaching-diary', priority: cloudFeed?.pendingAcademic.teachingDiaryOpen ? 'Normal' : 'Done' },
+    { title: 'Progress Card', detail: classTeacherScopes.length ? 'Open Class Teacher Progress Card review' : 'Class Teacher duty required', route: classTeacherScopes.length ? 'tr-result-progress-card' : undefined, priority: classTeacherScopes.length ? 'Normal' : 'Class Teacher only' },
+    { title: 'Returned Corrections', detail: returnedResultCount == null ? 'Result workflow cloud feed not installed' : returnedResultCount ? `${returnedResultCount} correction request(s) waiting` : 'No returned mark lists', route: returnedResultCount ? 'tr-result-subject-marks' : undefined, priority: returnedResultCount ? 'High' : 'Done' },
+  ];
+
+  return (
+    <div className="space-y-6" data-testid="teacher-dashboard-complete" data-teacher-ux="assignment-r9">
+      <section className="overflow-hidden rounded-[1.75rem] border border-slate-800 bg-slate-950 p-6 text-white shadow-xl">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[.22em] text-cyan-300">Classtago Teacher Dashboard</p>
+            <h1 className="mt-2 text-2xl font-black">Welcome, {context.teacherName}</h1>
+            <p className="mt-1 text-sm text-slate-300">{context.schoolName} · {context.academicYear}</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="w-fit rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-slate-200">{context.designation || 'Teacher'} · Headmaster-assigned scope</span>
+            <button onClick={() => onNavigate?.('tr-my-assignments')} className="rounded-xl bg-cyan-300 px-3 py-2 text-xs font-black text-slate-950">View My Academic Assignment</button>
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-cyan-200 bg-cyan-50/50 p-5 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <div className="flex items-center gap-2"><ShieldCheck className="h-5 w-5 text-cyan-700" /><h2 className="font-black text-slate-950">Headmaster Assigned Duties</h2></div>
+            <p className="mt-1 text-xs leading-5 text-slate-600">Class Teacher duty and Subject Teacher allocations are shown separately so you always know what the Headmaster assigned to you.</p>
+          </div>
+          <button onClick={() => onNavigate?.('tr-my-assignments')} className="w-fit rounded-lg border border-cyan-200 bg-white px-3 py-2 text-xs font-black text-cyan-900">Open full assignment</button>
+        </div>
+        <div className="mt-4 grid gap-3 lg:grid-cols-2">
+          <div className="rounded-xl border border-cyan-100 bg-white p-4">
+            <p className="text-[10px] font-black uppercase tracking-wider text-cyan-700">Class Teacher Duty</p>
+            {classTeacherScopes.length ? <div className="mt-2 flex flex-wrap gap-2">{classTeacherScopes.map(a => <span key={classScopeKey(a)} className="rounded-full bg-cyan-50 px-3 py-1.5 text-xs font-black text-cyan-900">{a.className} · {a.division}</span>)}</div> : <p className="mt-2 text-sm font-semibold text-slate-500">No Class Teacher class assigned.</p>}
+          </div>
+          <div className="rounded-xl border border-violet-100 bg-white p-4">
+            <p className="text-[10px] font-black uppercase tracking-wider text-violet-700">Subject Teaching</p>
+            {subjectAssignments.length ? <p className="mt-2 text-sm font-black text-slate-900">{subjectAssignments.length} subject allocation(s) across {new Set(subjectAssignments.map(classScopeKey)).size} class/division scope(s)</p> : <p className="mt-2 text-sm font-semibold text-slate-500">No Subject Teacher allocation assigned.</p>}
+            {subjectAssignments.length > 0 && <div className="mt-2 flex flex-wrap gap-1.5">{subjectAssignments.slice(0,6).map(a => <span key={a.id} className="rounded-full bg-violet-50 px-2.5 py-1 text-[10px] font-bold text-violet-900">{a.subjectName} · {a.className}-{a.division}</span>)}{subjectAssignments.length > 6 && <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold text-slate-600">+{subjectAssignments.length - 6} more</span>}</div>}
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-7">
+        <SummaryCard icon={CalendarClock} label={scheduleDate === today ? "Today's Classes" : "Tomorrow's Classes"} value={cloudFeed?.timetableAvailable ? cloudFeed.timetable.length : "Not configured"} note={cloudFeed?.timetableAvailable ? `Published cloud timetable for ${scheduleDate === today ? "today" : "tomorrow"}.` : "Published timetable cloud feed is not configured."} state={cloudFeed?.timetable.length ? "ok" : "muted"} />
+        <SummaryCard icon={Users} label="My Students" value={studentTotal || 'Not configured'} note={studentTotal ? `${uniqueClassScopes.length} assigned teaching class/division scope(s)` : (rosterCountError || 'No roster assignment found.')} state={studentTotal ? 'ok' : 'warn'} />
+        <SummaryCard icon={ClipboardCheck} label="Attendance Pending" value={classTeacherScopes.length ? (attendancePending == null ? 'Unavailable' : attendancePending) : 'Not assigned'} note={classTeacherScopes.length ? (attendanceCheckError || 'Only Headmaster-assigned Class Teacher class(es).') : 'Attendance is a Class Teacher duty.'} state={attendancePending ? 'warn' : 'ok'} />
+        <SummaryCard icon={FileText} label="Marks Pending" value={returnedResultCount == null ? "Not configured" : returnedResultCount} note={returnedResultCount ? `${returnedResultCount} Subject Mark List correction(s) returned by Class Teacher.` : "No returned correction is waiting."} state={returnedResultCount ? "warn" : "ok"} />
+        <SummaryCard icon={NotebookPen} label="Homework Pending" value={cloudFeed?.pendingAcademic.homeworkDrafts == null ? "Not configured" : cloudFeed.pendingAcademic.homeworkDrafts} note="Open AI Homework to create/publish." state={cloudFeed?.pendingAcademic.homeworkDrafts ? "warn" : "muted"} />
+        <SummaryCard icon={Users} label="Signup Approvals" value={classTeacherScopes.length ? (studentSignupPending == null ? "Unavailable" : studentSignupPending) : "Not assigned"} note={classTeacherScopes.length ? "Student Portal requests for your Class Teacher scope." : "Class Teacher duty required."} state={studentSignupPending ? "warn" : "ok"} />
+        <SummaryCard icon={Bell} label="Notifications" value={cloudFeed?.noticesAvailable ? cloudFeed.notices.length : "Not configured"} note={cloudFeed?.noticesAvailable ? "Teacher-visible cloud notices." : "School notice feed not connected yet."} state={cloudFeed?.notices.length ? "warn" : "muted"} />
+      </section>
+
+      {Boolean(returnedResultCount) && <button type="button" onClick={() => onNavigate?.('tr-result-subject-marks')} className="w-full rounded-2xl border border-rose-300 bg-rose-50 p-4 text-left shadow-sm transition hover:bg-rose-100">
+        <div className="flex items-start gap-3"><Bell className="mt-0.5 h-5 w-5 shrink-0 text-rose-600"/><div><p className="font-black text-rose-900">Result correction returned by Class Teacher</p><p className="mt-1 text-xs leading-5 text-rose-700">{returnedResultCount} Subject Mark List correction request(s) are waiting. Open Subject Marks List, correct the returned sheet and resubmit it to the Class Teacher.</p></div></div>
+      </button>}
+
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="mb-4 flex items-start justify-between gap-4"><div><h2 className="font-black text-slate-950">My Classes</h2><p className="mt-1 text-xs leading-5 text-slate-500"><b>Purpose:</b> this shows the Class / Division groups where you teach or hold Class Teacher duty. Subjects are grouped inside each class. Attendance appears only on your Headmaster-assigned Class Teacher class.</p></div><GraduationCap className="h-5 w-5 shrink-0 text-slate-400" /></div>
+        {teachingClassGroups.length === 0 ? <div className="rounded-xl border border-dashed border-amber-300 bg-amber-50 p-6 text-sm text-amber-800"><b>No active Teacher assignment is configured.</b><br/>Headmaster must assign Class Teacher duty and/or Subject Teaching scope in Academic Assignments.</div> : (
+          <div className="grid gap-3 lg:grid-cols-2">
+            {teachingClassGroups.map(group => {
+              const a = group.representative;
+              const subjectNames = [...new Set(group.subjects.map(s => s.subjectName))];
+              return <article key={group.key} className={`rounded-xl border p-4 ${group.isClassTeacher ? 'border-cyan-200 bg-cyan-50/30' : 'border-slate-200 bg-white'}`}>
+                <div className="flex items-start justify-between gap-3"><div><p className="font-black text-slate-900">{a.className} · {a.division}</p><p className="mt-1 text-xs font-semibold text-slate-500">{subjectNames.length ? `${subjectNames.length} subject(s) assigned to you in this class` : 'Class Teacher duty only; no subject allocation in this class'}</p></div><span className={`rounded-full px-2.5 py-1 text-[10px] font-black uppercase ${group.isClassTeacher ? 'bg-cyan-100 text-cyan-800' : 'bg-slate-100 text-slate-600'}`}>{group.isClassTeacher ? 'Class Teacher Class' : 'Teaching Class'}</span></div>
+                <div className="mt-3 flex flex-wrap gap-1.5">{subjectNames.length ? subjectNames.map(name => <span key={name} className="rounded-full bg-white px-2.5 py-1 text-[10px] font-bold text-slate-700 ring-1 ring-slate-200">{name}</span>) : <span className="text-[11px] text-slate-500">No subject chip for this class.</span>}</div>
+                <div className="mt-4 grid grid-cols-2 gap-2 text-xs"><span className="rounded-lg bg-slate-50 p-2"><b>{rosterCounts[group.key] ?? a.studentCount ?? 'Not configured'}</b><br/>Students</span><span className="rounded-lg bg-slate-50 p-2"><b>{subjectNames.length}</b><br/>My subjects here</span></div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button onClick={() => onNavigate?.('tr-my-students-list')} className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-bold hover:bg-slate-50">Student List</button>
+                  {group.isClassTeacher && <button onClick={() => onNavigate?.('tr-attendance-daily')} className="rounded-lg bg-slate-950 px-2.5 py-1.5 text-[11px] font-bold text-white">Class Attendance</button>}
+                  {subjectNames.length > 0 && <button onClick={() => onNavigate?.('tr-result-subject-marks')} className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-bold hover:bg-slate-50">Subject Marks</button>}
+                  {subjectNames.length > 0 && <button onClick={() => onNavigate?.('tr-ai-homework')} className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-bold hover:bg-slate-50">Homework</button>}
+                  <button onClick={() => onNavigate?.('tr-my-students-performance')} className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-bold hover:bg-slate-50">Performance</button>
+                  <button onClick={() => onNavigate?.(group.isClassTeacher ? 'tr-class-timetable' : 'tr-my-timetable')} className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-bold hover:bg-slate-50">Timetable</button>
+                </div>
+              </article>;
+            })}
+          </div>
+        )}
+      </section>
+
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="mb-4 flex items-start justify-between gap-4"><div><h2 className="font-black text-slate-950">My Subjects</h2><p className="mt-1 text-xs leading-5 text-slate-500"><b>Purpose:</b> this is your subject-wise teaching workspace. It groups the same subject across all classes assigned by the Headmaster. Attendance is intentionally not a subject action.</p></div><BookOpen className="h-5 w-5 shrink-0 text-slate-400" /></div>
+        {!groupedSubjectIds.length ? <div className="rounded-xl border border-dashed border-slate-300 p-6 text-sm text-slate-500">No Subject Teacher allocation found.</div> : <div className="space-y-3">{groupedSubjectIds.map(subjectId => {
+          const rows = subjectAssignments.filter(a => a.subjectId === subjectId); const subject = rows[0];
+          const totalStudents = rows.reduce((sum, row) => sum + Number(rosterCounts[classScopeKey(row)] ?? row.studentCount ?? 0), 0);
+          const media = [...new Set(rows.map(x => x.medium).filter(Boolean))];
+          return <article key={subjectId} className="rounded-xl border border-slate-200 p-4">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between"><div><p className="font-black text-slate-900">{subject.subjectName}{subject.subjectCode ? <span className="ml-2 font-mono text-[10px] font-semibold text-slate-400">{subject.subjectCode}</span> : null}</p><p className="mt-1 text-xs text-slate-500">Headmaster assigned in {rows.length} Class / Division scope(s)</p><div className="mt-2 flex flex-wrap gap-1.5">{rows.map(x => <span key={x.id} className="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold text-slate-700">{x.className} · {x.division}</span>)}</div></div><span className="w-fit rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-800">Syllabus tracking not connected</span></div>
+            <div className="mt-4 grid gap-2 sm:grid-cols-4 text-xs"><span className="rounded-lg bg-slate-50 p-3"><b>{rows.length}</b><br/>Assigned classes</span><span className="rounded-lg bg-slate-50 p-3"><b>{totalStudents || 'Not configured'}</b><br/>Students in scope</span><span className="rounded-lg bg-slate-50 p-3"><b>{media.join(', ') || 'School medium'}</b><br/>Medium</span><span className="rounded-lg bg-slate-50 p-3"><b>Not tracked yet</b><br/>Syllabus progress</span></div>
+            <div className="mt-3 flex flex-wrap gap-2"><button onClick={() => onNavigate?.('tr-study-material')} className="rounded-lg bg-slate-950 px-3 py-2 text-xs font-bold text-white">Study Material</button><button onClick={() => onNavigate?.('tr-ai-lesson-plan')} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold">Lesson Plan</button><button onClick={() => onNavigate?.('tr-ai-homework')} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold">Homework</button><button onClick={() => onNavigate?.('tr-question-paper-first-term')} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold">Question Paper</button><button onClick={() => onNavigate?.('tr-result-subject-marks')} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold">Subject Marks</button></div>
+          </article>;
+        })}</div>}
+      </section>
+
+      <div className="grid gap-5 xl:grid-cols-2">
+        <section id="teacher-today-timetable" className="scroll-mt-24 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="mb-4 flex items-center justify-between"><div><h2 className="font-black text-slate-950">{scheduleDate === today ? "Today’s Timetable" : "Tomorrow’s Timetable"}</h2><p className="text-xs text-slate-500">Period no., time, class/division, subject, room, free/substitute status.</p></div><Clock3 className="h-5 w-5 text-slate-400" /></div>
+          <div className="overflow-x-auto rounded-xl border border-slate-200"><table className="w-full min-w-[720px] text-xs"><thead className="bg-slate-50 text-left"><tr><th className="p-3">Period</th><th className="p-3">Time</th><th className="p-3">Class</th><th className="p-3">Subject</th><th className="p-3">Room</th><th className="p-3">Status</th></tr></thead><tbody>{cloudFeed?.timetable.map(item => <tr key={item.id} className={`border-t ${item.status === 'current' ? 'bg-cyan-50' : ''}`}><td className="p-3 font-black">{item.periodNo || '—'}</td><td className="p-3">{item.startTime && item.endTime ? `${item.startTime}–${item.endTime}` : '—'}</td><td className="p-3">{item.className}{item.division ? ` · ${item.division}` : ''}</td><td className="p-3 font-bold">{item.subjectName}</td><td className="p-3">{item.room || '—'}</td><td className="p-3"><span className={`rounded-full px-2 py-1 text-[9px] font-black uppercase ${item.status === 'current' ? 'bg-cyan-600 text-white' : item.status === 'completed' ? 'bg-emerald-50 text-emerald-700' : item.status === 'substitute' ? 'bg-violet-50 text-violet-700' : 'bg-slate-100 text-slate-600'}`}>{item.status}</span></td></tr>)}{(!cloudFeed?.timetableAvailable || !cloudFeed.timetable.length) && <tr><td colSpan={6} className="p-6 text-center text-slate-500"><b>{cloudFeed?.timetableAvailable ? `No class is scheduled for ${scheduleDate === today ? 'today' : 'tomorrow'}.` : 'Timetable cloud feed is not configured.'}</b><br/><span className="text-[11px]">No fabricated period data is shown.</span></td></tr>}</tbody></table></div>
+          <div className="mt-3 flex flex-wrap gap-2"><button disabled={!(context?.assignments || []).length} onClick={() => onNavigate?.('tr-my-students-list')} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold disabled:text-slate-400 disabled:opacity-50">Open Class</button>{classTeacherScopes.length > 0 && <button onClick={() => onNavigate?.('tr-attendance-daily')} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold">Class Attendance</button>}<button onClick={() => onNavigate?.('tr-ai-teaching-diary')} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold">Add Teaching Diary</button><button onClick={() => setScheduleDate(scheduleDate === today ? tomorrow : today)} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold">{scheduleDate === today ? "Tomorrow" : "Back to Today"}</button></div>
+        </section>
+
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="mb-4 flex items-center justify-between"><div><h2 className="font-black text-slate-950">Pending Academic Work</h2><p className="text-xs text-slate-500">“Complete Now” opens the canonical owner feature when it exists.</p></div><ListChecks className="h-5 w-5 text-slate-400" /></div>
+          <div className="space-y-2">{pendingRows.map(row => <div key={row.title} className="flex items-center gap-3 rounded-xl border border-slate-200 p-3"><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><b className="text-sm text-slate-900">{row.title}</b><span className={`rounded-full px-2 py-0.5 text-[9px] font-black uppercase ${row.priority === 'High' ? 'bg-rose-50 text-rose-700' : row.priority === 'Done' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>{row.priority}</span></div><p className="mt-1 text-[11px] text-slate-500">{row.detail}</p></div>{row.route ? <button onClick={() => onNavigate?.(row.route!)} className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-2 text-[10px] font-black hover:bg-slate-50">Complete Now <ArrowRight className="h-3 w-3"/></button> : <span className="text-[10px] font-bold text-slate-400">Not linked</span>}</div>)}</div>
+        </section>
+      </div>
+
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="mb-4 flex items-center justify-between"><div><h2 className="font-black text-slate-950">Notices & Alerts</h2><p className="text-xs text-slate-500">Headmaster/staff/exam/timetable/substitute/result/attendance/leave/school announcements.</p></div><Bell className="h-5 w-5 text-slate-400" /></div>
+        {cloudFeed?.noticesAvailable && cloudFeed.notices.length ? <div className="space-y-2">{cloudFeed.notices.map(notice => <article key={notice.id} className={`rounded-xl border p-4 ${notice.isRead ? 'border-slate-200 bg-white' : 'border-cyan-200 bg-cyan-50/40'}`}><div className="flex flex-wrap items-center gap-2"><b className="text-sm text-slate-900">{notice.title}</b>{notice.isPinned && <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[9px] font-black uppercase text-amber-700">Pinned</span>}<span className="rounded-full bg-slate-100 px-2 py-0.5 text-[9px] font-bold text-slate-600">{notice.isRead ? 'Read' : 'Unread'}</span></div>{notice.body && <p className="mt-2 text-xs leading-5 text-slate-600">{notice.body}</p>}<div className="mt-2 flex flex-wrap gap-3 text-[10px] font-bold text-slate-400"><span>{notice.category || 'School notice'}</span>{notice.publishedAt && <span>{notice.publishedAt.slice(0,10)}</span>}{notice.attachmentUrl && <a className="text-cyan-700 underline" href={notice.attachmentUrl} target="_blank" rel="noreferrer">Attachment</a>}{notice.canMarkRead && !notice.isRead && <button type="button" disabled={noticeWorkingId===notice.id} onClick={async()=>{setNoticeWorkingId(notice.id);try{await markTeacherNotificationRead(notice.id);setCloudFeed(current=>current?{...current,notices:current.notices.map(item=>item.id===notice.id?{...item,isRead:true}:item)}:current);}catch(e:any){setCloudFeedError(e?.message||'Notification could not be marked as read.');}finally{setNoticeWorkingId('');}}} className="rounded-lg border border-cyan-200 bg-white px-2.5 py-1 text-[10px] font-black text-cyan-800 disabled:opacity-50">{noticeWorkingId===notice.id?'Updating…':'Mark as Read'}</button>}</div></article>)}</div> : <div className="rounded-xl border border-dashed border-slate-300 p-6 text-sm text-slate-500"><div className="flex gap-3"><AlertCircle className="mt-0.5 h-5 w-5 shrink-0"/><div><b>{cloudFeed?.noticesAvailable ? 'No Teacher notices are currently published.' : 'No cloud notice feed is connected to this Teacher Dashboard yet.'}</b><p className="mt-1 text-xs">Read/unread, pin and attachment states are supported when the school notice table is available; no localStorage notice is used as production truth.</p></div></div></div>}
+      </section>
+
+      {cloudFeedError && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-semibold text-amber-800">Optional dashboard feed: {cloudFeedError}</div>}
+      <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700"><CheckCircle2 className="h-4 w-4" /> Teacher scope is cloud-resolved; unrelated classes/subjects are not exposed.</div>
+    </div>
+  );
+}

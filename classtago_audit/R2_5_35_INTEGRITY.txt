@@ -1,0 +1,41 @@
+Classtago R2.5.35 INTEGRITY / REGRESSION RECORD
+===================================================
+
+Baseline files: 294
+R2.5.35 files before this manifest: 298
+Changed existing files: 11
+New files before this manifest: 4
+Removed files: 0
+
+Changed existing files:
+- android/app/build.gradle
+- package.json
+- server.ts
+- src/components/CompleteProfileWorkspace.tsx
+- src/components/DashboardOverview.tsx
+- src/components/HeadmasterSystemAuditCloudWorkspace.tsx
+- src/components/LoginSection.tsx
+- src/lib/authService.ts
+- src/lib/roleModuleBlueprint.ts
+- src/modules/studentPortal/StudentPortalWorkspace.tsx
+- src/server/teacherCommunicationServer.ts
+
+New files before this manifest:
+- R2_5_35_STUDENT_PARENT_PORTAL_COMPLETE.txt
+- src/components/ParentAccountApprovalDesk.tsx
+- src/modules/parentPortal/ParentPortalWorkspace.tsx
+- src/modules/parentPortal/parentPortalService.ts
+
+Supabase files: 6
+Supabase combined SHA-256: 67ab891953dc9683ad37cb190173fc631c221c9abbf09fa70dbbd5f34d844fcd
+Baseline Supabase combined SHA-256: 67ab891953dc9683ad37cb190173fc631c221c9abbf09fa70dbbd5f34d844fcd
+Supabase schema/migrations: UNCHANGED
+
+Validation:
+- Deployment doctor: PASS
+- Android project doctor: PASS
+- Student/Parent static coverage & security checks: 42/42 PASS
+- TypeScript syntax/parse diagnostics: PASS (full dependency typecheck unavailable without node_modules)
+- No existing file removed
+
+Preservation note: Parent role is additive. No database migration/purge was introduced. Existing Headmaster, Clerk, Teacher, Admission, Result, Timetable and Communication architecture was not replaced.

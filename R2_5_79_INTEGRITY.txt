@@ -1,0 +1,4 @@
+Classtago R2.5.79 integrity scope
+Changed: src/components/RealtimeVoiceAssistant.tsx, server.ts
+Added: R2_5_79_RELEASE_NOTES.md, R2_5_79_INTEGRITY.txt
+No dependency manifest changes. No existing ERP workflow removals.

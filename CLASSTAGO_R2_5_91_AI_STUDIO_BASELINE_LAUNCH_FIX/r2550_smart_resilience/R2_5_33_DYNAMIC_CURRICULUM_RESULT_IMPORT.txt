@@ -1,0 +1,31 @@
+EDUNIXO R2.5.33 — Dynamic Curriculum Result Import
+
+ADDITIVE FEATURE — existing Maharashtra Result flows are preserved.
+
+Clerk Result Management
+- New: Import Existing Result System.
+- Accepts Excel (.xlsx/.xls), PDF, JPG and PNG; up to 8 files / 7.5 MB combined per analysis.
+- Excel is parsed client-side into structured sheet text; PDF/images are analysed by the existing server-side Gemini service.
+- AI reconstructs a proposed school-scoped curriculum Result schema: Board/Curriculum, classes, mediums, exams/terms, marks components, grading/pass/promotion rules, subjects, attendance/signatures, and proposed Mark List / Result Book / Progress Card structures.
+- AI output is not authoritative. Clerk must review/edit the detected rules before submission.
+- Original source documents are retained in a private school-scoped Supabase Storage bucket so the Headmaster can verify the exact Excel/PDF/image used by the Clerk. The Result template row stores only secure source metadata/checksums, never public URLs or embedded file bytes.
+
+Headmaster Result Management
+- New: Curriculum Result Pack Approvals.
+- Headmaster can review AI warnings, Clerk notes, marks/pass/promotion rules and generated output structures.
+- Return requires a correction note.
+- Approve activates the school curriculum pack and deactivates any older imported curriculum pack.
+- Existing Maharashtra canonical templates remain preserved and are not deleted/re-written by this approval.
+
+Storage / Security
+- Reuses the existing school-scoped edunixo_result_templates cloud table with category "Curriculum Result Pack".
+- Clerk-only analyse/submit endpoints and Headmaster-only final decision endpoint.
+- All actions are school-scoped and audited.
+- Original sources are private and opened for authorized Clerk/Headmaster review only through short-lived signed URLs.
+- Uploaded document content is treated as untrusted evidence; AI instructions embedded inside uploaded files are explicitly ignored.
+
+Important architectural boundary
+- R2.5.33 establishes the curriculum-pack import, verification, approval and activation layer without rewriting the current production Maharashtra marks-entry/result rendering engine.
+- This is deliberate regression protection. A later adapter can consume an approved pack class-by-class after its rules have been verified, without risking the existing National High School result flow.
+
+Returned packs can be reopened by the Clerk and can securely reuse the original private source-evidence files; new files may also be uploaded and re-analysed.

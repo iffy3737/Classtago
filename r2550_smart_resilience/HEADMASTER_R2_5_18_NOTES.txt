@@ -1,0 +1,46 @@
+EDUNIXO HEADMASTER PRODUCTION PATCH R2.5.18
+===========================================
+Cumulative base: Headmaster R2.5.17 + latest native project chain.
+
+1) HEADMASTER + SUBJECT TEACHER HYBRID DUTY
+- Headmaster administrative role remains unchanged.
+- A canonical teaching profile is prepared/linked safely when needed.
+- Headmaster can be selected in canonical Subject Teacher assignments.
+- My Teaching Work adds assigned-scope Study Material, AI Year Plan, Daily Plan,
+  Lesson Plan, Homework, Teaching Diary, Classwork, Question Paper, Subject Marks,
+  My Timetable, Workload and Substitute Duty views.
+- No broad Teacher access: academic work resolves canonical current-year
+  school_subject_teacher_assignments and rejects unassigned scopes.
+
+2) STAFF MASTER / FOCUSED MODULE READABILITY
+- Added semantic premium-light mobile styles for Staff Master hero/metrics.
+- Fixed low-contrast Focused Module Shortcut text and Module Home action.
+
+3) STAFF ACCOUNTS & ACCESS
+- Pending Staff Accounts still opens with Pending selected by default.
+- Selecting All Accounts now really shows all eligible staff accounts instead of
+  remaining hard-locked to Pending.
+- Empty states now explain the selected filter.
+
+4) HEADMASTER MY LEAVE APPLICATION
+- Added under Headmaster Leave Management.
+- Print-only external request; it never enters an EDUNIXO approval queue.
+- Formal A4 application addressed to:
+  The Hon'ble Chairman,
+  Bharat Vividh Vidhayak Karya Samiti, Nandurbar.
+- Includes leave type/date range/day count/reason/contact/remarks, Headmaster
+  signature block and physical Chairman Order/Sanction block.
+- Smart Print / PDF integration included.
+
+VALIDATION
+- TypeScript/TSX syntax transpilation: 207 files, 0 syntax errors.
+- Android native project doctor: structure OK; app id com.edunixo.app; min SDK 24,
+  target SDK 36.
+- Full npm build was attempted, but dependency hydration exceeded the execution
+  time available in the audit environment. Final deployment must run build:full.
+
+DATA SAFETY
+- This source package does not delete student, teacher, staff, assignment, result,
+  attendance or other operational records.
+- Headmaster teaching profile linking/creation is additive and scoped to the
+  authenticated Headmaster's school.

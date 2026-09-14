@@ -1,0 +1,46 @@
+EDUNIXO R2.5.33 — Dynamic Curriculum Result Import
+Integrity / Regression Record
+
+Base: R2.5.32 Teacher Clerk Stability + Profile Gate
+Existing baseline files: 289
+Existing files intentionally changed: 6
+Existing files byte-for-byte unchanged: 283
+Existing files removed: 0
+New feature/release files: 3 (including this integrity record)
+
+Changed existing files:
+- android/app/build.gradle (version only)
+- package.json (version only)
+- server.ts (isolated Curriculum Result Import/Pack APIs)
+- src/components/DashboardOverview.tsx (Clerk import route)
+- src/components/HeadmasterResultControlWorkspace.tsx (Curriculum Pack approval view)
+- src/lib/roleModuleBlueprint.ts (new Clerk/Headmaster feature entries)
+
+New files:
+- src/components/CurriculumResultImportStudio.tsx
+- R2_5_33_DYNAMIC_CURRICULUM_RESULT_IMPORT.txt
+- R2_5_33_INTEGRITY.txt
+
+Legacy Result safety:
+- Supabase schema/migration files: unchanged (6/6)
+- src/components/ResultManagement.tsx: unchanged
+- src/components/MasterResultBookEditor.tsx: unchanged
+- src/components/MasterProgressCardTemplateEditor.tsx: unchanged
+- src/modules/teacherResultFresh/*: unchanged
+- Existing canonical Maharashtra result-template keys remain isolated by RESULT_MASTER_TEMPLATE_KEYS.
+- Imported curriculum packs use category "Curriculum Result Pack" and do not overwrite canonical legacy templates.
+
+Validation:
+- Changed TS/TSX syntax/transpile: PASS
+- Deployment doctor: PASS (0.2.33)
+- Android project doctor: PASS (com.edunixo.app; min 24 / target 36)
+- New Clerk/Headmaster route and API presence checks: PASS
+- No existing file removed: PASS
+
+Architectural boundary:
+R2.5.33 safely implements import, AI-assisted extraction, human verification,
+private source-evidence retention, Headmaster approval/return and activation
+of Curriculum Result Packs. It intentionally does NOT rewrite or silently
+switch the current production Maharashtra Teacher marks-entry / Result Book /
+Progress Card calculation/rendering engine. A schema-driven adapter can consume
+approved packs in a later cumulative release after each pack's rules are verified.

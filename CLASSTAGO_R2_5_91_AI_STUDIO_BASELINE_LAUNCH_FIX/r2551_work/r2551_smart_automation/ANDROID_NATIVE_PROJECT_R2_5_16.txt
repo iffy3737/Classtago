@@ -1,0 +1,21 @@
+EDUNIXO R2.5.16 — Android Native Project
+
+Base: R2.5.15A
+Application ID: com.edunixo.app
+Version code: 2516
+Version name: 0.2.16
+Android baseline: minSdk 24, compile/targetSdk 36, Java 21
+
+This patch adds the Android Gradle/Capacitor project structure and native resources.
+No production signing key is bundled. No fake backend URL is bundled.
+
+Before an APK/AAB build, set VITE_EDUNIXO_API_BASE_URL to the real HTTPS origin serving EDUNIXO /api routes.
+The Gradle wrapper JAR is intentionally not fabricated in this environment. Run `npm run android:bootstrap` once in a normal development/CI environment after dependencies are installed; it hydrates the wrapper from the installed official Capacitor Android template and then runs `cap sync android`.
+
+Commands after backend URL is configured:
+  npm run android:bootstrap
+  npm run android:prepare
+  npm run android:apk:debug
+  npm run android:aab
+
+Release signing remains a separate production step.

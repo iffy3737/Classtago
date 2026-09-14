@@ -1,0 +1,5 @@
+[functions.communication-dispatch]
+verify_jwt = false
+
+[functions.period-notification-dispatch]
+verify_jwt = false

@@ -1,0 +1,10 @@
+Classtago R2.5.22 — PREVIEW ERROR + WELCOME CONTRAST FIX
+
+Base: R2.5.21 ROOT
+
+Changes:
+1. Module-entitlement verification now falls back to a secure authenticated Supabase RPC when the local /api backend is unavailable in preview.
+2. The fallback remains fail-closed if both authoritative checks fail.
+3. ERP Welcome banner now uses an opaque dark panel and high-contrast text.
+4. Public/private website Preview Welcome banner now uses a dark translucent backing panel with explicit bright foreground colors.
+5. Clerk Website Management and Admission Campaign ownership from R2.5.21 preserved.

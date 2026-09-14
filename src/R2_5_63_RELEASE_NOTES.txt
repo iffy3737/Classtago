@@ -1,0 +1,14 @@
+Classtago R2.5.63
+LANGUAGE HARD LOCK + GO-LIVE CLOSURE
+
+- Fixes the remaining mixed-language demo narrative failure mode.
+- Raw English is no longer the intended runtime fallback for selected non-English guided-demo narrative.
+- Adds strict Hindi/Marathi/Urdu local runtime guidance; Hindi includes exact Result Management action/effect translations.
+- Localizes role-transition and common field/status presentation in Hindi demo flows.
+- Preserves 23-language picker, process explorer, guided tours, analytics, lead conversion, session isolation and reset.
+- Synchronizes Android version to 0.2.63 / 2563.
+- Adds final source-package go-live preflight commands.
+- No production school data or destructive Supabase changes.
+
+Important deployment boundary:
+A real Render publish/live health check and the final Android live API origin must be completed in the deployment environment. This package does not claim a host deployment that was not actually executed.

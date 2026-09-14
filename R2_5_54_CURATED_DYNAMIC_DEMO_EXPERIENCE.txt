@@ -1,0 +1,39 @@
+Classtago R2.5.54 — CURATED DYNAMIC DEMO EXPERIENCE
+
+Goal
+- Demo should feel like the real Classtago product without cloning every production screen.
+- Important workflows are interactive; secondary workflows are guided; supporting features use a feature tour + multilingual manual.
+
+Implemented
+1. Production-faithful role modules
+   - Demo reads the canonical ROLE_MODULE_BLUEPRINT used by the actual app.
+   - Headmaster, Clerk, Teacher, Student and Parent no longer share a generic module menu.
+   - Teacher demo also surfaces Class Teacher additional-duty modules.
+
+2. Three demo depth levels
+   - LIVE INTERACTIVE: controlled temporary workflow with cross-role demo state.
+   - GUIDED DEMO: step-by-step safe simulation without external/production writes.
+   - FEATURE TOUR: supporting feature overview with full manual instead of loading unnecessary screens.
+
+3. Cross-role temporary demo flows
+   - Teacher attendance -> Student/Parent attendance view.
+   - Teacher homework publish -> Student/Parent homework view.
+   - Teacher marks submit -> Headmaster final publish -> Student/Parent published result.
+   - Clerk admission submit -> Headmaster confirmation -> demo admission totals update.
+   - Timetable sample version is shared by relevant roles.
+
+4. Multilingual feature manuals
+   - Every role module and feature can open a manual.
+   - Manual language is independent from the app UI language.
+   - Public rate-limited server route translates the manual with configured Gemini Free Tier.
+   - Server API key is never exposed to the browser.
+   - Translation cache reduces repeated AI usage; English master manual remains safe fallback.
+
+5. Curriculum isolation preserved
+   - Board/State selection remains the demo academic context.
+   - No other board's rules are silently substituted.
+
+Safety
+- No production school rows are created/updated/deleted by the demo.
+- No real WhatsApp/SMS/email/payment/destructive external action is executed by the demo.
+- Demo state remains temporary and resettable.

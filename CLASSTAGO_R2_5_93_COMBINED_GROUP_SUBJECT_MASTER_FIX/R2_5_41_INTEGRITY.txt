@@ -1,0 +1,52 @@
+Classtago R2.5.41 — PUBLIC POLISH + SCHOOL FINDER RESTORE
+========================================================
+Base release: R2.5.40 AI Fast Chapter Retrieval
+Base ZIP SHA-256: bff473e1cbdde15a60a57f39c6fe7ac56da6ad64ffb4b01f86337f01bc7413fa
+
+CHANGED SOURCE
+- package.json (version 0.2.41)
+- server.ts
+- src/components/EdunixoPlatformLanding.tsx
+- src/components/MobilePlatformGateway.tsx
+- src/components/PremiumSchoolPortal.tsx
+- src/index.css
+- R2_5_41_PUBLIC_POLISH_AND_SCHOOL_FINDER.txt (new)
+
+DEPENDENCY / DATA SAFETY
+- SQL/schema migrations changed: 0
+- Supabase auth/login logic changed: NO
+- Student/Teacher/Result/Admission records changed: NO
+- Canonical class/subject teacher assignment logic changed: NO
+- R2.5.40 AI Homework/Question Paper generation path changed: NO
+- Render build/start scripts changed: NO
+- No API keys/secrets added to source.
+
+PUBLIC POLISH
+- Light/Aurora accent text remapped to WCAG-readable deeper tones.
+- Explicit dark public surfaces preserve light foreground text.
+- School-specific portal dark header/quick-actions/footer surfaces protected.
+- Input/textarea placeholder contrast strengthened.
+
+SCHOOL FINDER
+- Web platform live search begins from first typed character.
+- Search debounce: 180 ms.
+- Stale request protection included.
+- Manual Find button retained.
+- Last opened school remembered on same device and shown above Finder.
+- Mobile launcher live search aligned to first character.
+- Server public-school directory snapshot cached for 30 seconds to reduce repeated Supabase reads.
+- Device recent-school state is convenience only; cloud auth remains authoritative.
+
+STATIC VALIDATION
+- TS/TSX syntax/transpile scan: 218 files, 0 errors.
+- Relative imports checked: 714, missing: 0.
+- CSS structural braces: 4172 open / 4172 close.
+- Secret-pattern scan: no embedded Supabase/Gemini/R2 secret detected.
+- Full npm/Vite runtime build not executed in this isolated container because project dependencies are not installed; Render Preview/production deploy remains the runtime gate.
+e2a842f8d11120087edaa8a939a016ec4e533250228b6467c2ae7afb7115f7e2  package.json
+45330f23bd0a982d7eb80ac9f8951f4993abd8389832c4a0522811e75015adcc  server.ts
+95f0c6893f63a26d751f57092b5ff8cce234d8d253d343fb7447e3a9c383047b  src/components/EdunixoPlatformLanding.tsx
+cf457023369bfcdcd90436ec6fdbbf2b697305401980428ec7d55b1da0b96e50  src/components/MobilePlatformGateway.tsx
+3151f01036b6486a43e8f31860e9023c1ae74fead782413dc8097c97ef3a0b59  src/components/PremiumSchoolPortal.tsx
+b96f3c52be1cae02d458a9e258c11833a029139a66740a7a2e51abd9a104cbfc  src/index.css
+1b020bc496af89b22c6ff33b2ac8ba30f05a9c888a427d5a9f9aad6bd9b6b0ef  R2_5_41_PUBLIC_POLISH_AND_SCHOOL_FINDER.txt

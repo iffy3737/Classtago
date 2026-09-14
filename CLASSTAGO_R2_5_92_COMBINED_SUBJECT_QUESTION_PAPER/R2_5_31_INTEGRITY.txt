@@ -1,0 +1,25 @@
+Classtago R2.5.31 INTEGRITY REPORT
+
+Base: Classtago R2.5.30 HEADMASTER STABILITY FIX
+Unchanged existing files: 280
+Changed existing files: 4
+Removed existing files: 0
+
+Changed existing files:
+- package.json
+- server.ts
+- src/lib/roleModuleBlueprint.ts
+- android/app/build.gradle
+
+Validation:
+- Headmaster Subject Teacher menu parity assertions: PASS
+- Assignment-scoped Headmaster roster access: PASS
+- Assignment-scoped Headmaster recognition access: PASS
+- Headmaster own timetable access: PASS
+- Headmaster Subject Marks Save/Submit role gate: PASS
+- Class Teacher-only Result review remains scoped: PASS
+- Class Teacher-only Result Book send remains scoped: PASS
+- Attendance Save remains Class Teacher-scoped: PASS
+- Deployment doctor: PASS (run during packaging)
+- Android project doctor: PASS (run during packaging)
+- TypeScript diagnostic delta vs R2.5.30: no new diagnostics in changed TS files

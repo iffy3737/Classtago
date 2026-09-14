@@ -1,0 +1,25 @@
+EDUNIXO R2.5.38 INTEGRITY REPORT
+
+Baseline files: 311
+R2.5.38 files: 312
+Changed existing files: 5
+  CHANGED android/app/build.gradle
+  CHANGED package.json
+  CHANGED server.ts
+  CHANGED src/App.tsx
+  CHANGED src/components/EdunixoPlatformLanding.tsx
+Added files: 1
+  ADDED R2_5_38_DUAL_SURFACE_ARCHITECTURE_LOCK.txt
+Removed files: 0
+
+All src/modules + src/services + supabase files unchanged: True
+src/lib/authService.ts: UNCHANGED
+src/lib/roleModuleBlueprint.ts: UNCHANGED
+src/components/TeacherWorkspace.tsx: UNCHANGED
+src/components/ClerkWorkspace.tsx: UNCHANGED
+src/components/DashboardOverview.tsx: UNCHANGED
+src/modules/studentPortal/StudentPortalWorkspace.tsx: UNCHANGED
+src/modules/parentPortal/ParentPortalWorkspace.tsx: UNCHANGED
+src/modules/peonPortal/PeonPortalWorkspace.tsx: UNCHANGED
+R2.5.37 Supabase combined SHA256: 298107b70ee7f7c2f822410663d150a3be31caee1ecd62479844f717d113d041
+R2.5.38 Supabase combined SHA256: 298107b70ee7f7c2f822410663d150a3be31caee1ecd62479844f717d113d041

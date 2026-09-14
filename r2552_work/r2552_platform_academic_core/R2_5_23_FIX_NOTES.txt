@@ -1,0 +1,25 @@
+EDUNIXO R2.5.23 — TEACHER MODULE START / LEAVE + CLOUD TIMETABLE HARDENING
+
+Base: R2.5.22 ROOT
+
+Changes:
+1. Added Teacher "Leave & Personal HR" module with four focused pages:
+   - Apply Leave
+   - My Leave Status
+   - My Leave History
+   - My HR & Leave Summary
+2. Teacher leave is cloud-backed through the existing authenticated Leave Management workflow.
+   - Teacher can see only own leave records.
+   - Submission goes to Headmaster final approval/rejection.
+   - Pending request can be cancelled only by the same Teacher.
+3. Added authenticated read-only leave settings endpoint for active school users so Teacher leave screens can use current school holidays and leave-counting policy without exposing Headmaster controls.
+4. Teacher Timetable & Workload no longer falls back to browser/localStorage timetable or substitute data.
+   - Teacher reads only published cloud timetable/substitute feeds.
+   - When no timetable is published, the UI shows a clear empty/unpublished message instead of stale browser data.
+5. Existing Teacher Dashboard, Academic Assignments, Attendance, Teaching & Academic Work, Result Management, My Students, Communication and Question Paper wiring preserved.
+6. Headmaster and Clerk R2.5.22 behavior preserved; no destructive SQL/data migration is included.
+
+Verification:
+- Change-scope diff confirms modifications are limited to Teacher workspace/navigation, Teacher timetable read path, new Teacher Leave module, shared authenticated leave settings API, package version and these notes.
+- Full npm/vite build could not finish in the execution environment because dependency installation timed out before node_modules was created.
+- Global TypeScript parse was run; changed Teacher files showed no new syntax/type diagnostics beyond missing external packages/react typings caused by the absent node_modules. Existing unrelated project diagnostics remain outside this batch.

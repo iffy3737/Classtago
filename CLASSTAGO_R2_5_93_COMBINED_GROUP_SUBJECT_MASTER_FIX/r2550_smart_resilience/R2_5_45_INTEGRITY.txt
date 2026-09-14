@@ -1,0 +1,76 @@
+EDUNIXO R2.5.45 INTEGRITY REPORT
+================================
+Parent baseline: R2.5.44
+Scope: FREE Phase 1 Technology Upgrade
+
+STATIC VALIDATION
+- TS/TSX/server source files parsed: 227
+- Parse-error files: 0
+- Relative imports checked: 732
+- Missing relative imports: 0
+- Undeclared external package dependencies: 0
+- Generated/private VAPID key material committed: NO
+
+SOURCE IMPACT
+- New runtime/support files: 11
+- Existing files changed: 12
+- Existing files removed: 0
+- Existing login/password fallback preserved.
+- Existing Attendance / Result / Timetable cloud tables remain canonical.
+
+DATA / SECURITY BOUNDARY
+- Destructive SQL: NONE
+- Existing operational record delete/reset/truncate: NONE
+- Existing auth/user/teacher/student/assignment/admission records mutated by Phase 1 migration: NONE
+- New tables: edunixo_push_subscriptions, edunixo_push_deliveries
+- New tables: RLS ON; direct anon/authenticated table grants revoked; server/service-role operations only
+- Realtime: additive publication membership only
+- Offline store: device-local AES-GCM encrypted IndexedDB; Supabase remains source of truth
+- Offline conflict strategy: reject/review, never silent overwrite
+- Final Result workflow actions: online-only
+- Passkey feature flag default: OFF
+- Paid Gemini File Search/RAG: NOT INCLUDED
+
+SUPABASE PRODUCTION STATUS
+- Applied migration: 20260901184410 free_phase1_realtime_web_push
+- Applied migration: 20260901184916 free_phase1_push_fk_indexes
+- Realtime publication verified for:
+  edunixo_attendance_entries
+  edunixo_result_subject_lists
+  edunixo_result_books
+  edunixo_progress_card_batches
+  edunixo_user_notifications
+- Attendance source constraint verified: manual / swiftchat only.
+- Offline attendance keeps DB source=manual and records offline origin in audit metadata.
+- New Push-table FK-support indexes are present; the current performance advisor shows no new unindexed-FK warning for the Phase 1 Push tables.
+- Existing project-wide advisor warnings outside this Phase 1 scope were not modified.
+
+RUNTIME BUILD NOTE
+- Full npm/Vite production build was not run in this sandbox because project dependencies are not installed here and external npm registry access is unavailable.
+- Static source/import/dependency validation is clean.
+- AI Studio/Codespaces Preview remains the required runtime smoke-test gate before production publish.
+
+KEY FILES ADDED/UPDATED
+- src/lib/phase1Offline.ts
+- src/lib/phase1SyncEngine.ts
+- src/lib/phase1Realtime.ts
+- src/hooks/useOnlineStatus.ts
+- src/lib/passkey.ts
+- src/lib/webPush.ts
+- src/components/Phase1SmartTools.tsx
+- public/edunixo-sw.js
+- tools/generate-vapid.mjs
+- src/App.tsx
+- src/components/LoginSection.tsx
+- src/lib/supabase.ts
+- src/modules/teacherFresh/TeacherAttendanceFresh.tsx
+- src/modules/teacherFresh/teacherFreshService.ts
+- src/modules/teacherResultFresh/TeacherResultManagement.tsx
+- src/modules/teacherResultFresh/teacherResultService.ts
+- src/modules/teacherResultFresh/types.ts
+- src/modules/teacherTimetableFresh/TeacherTimetableWorkload.tsx
+- server.ts
+- package.json
+- .env.example
+- supabase/migrations/20260901184410_free_phase1_realtime_web_push.sql
+- supabase/migrations/20260901184916_free_phase1_push_fk_indexes.sql

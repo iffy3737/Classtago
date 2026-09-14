@@ -1,0 +1,26 @@
+Classtago R2.5.60 — PREMIUM DEMO PASS + PROCESS COMPLETION QUALITY
+
+Base: R2.5.59 (All 25 Process Audit Complete)
+Scope: Demo experience only. No production Supabase migration is included or required.
+
+1) Premium Instant Demo Pass
+- New pre-demo entry layer: “Don’t watch a demo. Run the school.”
+- 10-second pass: visitor name, school/institution, role, optional contact, instruction language.
+- No OTP, no password, no approval queue, no production writes.
+- Instruction language is chosen on the pass and carried into process guidance.
+- Demo Pass identity is shown inside the Process Demo Hub.
+
+2) Process Completion Quality / Cross-Role Effects
+- Every process action now emits a structured temporary workflow event.
+- The next role/module shows a Connected Hand-off card proving where the previous action arrived.
+- Handoff UI labels follow the selected instruction language.
+- Process completion now shows a System-wide Impact map: roles connected, actions recorded and resulting effects.
+- Process Hub shows session change count and indicates processes already touched in the current demo session.
+- Workflow events are stored only in the isolated temporary demo state.
+
+3) Core demo state corrections
+- Admission global demo state now follows the audited R2.5.59 IDs: Clerk handoff at clerk-send and permanent confirmation at hm-confirm.
+- Communication session count now updates on Headmaster publish, not on Clerk draft.
+
+Production safety
+- Existing National High School ERP data, Supabase schema, authentication and production role permissions are unchanged.

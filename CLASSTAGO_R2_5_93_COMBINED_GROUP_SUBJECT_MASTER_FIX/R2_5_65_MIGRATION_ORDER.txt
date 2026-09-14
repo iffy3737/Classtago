@@ -1,0 +1,16 @@
+Classtago R2.5.65 — DATABASE MIGRATION ORDER
+
+Apply only migrations not already applied, in timestamp order:
+
+1. supabase/migrations/20260907170000_inbuilt_android_sms_gateway.sql
+   - R2.5.64 school Android SIM gateway registry + queue + RPCs.
+
+2. supabase/migrations/20260907193000_critical_sms_otp_platform_gateway.sql
+   - Critical-SMS policy lock.
+   - OTP challenge engine tables.
+   - Platform Super Admin Android SMS gateway + critical queue.
+
+3. supabase/migrations/20260907211000_platform_demo_lead_followup.sql
+   - Demo Follow-up status/note/next follow-up fields and indexes.
+
+The SQL uses IF NOT EXISTS / CREATE OR REPLACE where applicable so already-present compatible objects are preserved rather than dropped.

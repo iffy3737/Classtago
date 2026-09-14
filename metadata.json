@@ -1,0 +1,35 @@
+{
+  "name": "Classtago Responsive ERP + Android Shell",
+  "description": "Single responsive Classtago ERP client for desktop browser, mobile browser and Capacitor Android packaging, using the same React/Vite codebase and existing Supabase/Express backend.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API",
+    "UNIVERSAL_GEMINI_LIVE_DIRECT_GATEWAY",
+    "SERVER_SIDE_REALTIME_PROVIDER_KEY",
+    "ROLE_SCOPED_REALTIME_TOOL_GATEWAY",
+    "GAPLESS_PCM_AUDIOWORKLET",
+    "REALTIME_BARGE_IN",
+    "SESSION_RESUMPTION_CONTEXT_COMPRESSION",
+    "AGENT_VOICE_PERSONA_SELECTOR",
+    "MULTILINGUAL_SCHEDULED_INDIAN_LANGUAGES",
+    "FREE_FIRST_REALTIME_AI_POLICY",
+    "PROVIDER_ABSTRACTION_READY",
+    "INBUILT_ANDROID_SIM_SMS_GATEWAY",
+    "CRITICAL_SMS_POLICY",
+    "MULTI_CHANNEL_OTP_SECURITY",
+    "PLATFORM_DEMO_FOLLOW_UP",
+    "SIMPLIFIED_INSTANT_LIVE_DEMO",
+    "SMART_SMS_GATEWAY_ASSIGNMENT",
+    "PRIMARY_BACKUP_SMS_ROUTING",
+    "SMS_DAILY_SOFT_LIMIT",
+    "MARIA_DYNAMIC_ACTION_ENGINE",
+    "MARIA_VOICE_MARK_ENTRY_VERTICAL_HORIZONTAL_CURSOR",
+    "MARIA_HOMEWORK_EXISTING_FLOW_ADAPTER",
+    "MARIA_QUESTION_PAPER_EXISTING_FLOW_ADAPTER"
+  ],
+  "nativeRuntime": "Capacitor Android",
+  "release": "R2.5.97 Clerk attendance cloud-path canonicalization",
+  "version": "R2.5.97"
+}

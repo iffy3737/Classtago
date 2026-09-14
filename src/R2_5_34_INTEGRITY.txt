@@ -1,0 +1,42 @@
+Classtago R2.5.34 INTEGRITY / REGRESSION NOTE
+
+Base: Classtago R2.5.33 Dynamic Curriculum Result Import
+Purpose: Onboarding-only Result Import + document-role upload separation
+
+Existing files intentionally changed:
+- package.json
+- android/app/build.gradle
+- server.ts
+- src/components/CurriculumResultImportStudio.tsx
+- src/components/DashboardOverview.tsx
+- src/components/HeadmasterResultControlWorkspace.tsx
+- src/components/RoleModuleMenu.tsx
+- src/lib/roleModuleBlueprint.ts
+
+New documentation:
+- R2_5_34_RESULT_ONBOARDING_GUARD_AND_ROLE_UPLOADS.txt
+- R2_5_34_INTEGRITY.txt
+
+Existing files removed: 0
+Supabase migrations/schema changed: 0
+
+Protected core Result files retained byte-for-byte from R2.5.33:
+- src/components/ResultManagement.tsx
+  SHA-256 d8abcf56ce23b7f9f5b835f709a0682b4dd355d3ef559bbec3adb6f79339d605
+- src/components/MasterResultBookEditor.tsx
+  SHA-256 42592c910e7cbe0d971a731018336d89c24190e8728af30c271731c50506d576
+- src/components/MasterProgressCardTemplateEditor.tsx
+  SHA-256 8795d4a5a0014cce38526c4e89fe40df720c5521e7a0384fbd1f1d8d344e5008
+
+Supabase tree SHA-256 (same as R2.5.33):
+3b59a30403543b0489d02322b0d987ac10ea636f0662e7f12f285911b3db1bf3
+
+Validation:
+- Changed TS/TSX/server syntax transpile: PASS
+- Deployment doctor: PASS
+- Android project doctor: PASS
+- Four role-specific upload controls: PASS
+- Existing-result-system server guard: PASS
+- Clerk menu visibility guard: PASS
+- Headmaster second-curriculum activation guard: PASS
+- No existing files removed: PASS

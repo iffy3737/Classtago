@@ -1,0 +1,43 @@
+Classtago R2.5.37 — APP-WIDE READABILITY + SAFE BACK NAVIGATION
+================================================================
+
+Purpose
+-------
+Visual/accessibility maintenance only. Existing business logic, role permissions,
+Supabase/API flows, admissions, timetable, result, communication, Student/Parent,
+Peon/Bell and authentication systems are preserved.
+
+Readability / contrast changes
+------------------------------
+1. Added a single authenticated-ERP contrast guard at the canonical DashboardOverview
+   root so form controls/options/placeholders have deterministic readable foregrounds.
+2. Fixed the mobile runtime root cause that converted legacy dark operational panels
+   into pale panels while leaving light text/select/label colours behind. Intentional
+   dark panels now keep a dark high-contrast surface instead of becoming white-on-white.
+3. Hardened the mobile Command Center banner: slate/cyan/emerald utility text now gets
+   deterministic dark-on-light colours when that banner is rendered in its premium
+   light mobile treatment.
+4. Kept the reusable focused-module context bar dark/high-contrast on mobile so its
+   white labels and navigation controls remain readable.
+5. Corrected the direct low-contrast empty-slot label detected in the Master Progress
+   Card template editor (slate-300 on slate-50 -> slate-500).
+6. Existing explicitly protected dark workspaces (e.g. Smart Timetable) keep their own
+   contrast rules and are not converted to a light palette.
+
+Back navigation changes
+-----------------------
+1. Reused the existing canonical role/module router; no parallel routing system added.
+2. Module shortcut landing pages now expose "Back to Dashboard".
+3. Focused feature pages expose "Module home".
+4. Focused module-root/standalone pages expose "Dashboard".
+5. Legacy non-focused module pages now receive the same context/back control where safe.
+6. Back controls are no-print and do not appear on school documents.
+
+Preservation
+------------
+- No server route changed.
+- No Supabase schema/migration changed.
+- No role permission changed.
+- No data read/write behavior changed.
+- No module/feature removed or renamed.
+- No existing file removed.

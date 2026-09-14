@@ -1,0 +1,64 @@
+Classtago R2.5.30 — HEADMASTER STABILITY FIXES
+===============================================
+Base: Classtago R2.5.29 cumulative production project
+Scope: Only the eight Headmaster issues reported after Google AI Studio preview.
+
+1) Teaching Assignments staff picker
+- Uses the authorized canonical Staff Master API instead of a browser-side teachers query.
+- Shows the complete active Staff Master directory available to the Headmaster.
+- Prepares/reuses one Headmaster teaching profile so the Headmaster can receive Subject/Class assignments without creating a second login or changing the administrative login role.
+- Existing cloud Academic Assignment identity resolution remains unchanged.
+
+2) Teacher Profiles & Service Status
+- The legacy Teacher Profiles view is now a read-only mirror of canonical cloud Staff Master records.
+- Staff identity, designation, identifiers, contact and assignment-period calculation are resolved across teacher-row ID, auth user ID, SHALARTH/Employee ID and name compatibility paths.
+
+3) Staff Workload Analysis
+- Workload Total now counts Subject Assignments only.
+- Class Teacher Duty remains visible as a separate informational column and is never added to the workload total.
+
+4) Staff Master edit form
+- Designation and Qualification now use dropdowns populated from the existing Academic Setup master lists, while retaining current record values for backward compatibility.
+- Identifier/contact/date controls are unchanged because they are not lookup-master fields in the current Staff Master schema.
+
+5) Staff Master contrast
+- Added a module-scoped high-contrast guard for the dark Staff Master hero, counters and refresh control.
+- No global theme or unrelated module colors were changed.
+
+6) Smart AI Timetable
+- Added a Role selector to each Teaching Assignment workload row: Subject Teacher / Class Teacher · 1st Period.
+- Exactly one selected row per Class/Division receives the timetable first-period priority.
+- The generator schedules selected Class Teacher subject tasks before ordinary subject tasks and gives Period 1 a strong preference while retaining hard teacher/class clash and capacity rules.
+- Teacher/Class/Subject/Periods continue to come from canonical Academic Setup assignments; the Role selector does not rewrite those assignments.
+- Added Smart Timetable-scoped contrast guards so the dark operational surface stays readable in all appearance modes.
+
+7) Academic Term Active / Disabled toggle
+- Added a Headmaster-only atomic cloud status endpoint for school_academic_terms.
+- Active/Disabled now updates only the selected term instead of re-saving unrelated Academic Setup masters.
+- The term can be switched both directions and the cloud setup is refreshed after confirmation.
+
+8) Study Material / Headmaster compatibility
+- Headmaster Teaching & Academic Work now identifies the Headmaster teaching library explicitly and continues to use only assigned Class/Subject scopes.
+- Headmaster teaching-profile creation now supplies a deterministic Employee ID when old school data has no Employee/SHALARTH identifier.
+- Includes a backward-compatible retry for legacy teachers_check variants while leaving the authenticated login role as Headmaster.
+- This addresses the reported: new row for relation "teachers" violates check constraint "teachers_check".
+
+PRESERVATION RULES APPLIED
+--------------------------
+- No Supabase migrations were changed.
+- Clerk Workspace was not changed.
+- Student/admission/result/attendance modules were not rewritten for this patch.
+- Existing Headmaster/Teacher assignment cloud tables remain the source of truth.
+- No destructive data operation was added.
+- Existing deployment/Render/Android packaging from R2.5.29 remains intact; only app version was advanced to 0.2.30 / Android versionCode 2530.
+
+VALIDATION PERFORMED
+--------------------
+- TypeScript syntax transpilation: PASS for every changed TS/TSX file.
+- Classtago deployment doctor: PASS.
+- Classtago Android project doctor: PASS.
+- Static invariant checks for all 8 requested fixes: PASS.
+- Exact changed-file whitelist checked against the R2.5.29 base.
+
+Runtime note:
+The live Supabase database is external to this ZIP, so the final database-backed behavior must be confirmed in Google AI Studio Preview using the connected production environment. No destructive SQL or schema migration is included in this patch.

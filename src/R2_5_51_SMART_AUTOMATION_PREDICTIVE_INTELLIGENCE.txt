@@ -1,0 +1,27 @@
+Classtago R2.5.51 — Smart Automation & Predictive Intelligence
+
+Technology-only release. Existing ERP workflows are not rewritten.
+
+NEW SMART TECHNOLOGY
+- Explainable Attendance Risk scoring from canonical 30-day marked attendance.
+- Result Readiness intelligence from current academic-year Subject Teacher assignments and Result subject-list status.
+- Teacher Workload pressure scoring from canonical weekly-period assignments.
+- Headmaster Smart Intelligence dashboard inside Smart Tools.
+- Opt-in automation rules: Attendance Risk Watch, Result Readiness Watch, Teacher Workload Watch.
+- Rules default OFF. Headmaster can Preview without notification, Alert Now explicitly, or enable scheduled automation.
+- Server-side deduplicated automation run/audit history.
+- Scheduled worker checks enabled rules every five minutes and honors each rule cadence.
+- Automation can create Headmaster notifications only. It cannot change attendance, marks, result publication, students, staff or assignments.
+
+SAFETY
+- Additive server-only tables only: edunixo_smart_automation_rules, edunixo_smart_automation_runs.
+- RLS enabled; browser roles have no direct table grants.
+- Production migration 20260902155844 applied.
+- Rules/runs row counts were 0 immediately after migration.
+- No existing school data deleted/reset.
+
+VALIDATION
+- 233 TS/TSX source files parsed: 0 syntax errors.
+- 772 relative imports checked: 0 missing.
+- New migration destructive pattern hits: 0.
+- Full Vite build could not run in this sandbox because node dependencies are absent (vite: not found). AI Studio Preview/build remains the runtime gate.

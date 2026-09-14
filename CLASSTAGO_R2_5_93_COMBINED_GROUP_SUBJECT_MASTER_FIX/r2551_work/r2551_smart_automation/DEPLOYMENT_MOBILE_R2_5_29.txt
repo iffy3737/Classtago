@@ -1,0 +1,30 @@
+EDUNIXO R2.5.29 — DEPLOYMENT / GITHUB / MOBILE PACKAGING FIX
+=============================================================
+
+SCOPE
+- Infrastructure/package-only repair.
+- Existing src/, server.ts and Supabase application/database logic are intentionally unchanged.
+- Removed only three older full-project duplicate folders that were not referenced by the current root application.
+- Removed stale package-lock.json (0.2.14) and stale bun.lock because they did not represent the current 0.2.28 dependency set. A fresh npm install recreates a current package-lock.
+
+GITHUB / GOOGLE AI STUDIO
+- Upload this ZIP as the cumulative project in Google AI Studio.
+- The current application is at ZIP root: package.json, src/, server.ts, android/, etc.
+- Export/push the root project to GitHub; there is no nested old project root to select accidentally.
+
+RENDER
+- render.yaml is included. It defines a Node Web Service with npm build/start commands and /api/health health check.
+- Secret values are NOT stored in this ZIP. Provide the prompted Render environment values.
+- Production start now explicitly checks dist/server.js and forces production mode when NODE_ENV was not supplied.
+- npm run build now fails immediately if dist/index.html, dist/server.cjs or dist/server.js is missing.
+
+ANDROID
+- Native project remains com.edunixo.app.
+- Package/native version synchronized to 0.2.29 / versionCode 2529.
+- .env.mobile is safe and enables native packaging mode.
+- Put the final live HTTPS API origin only in .env.mobile.local (ignored by Git) before APK/AAB build.
+- Run npm run android:bootstrap once on a machine with Android tooling if the Gradle wrapper binary needs hydration.
+- Then npm run android:apk:debug can produce a test APK.
+
+SAFETY
+- No existing EDUNIXO role/module/permission/business flow was intentionally altered by this packaging repair.

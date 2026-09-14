@@ -1,0 +1,54 @@
+EDUNIXO R2.5.52 — PLATFORM ACADEMIC CORE
+Release date: 2026-09-03
+
+PURPOSE
+This cumulative release adds the production foundation for India-wide board/state routing, verified academic rulesets, global academic templates, and feature-level language policies. It extends the existing R2.5.51 build without replacing National High School operational data or existing school workflows.
+
+SUPER ADMIN — ACADEMIC CORE
+- Adds a dedicated Academic Core tab to Platform/Super Admin.
+- Board & State registry: State Board routing through all 28 States and 8 Union Territories, plus CBSE, CISCE/ICSE/ISC, NIOS, IB, Cambridge and extensible recognized-board registry.
+- Rules & Versions: draft/review workflow and controlled verified publication. A ruleset cannot become live unless the Super Admin explicitly confirms official verification and supplies source notes.
+- Template Library foundation: board/ruleset/report/class/medium/language-aware templates.
+- Feature Languages: per-feature input/output/multilingual policy, maximum languages per document, and default language.
+
+SCHOOL ACADEMIC ISOLATION
+- Adds school_academic_profiles as the locked school-level link to the selected Platform Board and published Ruleset.
+- New school curriculum onboarding selects Board Family -> State/UT when required -> Board.
+- AI curriculum/result import receives the selected Platform Board as a hard constraint; AI cannot silently reclassify the school into another board/state.
+- Headmaster activation is blocked until the selected board has a verified published ruleset.
+- Once activated/locked, changing board requires a future protected migration flow rather than an ordinary dropdown change.
+- Compatibility bridge preserves existing school_boards-based result workflows while storing the Platform Board/Ruleset identity in metadata.
+
+MULTILINGUAL FOUNDATION
+- Reuses the existing language catalogue and school/user language preference architecture.
+- Adds global feature policies for Mark List, Result Book, Progress Card, Catalogue, Question Paper, Homework, Certificate, Notice/Circular and Remarks/Observations.
+- UI language, document/output language and user-entered language remain separate concepts.
+- Board calculation/compliance rules remain independent of output language.
+
+DATABASE
+Migration:
+  supabase/migrations/20260903131511_platform_academic_core_board_state_language_foundation.sql
+
+Additive tables:
+  platform_board_families
+  platform_jurisdictions
+  platform_boards
+  platform_board_rulesets
+  platform_academic_template_library
+  platform_feature_language_policies
+  school_academic_profiles
+
+Seed foundation:
+  7 board families
+  36 India State/UT jurisdictions
+  41 board routing records
+  9 feature-language policies
+
+SAFETY / COMPATIBILITY
+- No destructive purge or rewrite of existing National High School records.
+- Existing school_boards/result/language/assignment data is not auto-migrated or overwritten by this release.
+- New Platform Academic Core master tables are not directly writable by anon/authenticated clients; Platform Admin operations use the existing protected server API pattern.
+- Official state/board assessment rules are intentionally NOT invented or prefilled. Routing records remain Rules Pending until verified rules are entered, reviewed and published by Super Admin.
+
+BUILD NOTE
+Source syntax validation is included in the R2.5.52 integrity checklist. A full dependency-backed Vite/TypeScript build could not be completed in the packaging environment because dependency installation did not complete; the project retains its existing tools/ensure-deps.mjs build bootstrap for the upload/deployment environment.

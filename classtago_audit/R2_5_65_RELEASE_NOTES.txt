@@ -1,0 +1,50 @@
+Classtago R2.5.65
+CRITICAL SMS + MULTI-CHANNEL OTP + DEMO FOLLOW-UP
+
+SCOPE LOCK
+- Existing ERP/public website flows remain intact; this release is additive/scoped around communication security, OTP delivery and Platform Demo follow-up.
+- Routine SMS is policy-blocked. Homework, ordinary attendance/results/timetable notices, normal announcements and holiday reminders remain on In-App/WhatsApp/Email.
+- SIM SMS is reserved for OTP, account/security confirmation, gateway test and genuine critical/emergency communication.
+
+MULTI-CHANNEL OTP
+- OTP is no longer dependent on a single SIM/SMS path.
+- For each OTP challenge, Classtago independently attempts:
+  1) inbuilt Android SIM SMS gateway,
+  2) configured WhatsApp OTP webhook,
+  3) Email as an OPTIONAL backup when an email address is supplied and the email provider is configured.
+- The same cryptographically generated 6-digit OTP is used across delivery channels.
+- OTP expires after 5 minutes, has resend cooldown, attempt limits, rate limiting, hash-only storage and one-time consumption.
+- SMS queue jobs expire with the OTP and are never sent after expiry.
+- If the SIM gateway is offline/depleted but WhatsApp succeeds, OTP flow continues. Email remains optional.
+
+PLATFORM / SUPER ADMIN OTP
+- Institution registration OTP uses Platform OTP delivery.
+- Live Demo request OTP uses Platform OTP delivery.
+- Demo-to-school-setup OTP uses Platform OTP delivery.
+- Platform Super Admin security OTP uses canonical admin contact details; browser cannot choose an arbitrary destination.
+- Platform Admin OTP request remains available even when the Android SMS gateway is offline, provided another configured OTP channel can deliver.
+
+SCHOOL OTP
+- Online Admission guardian verification uses school-scoped multi-channel OTP.
+- SMS path uses the authorized school Android gateway; WhatsApp is independently attempted when configured; guardian email is an optional backup.
+
+DEMO FOLLOW-UP DESK
+- Every OTP-verified public Live Demo request is saved before the isolated demo opens.
+- Platform Admin > Demo Follow-up shows demo leads for follow-up.
+- Super Admin can save status, follow-up note and next follow-up date/time.
+- Supported statuses: New, Contacted, Follow Up, Qualified, Converted, Closed.
+- Super Admin can permanently delete a lead after work is complete.
+- Demo setup requests remain traceable through the same platform lead table.
+
+VERSION
+- Web/package: 0.2.65
+- Android versionCode: 2565
+- Android versionName: 0.2.65
+
+PRODUCTION SETUP
+- Apply the R2.5.64 SMS gateway migration first if not already applied.
+- Apply 20260907193000_critical_sms_otp_platform_gateway.sql.
+- Apply 20260907211000_platform_demo_lead_followup.sql.
+- Set EDUNIXO_OTP_PEPPER on the server.
+- Configure the WhatsApp OTP webhook to make the non-SMS path operational.
+- Email OTP is optional: configure RESEND_API_KEY + OTP_EMAIL_FROM only if desired.

@@ -1,0 +1,16 @@
+Classtago R2.5.42 — Pre-Publish Command/Profile Polish
+
+Scope: visual-only authenticated ERP hero repair.
+
+Fixed:
+- Replaced the dull grey Welcome/Command Center identity patch on light/aurora/mobile runtime with a premium white-cyan-violet surface.
+- Forced deterministic dark readable Welcome text on light surfaces.
+- Fixed mobile Chrome/WebKit text-fill inheritance that caused white profile name/actions to disappear on a pale profile card.
+- Strengthened profile name, email/ID, role badge, Edit, Complete Profile and notification-control contrast.
+- Preserved all profile actions, auth, role permissions, routing, Supabase data, modules and business workflows.
+
+Files changed from R2.5.41 baseline:
+- src/App.tsx
+- src/index.css
+
+No SQL. No database mutation. No permission/auth change.

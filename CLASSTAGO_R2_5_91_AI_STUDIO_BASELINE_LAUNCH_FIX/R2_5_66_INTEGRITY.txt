@@ -1,0 +1,25 @@
+Classtago R2.5.66 INTEGRITY / SCOPE SUMMARY
+Base archive: EDUNIXO_R2_5_65_CRITICAL_SMS_MULTICHANNEL_OTP_DEMO_FOLLOWUP.zip
+Base files: 444
+Current files before this integrity marker: 447
+Removed base files: 0
+Modified base files: 9
+Added release/audit files: 3
+TypeScript/TSX syntax parse: PASS (248 files, 0 syntax-error files)
+Local relative import check: PASS
+
+Modified base files:
+metadata.json
+package.json
+server.ts
+src/App.tsx
+src/components/DemoExperience.tsx
+src/components/EdunixoPlatformLanding.tsx
+src/components/PlatformAdminPortal.tsx
+src/lib/platformLandingTranslations.ts
+src/lib/platformSmsGateway.ts
+
+Added files:
+R2_5_66_RELEASE_NOTES.md
+R2_5_66_SCOPE_SAFETY_AUDIT.md
+R2_5_66_TEST_CHECKLIST.md

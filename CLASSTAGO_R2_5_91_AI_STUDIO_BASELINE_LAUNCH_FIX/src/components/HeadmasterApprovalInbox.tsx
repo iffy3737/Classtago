@@ -1,0 +1,21 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import { CheckCircle2, ChevronRight, CircleAlert, ClipboardCheck, Loader2, RefreshCw } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import type { RoleVisibleModule, RoleModuleFeature } from '../lib/roleModuleBlueprint';
+
+type InboxItem = { id: string; count: number | null; available: boolean; status: string };
+type Props = { module: RoleVisibleModule; onOpenFeature: (feature: RoleModuleFeature) => void };
+
+export default function HeadmasterApprovalInbox({ module, onOpenFeature }: Props) {
+  const [items, setItems] = useState<InboxItem[]>([]); const [loading, setLoading] = useState(true); const [error, setError] = useState('');
+  const load = async () => { setLoading(true); setError(''); try { const { data: { session } } = await supabase.auth.getSession(); if (!session?.access_token) throw new Error('Secure session unavailable.'); const response = await fetch('/api/headmaster/approval-inbox', { headers: { Authorization: `Bearer ${session.access_token}` } }); const payload = await response.json().catch(() => ({})); if (!response.ok) throw new Error(payload.error || 'Approval Inbox could not be loaded.'); setItems(Array.isArray(payload.items) ? payload.items : []); } catch (e: any) { setError(e.message || 'Approval Inbox could not be loaded.'); } finally { setLoading(false); } };
+  useEffect(() => { void load(); }, []);
+  const byId = useMemo(() => new Map(items.map(item => [item.id, item])), [items]);
+  if (loading) return <div className="grid min-h-[340px] place-items-center rounded-3xl border border-slate-200 bg-white"><Loader2 className="h-9 w-9 animate-spin text-cyan-600" /></div>;
+  return <div className="space-y-5">
+    <header className="rounded-[1.75rem] bg-slate-950 p-6 text-white shadow-2xl sm:p-8"><div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div><div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[.2em] text-cyan-300"><ClipboardCheck className="h-4 w-4" />Unified Approval Inbox</div><h1 className="mt-3 text-2xl font-black">One queue, exact owner-module actions.</h1><p className="mt-2 text-xs leading-6 text-slate-400">This desk never duplicates approval forms. Every card opens the official feature that owns the decision.</p></div><button onClick={() => void load()} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-xs font-black"><RefreshCw className="h-4 w-4" />Refresh</button></div></header>
+    {error && <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-bold text-rose-800">{error}</div>}
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{module.features.map(feature => { const item = byId.get(feature.id); const known = item?.available && item.count !== null; const clear = known && item?.count === 0; return <button key={feature.id} onClick={() => onOpenFeature(feature)} className="rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-300 hover:shadow-xl"><div className="flex items-start justify-between gap-3"><div className={`grid h-11 w-11 place-items-center rounded-xl ${clear ? 'bg-emerald-50 text-emerald-700' : 'bg-cyan-50 text-cyan-700'}`}>{clear ? <CheckCircle2 className="h-5 w-5" /> : <ClipboardCheck className="h-5 w-5" />}</div><div className="text-right"><div className="text-2xl font-black text-slate-950">{known ? item?.count : '→'}</div><div className="text-[9px] font-black uppercase tracking-wide text-slate-400">{known ? (clear ? 'Clear' : 'Pending') : 'Owner module'}</div></div></div><div className="mt-4 text-sm font-black text-slate-950">{feature.label}</div><div className="mt-2 flex items-center justify-between text-[10px] font-bold text-slate-500"><span>{known ? 'Live cloud queue' : 'Open canonical workflow'}</span><ChevronRight className="h-4 w-4 text-cyan-700" /></div></button>; })}</div>
+    <div className="rounded-2xl border border-cyan-200 bg-cyan-50 p-4 text-xs leading-6 text-cyan-900"><CircleAlert className="mr-2 inline h-4 w-4" />A count is displayed only where a permanent cloud queue is available. Other cards remain exact shortcuts to their owner module instead of showing invented totals.</div>
+  </div>;
+}

@@ -1,0 +1,8 @@
+Classtago R2.5.53A — Role Demo Visibility Hotfix
+
+- Demo school website now shows a visible One-click ERP Demo section.
+- Headmaster, Clerk, Teacher, Student, Parent, and Super Admin demo cards are visible before entering the ERP workspace.
+- Each role card opens its role demo directly without a password.
+- Existing in-workspace role switcher remains available.
+- Hero quick-entry button is labelled Quick Headmaster Demo to avoid hiding the other role choices.
+- No production school data, Supabase schema, or National High School records are changed by this hotfix.

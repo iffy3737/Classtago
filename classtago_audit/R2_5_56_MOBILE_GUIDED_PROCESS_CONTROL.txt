@@ -1,0 +1,37 @@
+Classtago R2.5.56 — MOBILE + USER-CONTROLLED PROCESS DEMO
+
+Base
+- Built from the working R2.5.55 Process Demo code.
+- R2.5.55A is NOT assumed as the base because the user did not upload that hotfix.
+
+Changes
+1. Every process step now waits for explicit visitor permission.
+   - Page/role/module context opens first.
+   - Auto-filling does not start automatically.
+   - Visitor presses “Start Process” on every page/step.
+   - Moving to the next role resets to waiting state again.
+
+2. Natural typing engine.
+   - One character at a time instead of the previous very-fast multi-character interval.
+   - Character timing varies naturally (roughly 72–120ms base, with punctuation pauses).
+   - 420–680ms pause between fields.
+   - Pause / Resume controls are available while filling.
+
+3. Mobile responsive hardening.
+   - Process demo root and major sections are constrained to viewport width.
+   - Outer horizontal overflow is blocked at the demo surface.
+   - Mobile gets a compact current-step tracker instead of the wide desktop process rail.
+   - Mobile role context shows only the current production module; full navigation appears from tablet/desktop upward.
+   - Action / Continue buttons become full-width on small screens.
+   - Long titles, board names, module names and field values wrap safely.
+   - Desktop process tracker remains horizontally scrollable inside its own container only.
+
+4. Interaction model preserved.
+   - Visitor still performs meaningful workflow decisions: Submit, Approve, Assign, Generate, Publish, etc.
+   - “What just happened” continues to explain cross-role/system impact.
+   - Demo state remains temporary and production-safe.
+
+Regression scope
+- No production Supabase schema/data changes.
+- No Headmaster/Clerk/Teacher/Student/Parent production module logic changed.
+- Only demo presentation/interaction code and package metadata are changed.

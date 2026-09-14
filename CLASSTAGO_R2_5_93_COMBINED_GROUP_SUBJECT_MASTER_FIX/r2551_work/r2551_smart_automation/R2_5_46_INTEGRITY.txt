@@ -1,0 +1,37 @@
+EDUNIXO R2.5.46 — INTEGRITY / SAFETY GATE
+==========================================
+Baseline: EDUNIXO R2.5.45 FREE Phase 1 Technology Upgrade
+
+Scope
+-----
+- 15 source/release files changed or added relative to R2.5.45 after final integrity note.
+- No server.ts change.
+- No Supabase migration in this release.
+- No destructive data operation.
+
+Static validation
+-----------------
+- TypeScript/TSX source parser: 226 files checked, 0 parse-error files.
+- Relative imports: 747 checked, 0 missing.
+- External JS/TS package declaration audit: 24 used, 0 undeclared.
+- New Phase 2 TS files: no non-module TypeScript diagnostics in syntax/type surface check.
+- Java custom plugin parser signal: 0 Java syntax errors; full Android dependency compilation requires normal Android/Gradle build environment.
+- Admission OCR heuristic smoke test: Student Name / Guardian / DOB / Birth Place / Gender / Address extracted correctly from labelled sample.
+- Smart Search smoke test performed against canonical role module catalogue.
+
+Security / compatibility
+------------------------
+- Destructive SQL patterns in changed implementation files: 0.
+- Embedded private-key blocks: 0.
+- Hard-coded Gemini-style API keys: 0.
+- Hard-coded Supabase server secret patterns: 0.
+- OCR does not upload image/text for recognition.
+- Translation uses on-device ML Kit; first language-model download may require network.
+- Voice notes request Android offline recognition preference but actual offline availability is device speech-engine dependent.
+- Existing role/plan/module gates remain authoritative for Smart Search navigation.
+- Existing Phase 1 offline/Reatime/push/passkey behavior retained.
+
+Runtime gate
+------------
+- Full npm/Vite/Android Gradle build was not executed in this sandbox because project node_modules/Android dependency cache are not present here.
+- AI Studio/Codespaces Preview and Android build remain the final runtime gates before production publishing.

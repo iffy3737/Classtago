@@ -1,0 +1,25 @@
+Classtago R2.5.82 — Phase 1 Universal Gemini Live AI Core
+
+CUMULATIVE BASE
+- Based on Classtago R2.5.81 full application.
+- Existing ERP modules, auth, Supabase, admissions, timetable, results, communication and mobile shell are preserved.
+
+PHASE 1 CHANGES
+- Replaced the user-facing Pipecat/Daily realtime component with Classtago's direct Gemini Live client.
+- Added authenticated `/api/assistant/live` WebSocket gateway on the existing Express server.
+- Added server-side role/school validation and role-scoped initial tool gateway.
+- Added gapless AudioWorklet PCM playback, interruption flush, voice/persona selection and multilingual realtime behavior.
+- Added session resumption, context compression and provider reconnect handling.
+- Added server audit events for live session lifecycle/tool use without raw transcript logging.
+- Added websocket URL resolution for web and Capacitor mobile runtimes.
+- Gemini is the default free-first voice path; Fish paid-provider fallback and legacy Pipecat broker require explicit server opt-in.
+- Removed unused Pipecat browser dependencies from package.json; legacy broker code remains dormant for controlled rollback only.
+
+INITIAL LIVE TOOLS
+- get_current_school_context — authenticated current school/user context only.
+- get_latest_notifications — signed-in user's notifications only.
+- get_my_teaching_assignments — teacher/class teacher/headmaster only.
+- prepare_staff_dial — headmaster only, current-school active staff, user-confirmed device dialer handoff.
+
+PHASE 2 REMAINS LOCKED
+Full previously approved AI feature scope will be attached to this gateway: Teacher academic AI, School Receptionist, Admissions, Parent AI, attendance/absence follow-up, fee reminders, communication, broader ERP actions, and analytics.

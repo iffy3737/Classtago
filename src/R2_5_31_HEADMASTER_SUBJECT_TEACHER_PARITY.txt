@@ -1,0 +1,48 @@
+Classtago R2.5.31 — Headmaster Subject Teacher Capability Parity
+
+Scope
+-----
+This cumulative patch extends the Headmaster's existing teaching identity only inside current canonical Subject Teacher assignments. It does not convert the Headmaster base role into Teacher and does not grant school-wide Teacher data access.
+
+Headmaster My Teaching Work now includes
+---------------------------------------
+- My Teaching Dashboard
+- My Teaching Assignment
+- Study Material
+- AI Year Plan
+- AI Daily Teaching Plan
+- AI Lesson Plan
+- AI Homework
+- AI Teaching Diary
+- AI Classwork & Assignments
+- Question Paper — First Term / First Unit Test / First Term Examination
+- Question Paper — Second Term / Second Unit Test / Second Term Examination
+- My Subject Marks List
+- My Subject Students
+- My Students Performance
+- Teaching Notices
+- Class / Subject Announcements
+- Homework Notifications
+- Parent / Student Communication
+- My Teaching Timetable
+- My Teaching Workload
+- My Substitute / Adjustment Duties
+
+Authorization rules preserved
+-----------------------------
+- All Subject Teacher features remain restricted to the Headmaster's own active school_subject_teacher_assignments scope.
+- Question Paper and Academic AI use the same existing Subject Teacher engine; no duplicate academic engine was introduced.
+- Subject Marks Save/Submit now accepts the Headmaster teaching identity, but the requested Class/Division/Subject must still match a current canonical Subject Teacher assignment.
+- Student roster, Performance/Recognition and Timetable APIs now accept the Headmaster teaching identity, with the existing assignment-scope checks retained.
+- Teacher Communication already supported Headmaster teaching identity and continues to enforce assigned recipient scope.
+- Class Teacher-only Result review, Result Book send and Attendance save were NOT broadened by this Subject Teacher patch.
+- Headmaster administrative Result Control, approvals and Chairman leave flow remain unchanged.
+
+Existing files changed
+----------------------
+- src/lib/roleModuleBlueprint.ts (Headmaster teaching navigation only)
+- server.ts (Headmaster accepted by assignment-scoped Subject Teacher runtime endpoints only)
+- package.json (version only)
+- android/app/build.gradle (version only)
+
+No Supabase migration is included and no existing database record is modified by this package.

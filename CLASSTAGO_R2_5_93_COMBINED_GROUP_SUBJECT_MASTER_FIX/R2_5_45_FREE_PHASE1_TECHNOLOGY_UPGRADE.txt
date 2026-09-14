@@ -1,0 +1,98 @@
+Classtago R2.5.45 — FREE PHASE 1 TECHNOLOGY UPGRADE
+=================================================
+Parent baseline: R2.5.44 School Frontend Contrast Hardening
+Release type: cumulative / additive / free-only technology upgrade
+
+IMPLEMENTED
+-----------
+1. Supabase Realtime foundation
+   - Selected existing RLS-protected tables enabled for Realtime:
+     edunixo_attendance_entries
+     edunixo_result_subject_lists
+     edunixo_result_books
+     edunixo_progress_card_batches
+     edunixo_user_notifications
+   - Client subscriptions remain school-scoped.
+   - Subject Mark List emits a final post-marks refresh signal so other clients do not intentionally reload in the list-before-marks gap.
+
+2. Secure offline school-work layer
+   - AES-GCM encrypted IndexedDB cache/action queue.
+   - Attendance: cached roster/day/marks, offline save, reconnect auto-sync.
+   - Subject Mark List: cached template/roster/marks, offline Save Draft, reconnect auto-sync.
+   - Result Book: latest cloud copy cached for offline read-only viewing.
+   - Progress Card: latest cloud batch cached for offline read-only viewing.
+   - Timetable: latest cloud data cached for offline read-only viewing.
+   - Queue status/manual Sync available from Smart Tools.
+
+3. Conflict/data-safety controls
+   - Supabase remains the source of truth.
+   - Attendance offline sync validates capture date and uses a 7-day safe sync window.
+   - Mark List draft offline sync uses revision/update metadata and a 14-day safe sync window.
+   - Newer cloud changes are never silently overwritten; conflict returns for human review.
+   - Attendance DB source remains canonical `manual`; offline origin is stored only in audit metadata.
+   - Send to Class Teacher, Class Teacher Return/Accept, Result Book rebuild/forward, Progress Card official/final actions remain online-only.
+
+4. Free standards-based Web Push
+   - No paid notification provider.
+   - Authenticated device subscription endpoints.
+   - Server-side Web Push worker bridges recent unread Classtago notifications to subscribed browsers.
+   - Delivery de-duplication, retry counter and stale subscription cleanup.
+   - Service worker handles incoming push and notification click.
+   - One-time VAPID key generation: npm run push:keys
+   - Store generated keys only as hosting/server environment variables:
+     EDUNIXO_VAPID_PUBLIC_KEY
+     EDUNIXO_VAPID_PRIVATE_KEY
+     EDUNIXO_VAPID_SUBJECT
+
+5. QR scanner
+   - Camera-based QR scan using the browser's native BarcodeDetector when supported.
+   - No paid scanner SDK/provider.
+   - Unsupported browsers fail safely without breaking the ERP.
+
+6. Document scanner
+   - Camera/gallery page capture.
+   - Multi-page preview/removal.
+   - Local PDF creation using existing jsPDF.
+   - No paid scanning service and no document upload is required for PDF creation.
+   - This web release is camera capture + PDF; it does not claim ML Kit automatic edge/crop processing.
+
+7. Passkey / biometric foundation
+   - WebAuthn/Supabase passkey preparation added behind a feature flag.
+   - DEFAULT: VITE_EDUNIXO_PASSKEY_ENABLED=false
+   - Deliberately disabled until the final custom domain / WebAuthn RP ID is locked.
+   - Password login remains available; passkeys do not replace the existing auth fallback.
+
+DATABASE
+--------
+Applied additive production migrations:
+- 20260901184410 free_phase1_realtime_web_push
+- 20260901184916 free_phase1_push_fk_indexes
+
+New server-only tables:
+- public.edunixo_push_subscriptions
+- public.edunixo_push_deliveries
+RLS enabled; browser authenticated/anon direct table access is not granted.
+No existing Attendance, Result, Student, Teacher, Assignment, Auth or Admission records were deleted/reset.
+
+EXCLUDED BY FREE-ONLY RULE
+--------------------------
+- Gemini File Search / paid RAG indexing is NOT added in this release.
+- No mandatory paid SMS/WhatsApp/email/scanner/push provider is introduced.
+
+ACTIVATION NOTES
+----------------
+- Realtime DB publication setup is already applied in production Supabase.
+- Free Web Push needs a one-time VAPID key pair on the final hosting environment. Run `npm run push:keys`, then set the three EDUNIXO_VAPID_* server environment variables. Never commit the private key.
+- Passkeys remain OFF until the final custom domain is locked; then enable VITE_EDUNIXO_PASSKEY_ENABLED=true only after Supabase WebAuthn RP ID/origin configuration is confirmed.
+
+VALIDATION
+----------
+- TypeScript/TSX parser: 227 files checked, 0 parse-error files.
+- Relative imports: 732 checked, 0 missing.
+- External package declaration audit: 0 undeclared dependencies.
+- Destructive Phase 1 SQL patterns: 0.
+- Secret audit for generated VAPID/private-key material: PASS.
+- Supabase Realtime publication verified for all five selected tables.
+- Supabase migration history and local Phase 1 migration filenames are synchronized.
+- Attendance source constraint verified (`manual` / `swiftchat` only) and offline code kept compatible.
+- Full npm install/Vite production build could not be run in this sandbox because external npm registry access is unavailable. AI Studio/Codespaces Preview remains the runtime gate before publishing.

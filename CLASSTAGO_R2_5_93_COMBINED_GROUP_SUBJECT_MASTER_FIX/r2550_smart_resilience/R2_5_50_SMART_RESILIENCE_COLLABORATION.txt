@@ -1,0 +1,39 @@
+EDUNIXO R2.5.50 — SMART RESILIENCE & COLLABORATION
+====================================================
+Baseline: R2.5.49 Smart Technology Completion
+Version: 0.2.50 / Android versionCode 2550
+
+TECHNOLOGY-ONLY SCOPE
+- Supabase private school-scoped Realtime Presence + Broadcast authorization.
+- Anonymous concurrent-edit soft warnings for Daily Attendance and Subject Mark List.
+- Existing server-side conflict/revision checks remain final authority; collaboration does not lock or overwrite records.
+- Android WorkManager 2.11.2 Sync Guardian tracks encrypted pending offline queue count and issues a reminder after network returns. It never bypasses the authenticated web sync engine and never decrypts/ships IndexedDB data in the background.
+- Optional Android biometric App Shield: after 60 seconds away, require Android fingerprint/face/device credential to resume.
+- Existing Phase 1–5 offline sync, native ML Kit, FCM foundation, passkey foundation, Web Push and ERP workflows preserved.
+
+DATABASE
+Production migration history contains two idempotent records with the same policy migration name:
+- 20260902151953_free_phase6_private_realtime_collaboration
+- 20260902152015_free_phase6_private_realtime_collaboration
+Both only DROP/CREATE the same two realtime.messages RLS policies. No school rows/tables were duplicated or changed.
+Final policies verified:
+- edunixo_school_realtime_read (SELECT, authenticated)
+- edunixo_school_realtime_write (INSERT, authenticated)
+Topic format: edunixo:school:<school_uuid>; active membership + active user required.
+
+SAFETY
+- No operational localStorage payloads added. App Shield/Sync Guardian localStorage keys are device settings only.
+- No student names, emails, marks or attendance values broadcast in Presence/Broadcast metadata.
+- No destructive school-data SQL.
+- No credentials or secrets embedded.
+- No existing files removed.
+
+STATIC VALIDATION
+- TS/TSX source files: 233
+- Parse errors: 0
+- Relative imports: 767
+- Missing relative imports: 0
+- Android Java files: 13
+- Java brace errors: 0
+- AndroidManifest.xml parsed successfully.
+- Full Android Gradle compile not run because the supplied cumulative baseline does not include android/gradlew. Native Android Studio/AI Studio build remains the runtime gate.

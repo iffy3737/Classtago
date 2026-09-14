@@ -1,0 +1,40 @@
+Classtago R2.5.36 — PARENT SIGNUP + PEON OPERATIONS + BELL ALARM
+=================================================================
+Base: R2.5.35 cumulative project.
+
+Parent signup visibility
+- Parent Sign Up is now visibly rendered on the main Login screen alongside Staff Sign Up and Student Sign Up.
+- Existing R2.5.35 Parent verification, Headmaster approval and child-link security flow is reused; no duplicate Parent backend was created.
+
+Peon role
+- Additive UserRole: peon.
+- Peon is created through the existing Staff Master / Staff Sign Up chain; Peon/Attendant/Helper/Support Staff designation is inferred as the Peon role.
+- Headmaster retains account activation/deactivation authority.
+- Peon portal is least-privilege: Duty Dashboard, Bell Timing & Alarm, Gate & Visitor Desk, Office Dispatch & Delivery, My Leave, Notices & Instructions, Profile & Security.
+- Peon does not receive Admission, Academic Setup, Teacher Assignment, Marks/Result editing, Fees/Accounts, Payroll or account-approval authority.
+- Peon profile uses the existing Complete Profile engine as staff and uses Employee Code / username as protected login identity.
+
+Bell Timing & Alarm
+- Headmaster-only Bell Timing & Alarm Control supports two independent sources:
+  1) Timetable mode: read-only school period timings from active Academic Setup.
+  2) Manual mode: Headmaster-defined bell schedule with effective dates, days and custom events.
+- Manual Bell Schedule does not modify the academic timetable.
+- Peon has no alarm OFF switch and cannot edit Bell Timing.
+- Native Android BellAlarm Capacitor plugin uses exact local Android alarms, persists the schedule, and reschedules after reboot/app update/time/timezone change.
+- Bell sound uses Android alarm audio usage. Explicit phone Silent mode suppresses sound; other OS-level notification/DND policy remains controlled by Android.
+- Exact-alarm permission/readiness is surfaced in Peon Bell Timing.
+
+Leave-aware bell safety
+- Bell schedule generation is scoped to the currently authenticated Peon user.
+- Approved Peon leave ranges are read from the canonical Leave Management audit workflow.
+- Full-day approved leave removes all bell alarms for the leave date(s).
+- Half-day approved leave removes only bells in that leave session, using the active day's bell span to determine the session boundary.
+- Future approved leave dates are removed before the native schedule is sent to the Peon device.
+- When the Peon app refreshes/returns to foreground, replaceSchedule cancels previously stored alarms that are no longer authorized by the current leave-aware schedule.
+- Peon Portal refreshes leave/bell state on foreground and every five minutes while visible.
+- After leave ends, subsequent valid bells remain in the authoritative schedule automatically.
+
+Preservation
+- No Supabase schema/migration file changed.
+- No existing file was removed.
+- Existing Headmaster, Clerk, Teacher, Student, Parent, Admission, Result, Timetable and Communication engines were not replaced.

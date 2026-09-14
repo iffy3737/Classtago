@@ -1,0 +1,24 @@
+Classtago R2.5.19 — Clerk / Headmaster production corrections
+
+1. Clerk access:
+   - Website Design & Content enabled.
+   - Admission Campaign Setup enabled.
+   - Admission Applications removed from Clerk.
+   - Admission Confirmation remains Headmaster-only.
+   - Campaign publish/close remains Headmaster-controlled; Clerk may prepare/save setup.
+
+2. Headmaster session navigation:
+   - Logout/login clears stale module query/hash navigation.
+   - Successful login starts from dashboard/root workspace instead of reopening the previous module.
+
+3. Global readability:
+   - Semantic dark-surface contrast protection added across premium operational heroes/cards.
+   - Prevents mobile/light theme adapters from producing dark text on dark gradients.
+
+4. Cloud data cleanup already applied:
+   - Clerk duplicate Teacher Master row removed.
+   - Testing students Abc, Zyx, Shaikh Mariya Mohammad Irfan removed.
+   - Testing admission applications Abc, Zyx, Shaikh Mariya Mohammad Irfan, Shaikh Mikail removed.
+   - Profile -> Teacher Master sync trigger is active in Supabase.
+
+No server-side production secrets are bundled in this package.

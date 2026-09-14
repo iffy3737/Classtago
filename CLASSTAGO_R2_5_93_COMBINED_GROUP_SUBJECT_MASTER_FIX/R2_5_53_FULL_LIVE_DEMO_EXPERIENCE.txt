@@ -1,0 +1,39 @@
+Classtago R2.5.53 — FULL LIVE DEMO EXPERIENCE
+Date: 2026-09-03
+Base: R2.5.52A Platform Academic Core (root-fixed)
+
+WHAT IS INCLUDED
+- Public website "Try Live Demo" entry on desktop and mobile navigation/hero.
+- /demo direct route support inside the SPA.
+- Curriculum-first demo configuration.
+- State Board -> all 28 States + 8 Union Territories selector.
+- CBSE, CISCE/ICSE/ISC, NIOS, IB, Cambridge and Other Recognized Board families.
+- Strict selected-board context isolation in demo state.
+- Live read-only Platform Academic Core catalogue endpoint with safe frontend fallback.
+- Verified ruleset marker when a published Platform ruleset exists.
+- Neutral showcase calculations when no verified ruleset exists; no cross-board rule fallback.
+- School medium and multi-language enablement.
+- Feature/document language selector independent from the demo interface.
+- Unicode/RTL-ready remarks (Urdu/Kashmiri/Sindhi direction supported from language metadata).
+- Demo school public website before ERP entry.
+- One-click Headmaster, Clerk, Teacher, Student, Parent and Super Admin demo roles.
+- Interactive attendance sample with temporary save simulation.
+- Teaching/Academic Work demo actions.
+- Result sample with Mark List, Result Book, Progress Card and Catalogue template adoption.
+- User template upload for PDF/image/Word/spreadsheet; spreadsheet first-row columns are detected locally.
+- Temporary school template adoption bound to selected board + document language.
+- Communication channel simulations; no real WhatsApp/SMS/email is sent.
+- Admissions sample simulation.
+- Guided demo tour.
+- Demo reset button and automatic session expiry/reset after 6 hours.
+- All demo state stored only in browser localStorage; no production school tenant writes.
+
+PRODUCTION SAFETY
+- National High School operational data is not migrated or modified by this release.
+- Existing authenticated ERP routes remain unchanged.
+- Demo catalogue API exposes only safe board routing labels, published ruleset version markers and active language labels.
+- Demo actions do not call destructive school APIs.
+
+VALIDATION
+- Changed TS/TSX files passed TypeScript transpile diagnostics with zero syntax errors.
+- Full dependency installation could not complete in the packaging environment due install timeout, so no false full-Vite-build claim is made.

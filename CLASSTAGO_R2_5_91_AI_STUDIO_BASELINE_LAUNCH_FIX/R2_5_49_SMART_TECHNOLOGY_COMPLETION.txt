@@ -1,0 +1,34 @@
+Classtago R2.5.49 — SMART TECHNOLOGY COMPLETION
+
+Baseline: R2.5.48
+Purpose: Return development to the Smart/Latest Technology Upgrade track.
+
+IMPLEMENTED
+1. Native Google Code Scanner integration for Android QR/barcode scanning with web BarcodeDetector fallback.
+2. ML Kit Document Scanner native flow with automatic document capture/crop/enhancement UI and PDF output saved locally on Android; manual camera/PDF fallback preserved.
+3. Android BiometricPrompt/device credential verification inside Smart Tools; WebAuthn/passkey foundation preserved and remains gated until final RP domain is locked.
+4. Native Android FCM pipeline: Android token plugin, notification service/channel, authenticated backend token registration, server-only Supabase token/delivery storage, FCM HTTP v1 OAuth delivery worker. No Firebase secrets are embedded in the client.
+5. Supabase Realtime Presence connected-device signal, intentionally broadcasting no names/emails/student records.
+6. Offline Sync Review dashboard: pending encrypted Attendance/Subject Mark Draft actions show attempts/errors and can be explicitly discarded locally without changing cloud data. Existing conflict-safe sync remains authoritative.
+7. Voice Command capture for role-safe Smart Command Search using device speech recognition. Existing permission/plan routing still gates navigation.
+8. Phase 1/2 capabilities preserved: encrypted offline cache/queue, realtime Postgres changes, Web Push, OCR, on-device translation, lecture voice notes, passkey foundation, web QR/document fallbacks.
+
+FREE / ACTIVATION STATUS
+- Native ML Kit scanner, Google Code Scanner, BiometricPrompt, Supabase Realtime and FCM transport do not require a mandatory paid API provider in this design.
+- Native FCM code is ready but final activation requires the project's approved Android google-services.json plus server-only Firebase service-account environment variables. These are intentionally not committed.
+- Passkeys remain intentionally disabled until the final production custom domain / RP ID is locked.
+
+DATABASE
+Applied additive production migration: 20260902143116_free_phase5_native_android_push
+Creates only server-only native push token + delivery audit tables. RLS enabled. No existing rows/tables were deleted or reset.
+
+VALIDATION
+- TypeScript/TSX syntax parse: PASS (229 files, 0 parse errors).
+- Relative imports: PASS (754, 0 missing).
+- Existing files removed vs R2.5.48: 0.
+- Android native project doctor: PASS structure; min SDK 24 / target SDK 36.
+- Android manifest XML/package JSON parse: PASS.
+- Java brace sanity: PASS.
+- Production native push table smoke: PASS; RLS enabled and tables empty immediately after migration.
+- Full Gradle compile was not run in this sandbox because the source ZIP does not contain gradlew; project doctor indicates wrapper hydration via npm run android:bootstrap. Final native runtime gate is Android/AI Studio build.
+- npm dependency install attempted in sandbox but external dependency installation timed out; AI Studio ensure-deps remains the package/runtime gate.

@@ -1,0 +1,11 @@
+Classtago R2.5.73 INTEGRITY
+Base: R2.5.72 PLATFORM ADMIN BUTTON ROOT FIX
+Intended modified files: package.json, server.ts, src/App.tsx, src/components/AIAssistant.tsx
+Intended added files: R2_5_73_RELEASE_NOTES.md, R2_5_73_TEST_CHECKLIST.md, R2_5_73_INTEGRITY.txt
+
+89653067b952e671c2170d3cc5e3b2c6894ffb96e704cef8bfbf0622966190ea  package.json
+f045c92bc8167450182c524ecbec30753867fd39d7d40262ca81b9502487f757  server.ts
+79034f84b2f0b2b8e1a77a6d3d69debd1a2a88df4db5a7f93a7dec103db00e09  src/App.tsx
+601a20200cdeb09e105af97cee83438a518fd000b7f6b6fc95e2a231ff63541d  src/components/AIAssistant.tsx
+225256ce2c7f7b111211d9e05f33d3df0d2dcd2005d151094e1dc669c8184e46  R2_5_73_RELEASE_NOTES.md
+be4dad9b7675825d6f465015e8700843e7b3fe6e98a8500d51105636f316e14c  R2_5_73_TEST_CHECKLIST.md

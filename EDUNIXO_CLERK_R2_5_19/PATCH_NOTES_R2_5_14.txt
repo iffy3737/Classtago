@@ -1,0 +1,31 @@
+EDUNIXO R2.5.14 — Single Responsive ERP + Smart Multilingual Documents
+
+BASE CHAIN
+R2.5 full project + R2.5.1 + R2.5.2 + R2.5.3 + R2.5.4 + R2.5.5 + R2.5.6 + R2.5.7 + R2.5.8 + R2.5.9 + R2.5.10.
+R2.5.11 is NOT required.
+R2.5.12A is NOT uploaded separately; its selected multilingual document implementation is merged here.
+The earlier R2.5.13 cloud-continuity patch is NOT required and must NOT be uploaded.
+
+WHAT THIS PATCH DOES
+1. One responsive EDUNIXO ERP frontend for PC browser, mobile browser and packaged/native app.
+2. app.* / erp.* hosts (or explicit app mode) enter the ERP app launcher; the public website remains a separate surface.
+3. Packaged native builds keep their special /api routing behavior; browser app uses same-origin /api.
+4. Multi-school selection and selected-school context remain validated against authenticated school membership.
+5. Premium light app presentation is shared across desktop and mobile, with desktop-width composition at larger viewports.
+6. Smart multilingual documents are merged for Question Paper, Certificate Document System and Master Progress Card Template:
+   - feature/document profile
+   - per-section language
+   - per-field language overrides
+   - mixed LTR/RTL support
+   - script-aware font/direction helpers
+7. No generic One Cloud State/workspace-drafts frontend service is included.
+8. No Supabase migration, production-record update, destructive SQL or dummy data is included in this ZIP.
+
+VALIDATION
+- Reconstructed from the actual R2.5 full project and sequential R2.5.1–R2.5.10 patch chain.
+- TypeScript transpile/syntax validation: 198 source TS/TSX files checked, 0 syntax errors.
+- Full npm build was not run in the container because project dependencies are not installed there.
+
+UPLOAD
+Upload this ZIP on top of the project that already has R2.5 through R2.5.10 applied.
+Do NOT upload R2.5.11, R2.5.12A, or the old R2.5.13 afterward.

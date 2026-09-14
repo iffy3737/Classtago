@@ -1,0 +1,25 @@
+Classtago R2.5.57 — Process Demo Control & Language Fidelity
+
+Scope: Demo-only UX/interaction corrections on top of R2.5.56.
+
+Changes
+1. Added a dedicated Demo Instruction Language selector in Demo Setup.
+2. Process guidance now follows the selected instruction language for core demo-medium languages: English, Hindi, Urdu, Marathi, Gujarati, Bengali, Tamil, Telugu, Kannada, Malayalam, Odia, Punjabi and Assamese.
+3. Removed generic typing behavior from every process screen.
+4. Added four screen interaction modes:
+   - Form: only genuine text fields type naturally; dropdowns select; checkboxes tick.
+   - Selection: dropdowns/options/toggles are applied without fake typing.
+   - Review: submitted data is visible before Start Process; no data entry occurs; review highlights run only after user starts.
+   - View: Student/Parent/read-only data is visible before Start Process; walkthrough highlights only.
+5. Result subject-marks entry is explicitly treated as form/data-entry instead of a generic selection page.
+6. Admission Headmaster approval is review-only; no fake typing.
+7. Student/Parent views are read-only; no fake typing.
+8. Natural text typing slowed to roughly 108–166 ms per character, with longer field pauses.
+9. All process-list number boxes now use one consistent cyan style; desktop step number boxes are also standardized.
+10. Preserved mobile overflow hardening from R2.5.56.
+
+Production safety
+- No production Supabase schema/data changes.
+- No production role/module permissions changed.
+- No server/API behavior changed.
+- Demo remains temporary/local and isolated.

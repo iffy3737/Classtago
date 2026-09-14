@@ -1,0 +1,39 @@
+EDUNIXO PRODUCTION R2.5.24 ROOT
+Teacher safe-hardening cumulative patch
+Base: EDUNIXO_PRODUCTION_R2_5_23_ROOT.zip
+
+NON-BREAKING RULE
+- Existing Headmaster/Clerk/Student/public flows were not intentionally rewritten.
+- No Supabase SQL migration/schema file was changed or added.
+- Headmaster timetable/substitute publishing tail is byte-for-byte unchanged from R2.5.23.
+- Existing tables, statuses, UI function signatures and result workflow states are preserved.
+
+TEACHER FIXES IN THIS PACKAGE
+1. Student Signup Approvals menu is exposed only through current Class Teacher duty catalogue, not plain Subject Teacher catalogue.
+2. Teacher assignment context refreshes on canonical assignment update, app focus and visibility return.
+3. Attendance Correction request/list is routed through authenticated server validation using the existing canonical Class Teacher roster helper.
+4. My Students Recognition load/save is routed through authenticated server validation; Teacher/student/scope identity is resolved server-side.
+5. Teacher Timetable read is authenticated and server-scoped; substitute matching prefers user/Teacher record IDs with name only as compatibility fallback.
+6. Teacher Dashboard timetable uses the scoped Teacher endpoint. Open Class is no longer incorrectly disabled only because today's timetable is empty. Misleading syllabus placeholder wording was corrected.
+7. Result critical writes are hardened without changing existing UI/status flow:
+   - Subject Teacher Save Draft
+   - Subject Teacher Submit
+   - Class Teacher Return for Correction
+   - Class Teacher Accept to Result Book
+   - Result Book Send to Progress Card/Clerk
+   Current assignment scope is revalidated on the server. Multi-step Accept/Send paths include best-effort rollback where later writes fail.
+
+INTENTIONALLY NOT REWRITTEN IN THIS SAFE PATCH
+- Headmaster timetable generation/publish logic.
+- Existing Leave approval chain.
+- Automatic Leave -> substitute allocation trigger (still requires a dedicated integration pass).
+- Result Book build/consolidation persistence (critical transition writes are hardened, but build remains on the existing flow to avoid changing result calculations without live regression data).
+- Teacher Complete Profile official-field governance.
+- Remaining Academic submission/attachment direct-client paths.
+- Dashboard notification Mark Read UX.
+
+VERIFICATION
+- 204 project TS/TSX files passed TypeScript syntax transpilation diagnostics: 0 syntax errors.
+- Teacher-related 53 TS/TSX files passed syntax diagnostics: 0 errors.
+- No Supabase migration diff versus R2.5.23.
+- Full npm/Vite production build was NOT certified in this environment because dependency installation timed out. Do not interpret syntax checks as a live Supabase end-to-end test.

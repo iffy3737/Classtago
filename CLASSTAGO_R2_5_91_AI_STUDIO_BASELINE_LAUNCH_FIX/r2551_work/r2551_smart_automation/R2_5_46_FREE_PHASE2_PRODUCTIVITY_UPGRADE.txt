@@ -1,0 +1,57 @@
+EDUNIXO R2.5.46 — FREE PHASE 2 PRODUCTIVITY UPGRADE
+===================================================
+Parent baseline: R2.5.45 FREE Phase 1 Technology Upgrade
+Release type: cumulative / additive / free-only / no database migration
+
+FREE-ONLY IMPLEMENTED
+---------------------
+1. Admission On-device OCR (Android)
+   - Bundled Google ML Kit Text Recognition for Latin + Devanagari scripts.
+   - Admission Application step 1 can capture/choose an image and suggest Student Name, DOB, Gender, Birth Place, Guardian and Address when labels are recognized.
+   - OCR fills only EMPTY fields and always requires human review before submission.
+   - OCR image/text stays on the Android device; no OCR cloud upload/API.
+   - Urdu-script OCR is NOT claimed because ML Kit Text Recognition v2 does not provide an Urdu-script recognizer. English/Latin text on Urdu documents can still be read.
+
+2. On-device Multilingual Translation (Android)
+   - Google ML Kit Translation; no paid Cloud Translation API.
+   - English, Hindi, Marathi, Urdu, Gujarati and other supported school languages exposed in Smart Tools.
+   - Language models download on first use, then translation can run on-device/offline.
+   - Google attribution displayed in translated output.
+
+3. Lecture Voice Notes (Teacher / Class Teacher / Headmaster teaching identity)
+   - Android device SpeechRecognizer with offline preference requested.
+   - No paid speech-to-text API key/provider.
+   - Transcript stays in the app; quick recap + keywords are deterministic local text processing, NOT generative AI.
+   - Notes are saved into the existing AES-GCM encrypted EDUNIXO IndexedDB cache on that device.
+   - Speech engine/language-pack availability remains device-dependent; Android may ignore offline preference depending on recognizer implementation.
+
+4. Smart Command Search
+   - Role-aware module/feature search using the canonical EDUNIXO role module catalogue.
+   - Natural workflow aliases (attendance, mark list, result book, leave, admission, timetable, etc.).
+   - Navigation still passes through the same existing plan/role/feature access gate; Smart Search cannot bypass permissions.
+   - No AI API or embedding service.
+
+5. Phase 1 Smart Tools retained
+   - Offline Attendance / Mark List queue, Result Book/Progress Card cache, Realtime, Web Push, QR, Document PDF Scanner and Passkey foundation remain intact.
+
+FREE-ONLY EXCLUSIONS
+--------------------
+- No paid Gemini agent/action API added.
+- No paid embeddings/vector-generation API added.
+- No Cloud Translation or Cloud Speech API added.
+- No claim of true embedding-based semantic search in this free release; Smart Command Search is local role-aware fuzzy/alias search.
+- No unrestricted autonomous ERP write actions. Existing AI Assistant and existing Gemini academic features are left untouched; this release does not expand them.
+
+DATABASE / RISK
+---------------
+- NO new Supabase migration in R2.5.46.
+- NO existing table/record reset, delete or rewrite.
+- Supabase remains canonical source of truth for operational school data.
+- Phase 2 device tools are additive and isolated from Attendance/Result/Auth/Admission approval business rules.
+
+ANDROID
+-------
+- App version: 0.2.46 / versionCode 2546.
+- New custom Capacitor plugin: EdunixoML.
+- Android permission added: RECORD_AUDIO (only for user-invoked voice notes).
+- ML Kit dependencies: text-recognition 16.0.1, text-recognition-devanagari 16.0.1, translate 17.0.3.

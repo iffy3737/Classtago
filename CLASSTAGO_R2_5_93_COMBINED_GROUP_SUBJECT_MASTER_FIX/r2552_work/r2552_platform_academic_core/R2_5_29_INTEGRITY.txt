@@ -1,0 +1,16 @@
+EDUNIXO R2.5.29 INTEGRITY CHECK
+==============================
+Packaging/deployment repair only.
+
+Frozen application/business-logic scope:
+- src/**
+- server.ts
+- supabase/**
+
+Combined SHA-256 manifest before infrastructure repair:
+63c9053f9f4d6ef331354d0e2dbddcb97a7364701f9b405ed32387db1a756817
+
+Combined SHA-256 manifest after infrastructure repair:
+63c9053f9f4d6ef331354d0e2dbddcb97a7364701f9b405ed32387db1a756817
+
+Result: IDENTICAL. Existing application/business logic was not modified.

@@ -1,0 +1,25 @@
+EDUNIXO R2.5.40 INTEGRITY
+========================
+Build: AI Fast Chapter Retrieval
+Base: R2.5.39
+Version: 0.2.40
+
+SHA-256:
+f4a6cfdd197f0b3c26a93cbb4fd5cf5f9aa9a217cb902a4f8f3b0773f9af8172  server.ts
+9fe0b220d362e00200adfb5a2abafbcb622b5300453fb0f940e681da37c81773  src/modules/teacherAcademicFresh/services/teacherAcademicService.ts
+eb2bd1aaaf554d5dc309ff25a1989e193f194503e2ed243253b505c588b3a648  src/server/r2Storage.ts
+31f0d826956b4bb9d6753c28a8d953f498020d043a09dab6b3a03049ede1b7fb  package.json
+262b996b201cbc6d3348ed1fcd4c390455b191b90c03b508e8de40f157cee171  .env.example
+4125593456f3b610a3b34a81734d732e494f984efa4a7fd84b1b18ebc6fa22ad  R2_5_40_AI_FAST_CHAPTER_RETRIEVAL.txt
+
+Validation:
+- TS/TSX syntax-transpile: 218 files / 0 error files
+- Homework chapter-first File Search path: PASS
+- Question Paper structured chapter-first File Search path: PASS
+- Single-question chapter-first replacement: PASS
+- Cached Gemini PDF fallback preserved: PASS
+- Canonical Subject Teacher / role security assertions: PASS
+- Textbook-only policy assertion: PASS
+- Cloudflare R2 existing route/config preserved: PASS
+- R2 secret placeholders are blank: PASS
+- Destructive SQL/data migration: NONE

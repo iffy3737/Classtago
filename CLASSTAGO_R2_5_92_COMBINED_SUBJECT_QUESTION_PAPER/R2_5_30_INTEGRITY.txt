@@ -1,0 +1,33 @@
+Classtago R2.5.30 — INTEGRITY / REGRESSION SCOPE
+==============================================
+Base files: 282
+Existing base files intentionally modified: 12
+Existing base files byte-for-byte untouched: 270
+New release-note files are additive only.
+
+Untouched aggregate SHA-256:
+7b377565cff51691f31caafd970deb82f75b48237dfde4e31dcdd72eccb051c2
+
+INTENTIONALLY MODIFIED EXISTING FILES
+- android/app/build.gradle
+- package.json
+- server.ts
+- src/components/AcademicSetupModule.tsx
+- src/components/ExecutiveDashboard.tsx
+- src/components/MasterDataDashboard.tsx
+- src/components/SmartTimetableV2.tsx
+- src/components/StaffMaster.tsx
+- src/components/TeacherWorkspace.tsx
+- src/index.css
+- src/modules/teacherAcademicFresh/pages/StudyMaterialPage.tsx
+- src/server/teacherCommunicationServer.ts
+
+VALIDATION
+- Changed TS/TSX syntax transpilation: PASS
+- Deployment doctor: PASS
+- Android project doctor: PASS
+- 8 requested Headmaster static invariants: PASS
+- Supabase migration directory: UNCHANGED
+- ClerkWorkspace.tsx: UNCHANGED
+
+This manifest verifies patch scope against the exact R2.5.29 base used for R2.5.30.

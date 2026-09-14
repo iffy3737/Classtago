@@ -1,0 +1,33 @@
+EDUNIXO R2.5.39 — REAL WEB SURFACE + PREMIUM SCHOOL FRONT
+
+ROOT CAUSE FIXED
+- Google AI Studio npm run dev was forcing VITE_EDUNIXO_APP_RUNTIME=true.
+- That made the root / render the app/mobile school launcher instead of the public corporate website.
+- Browser app mode is now explicit via app./erp. host, /app route or app query; native Android keeps its native flag.
+
+EXPECTED SURFACES
+- /                  -> EDUNIXO premium corporate/public website (Admin/Super Admin login only)
+- /school/<slug>     -> selected school's premium public website
+- /app               -> browser ERP/app launcher
+- Native Android APK -> app-first school launcher/login
+
+SCHOOL FRONT VISUAL PASS
+- Added verified school-network utility strip with school code/contact/location.
+- Added premium quick-access rail for Academics, Gallery, Admissions/Contact and Secure School Login.
+- Existing admissions, public content, school resolver, login and ERP data flows are unchanged.
+
+REGRESSION BOUNDARY VS R2.5.38
+Changed existing files only:
+1. tools/dev.mjs
+2. src/lib/mobileRuntime.ts
+3. src/components/PremiumSchoolPortal.tsx
+4. package.json
+5. android/app/build.gradle
+
+No existing files removed.
+Supabase tree SHA-256 unchanged:
+127cfcb8c56ba3ea7c8ccf62eda80b042ec9e06ddab7141cdc9210b353acb3d4
+Deployment doctor: PASS
+Android project doctor: PASS
+Version: 0.2.39
+Android versionCode: 2539

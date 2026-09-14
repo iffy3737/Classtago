@@ -1,0 +1,29 @@
+EDUNIXO R2.5.48 INTEGRITY
+
+Baseline: R2.5.47
+Package version: 0.2.48
+
+Static TypeScript/TSX parse gate:
+- 225 TS/TSX source files including server.ts
+- Parse-error files: 0
+- Relative imports: 742
+- Missing relative imports: 0
+- Undeclared external packages: 0
+
+Safety gate:
+- English + all 22 Scheduled Indian Languages in bootstrap catalogue: 23 entries total
+- Direct public.classes/public.divisions probes in server.ts: 0
+- Old live-language/legacy lookup warning strings: 0
+- New Phase 4 migration destructive SQL patterns: 0
+- Hard-coded credential/private-key literal hits: 0
+- Existing files removed vs R2.5.47: 0
+
+Production database:
+- Migration 20260902140603_free_phase4_student_profile_extension applied successfully.
+- edunixo_student_profiles is RLS-enabled and server/service-role only.
+- Read-only post-migration smoke: profile rows 0; students 0; admission applications 0; progress batches 0 at audit time.
+- No existing production row was deleted/reset/migrated by this release.
+
+Build note:
+- Full npm/Vite/Android build was not run in this sandbox because project node_modules are not installed here.
+- AI Studio Preview/ensure-deps is the runtime build gate before publish.

@@ -1,0 +1,53 @@
+EDUNIXO R2.5.36 INTEGRITY / REGRESSION RECORD
+===================================================
+
+Baseline files: 299
+R2.5.36 files before this manifest: 308
+Changed existing files: 16
+New files before this manifest: 9
+Removed files: 0
+
+Changed existing files:
+- android/app/build.gradle
+- android/app/src/main/AndroidManifest.xml
+- android/app/src/main/java/com/edunixo/app/MainActivity.java
+- package.json
+- server.ts
+- src/components/ClerkCommunicationOffice.tsx
+- src/components/CompleteProfileWorkspace.tsx
+- src/components/DashboardOverview.tsx
+- src/components/HeadmasterCommunicationCloudWorkspace.tsx
+- src/components/HeadmasterSystemAuditCloudWorkspace.tsx
+- src/components/LoginSection.tsx
+- src/components/StaffAccountManager.tsx
+- src/components/StaffMaster.tsx
+- src/lib/authService.ts
+- src/lib/roleModuleBlueprint.ts
+- src/types.ts
+
+New files before this manifest:
+- R2_5_36_PARENT_SIGNUP_PEON_BELL_OPERATIONS.txt
+- android/app/src/main/java/com/edunixo/app/BellAlarmPlugin.java
+- android/app/src/main/java/com/edunixo/app/BellAlarmReceiver.java
+- android/app/src/main/java/com/edunixo/app/BellAlarmService.java
+- android/app/src/main/java/com/edunixo/app/BellAlarmStore.java
+- android/app/src/main/java/com/edunixo/app/BellBootReceiver.java
+- src/components/BellTimingManager.tsx
+- src/lib/bellAlarmNative.ts
+- src/modules/peonPortal/PeonPortalWorkspace.tsx
+
+Supabase files: 6
+Supabase combined SHA-256: 298107b70ee7f7c2f822410663d150a3be31caee1ecd62479844f717d113d041
+Baseline Supabase combined SHA-256: 298107b70ee7f7c2f822410663d150a3be31caee1ecd62479844f717d113d041
+Supabase schema/migrations: UNCHANGED
+
+Validation:
+- Deployment doctor: PASS
+- Android project doctor: PASS
+- Parent / Peon / Bell / Leave static checks: 31/31 PASS
+- Full-day and half-day leave suppression behavior tests: PASS
+- Changed TypeScript/TSX syntax/parse diagnostics: PASS
+- Android manifest XML parse: PASS
+- No existing file removed
+
+Preservation note: R2.5.36 is additive/scoped. Existing Headmaster, Clerk, Teacher, Student, Parent, Admission, Result, Timetable and Communication engines were not replaced. No database migration/purge was introduced.

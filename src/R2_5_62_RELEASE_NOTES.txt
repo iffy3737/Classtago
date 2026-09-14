@@ -1,0 +1,28 @@
+Classtago R2.5.62 — FINAL DEMO AUDIT + LANGUAGE LEAK FIX + GO-LIVE READINESS
+
+Base: R2.5.61_BATCHED_DEMO_SALES_EXPERIENCE
+
+Included in this cumulative build:
+- Fixes the two reported mixed-language process areas.
+- Adds server-side, rate-limited process narrative translation for selected demo instruction language.
+- Keeps tokens/names/class identifiers safe while translating action/effect guidance.
+- Session-only demo visitor/state storage; no persistent localStorage for new demo sessions.
+- Cleans known legacy R2.5.60/R2.5.61 demo localStorage keys only.
+- Retains 25 processes / 100 explicit process steps / production-faithful control modes.
+- Retains Premium Instant Demo Pass, Process Hub, 3-minute tour, 10-minute connected tour, manuals, analytics and conversion.
+- Final demo regression/security audit included.
+- Production go-live readiness audit included.
+
+Production ERP/Supabase school records are not modified by this release.
+The only server-side persistent write reachable from the demo is the explicit consent-gated Setup My School lead submission.
+
+Validation performed:
+- Modified TS/TSX/server syntax-level TypeScript transpile: PASS
+- 25 process IDs unique: PASS
+- 100 process steps: PASS
+- 100 explicit interaction modes: PASS
+- 23 instruction languages: PASS
+- Main demo surfaces direct Supabase writes: NONE
+- dangerouslySetInnerHTML/innerHTML on main demo surfaces: NONE
+- obvious hard-coded private credentials: NONE FOUND
+- Full npm/Vite build: NOT COMPLETED in this environment because npm install timed out before dependencies were installed.

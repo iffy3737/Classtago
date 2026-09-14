@@ -1,0 +1,19 @@
+Classtago R2.5.52 PLATFORM ACADEMIC CORE — INTEGRITY
+Generated: 2026-09-03
+
+Validation:
+- TypeScript/TSX transpile syntax: PASS (4 modified code surfaces)
+- Migration additive/no DROP/TRUNCATE check: PASS
+- Source scope comparison against R2.5.51: PASS; only intended implementation files changed/added
+- Live Supabase foundation migration: APPLIED and verified separately
+- Full npm dependency build: NOT CLAIMED (dependency install unavailable in packaging runtime)
+
+SHA-256:
+de3e424612efd51124de865786feae4b667aa27a2f9005325e8a31145de50a06  package.json
+9b9391d5c0bb75e484822d8ed3bcdbb3b8a104645cab86dc5de5941801515a2a  server.ts
+fcf70c6e64230b059547cbc338f9eb91fb0c96e836d7f3f859c387dfe57d446e  src/components/PlatformAdminPortal.tsx
+a25c58c65eb5d2426b59872320e280e5a5bb960c779ffcbf87d103ab66d41955  src/components/PlatformAcademicCore.tsx
+569db4a9d9c6672dfaa6812572a57c83467433c6e8e7eab3ad96f21bc170cd69  src/components/CurriculumResultImportStudio.tsx
+adcfdcdb49b5ecc6daeb38fb6f28c0ad7ae54321b09c1ab740e93ed2308dc516  supabase/migrations/20260903131511_platform_academic_core_board_state_language_foundation.sql
+8c2fa2d654b9726c91cf762804a50f9b25f8e0ad9f8361330f32b8a6c1d8f0da  R2_5_52_PLATFORM_ACADEMIC_CORE.txt
+d1b7bc19db1e19863593ca771fd3788dfda94fcd67b9a109735bed2fd0e1652b  R2_5_52_TEST_CHECKLIST.md

@@ -1,0 +1,24 @@
+Classtago R2.5.15 — Android Native Shell
+
+Purpose
+- Keep one React + TypeScript + Vite ERP codebase for PC browser, mobile browser and Android.
+- Add a Capacitor Android shell without duplicating ERP modules.
+
+Native runtime
+- App ID: com.edunixo.app
+- App name: Classtago
+- Web bundle: mobile-dist
+- Premium light theme preserved.
+- Hardware back, status bar, splash, keyboard resize, deep links, external links and online/offline state are wired.
+
+Required deployment value before making a production APK/AAB
+- .env.mobile -> VITE_EDUNIXO_API_BASE_URL
+- Set it to the HTTPS origin hosting this project's Express /api routes.
+- Do NOT place Supabase service-role or other server secrets in this file.
+
+Android workflow after dependencies are available
+1. npm run android:add        (first time only; creates android/)
+2. npm run android:prepare    (builds mobile-dist and syncs native project)
+3. npm run android:open       (opens Android Studio)
+
+For later updates after android/ exists, normally only android:prepare is needed.

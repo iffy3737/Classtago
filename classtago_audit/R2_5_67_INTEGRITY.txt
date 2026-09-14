@@ -1,0 +1,40 @@
+Classtago R2.5.67 INTEGRITY / SCOPE SUMMARY
+
+Base ZIP:
+EDUNIXO_R2_5_66_SIMPLIFIED_INSTANT_LIVE_DEMO.zip
+SHA-256: 0fcc78fbf98aebd942785cdf52a9bb166f7f1b619cdc8594398f824a3d3bfd30
+
+Scope diff vs exact R2.5.66 base:
+- Added files: 4
+- Removed files: 0
+- Modified existing files: 7
+
+Added:
+R2_5_67_RELEASE_NOTES.md
+R2_5_67_SCOPE_SAFETY_AUDIT.md
+R2_5_67_TEST_CHECKLIST.md
+supabase/migrations/20260907230000_smart_sms_gateway_role_assignment.sql
+
+Modified:
+metadata.json
+package.json
+server.ts
+src/components/PlatformSmsGatewayControlPanel.tsx
+src/components/SmsGatewayControlPanel.tsx
+src/lib/platformSmsGateway.ts
+src/lib/smsGateway.ts
+
+Removed:
+NONE
+
+Static checks:
+- TypeScript/TSX syntax parse: PASS (252 files, 0 syntax errors)
+- Local relative import resolution: PASS
+- R2.5.65 platform queue fresh-install column declaration: one claimed_at field (PASS)
+- Existing ERP files removed: 0
+- SMS critical-only policy retained
+- WhatsApp OTP independent path retained
+- Email OTP remains optional
+
+Database change:
+- Additive migration: supabase/migrations/20260907230000_smart_sms_gateway_role_assignment.sql

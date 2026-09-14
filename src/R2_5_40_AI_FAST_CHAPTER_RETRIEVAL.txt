@@ -1,0 +1,72 @@
+Classtago R2.5.40 — AI FAST CHAPTER RETRIEVAL
+================================================
+Date: 2026-08-30
+Base: R2.5.39 Real Web Preview + Premium School Front
+
+Purpose
+-------
+Reduce Teacher waiting time in AI Homework and Question Paper generation without
+changing canonical Teacher assignment security, Question Paper validation, or
+existing safe fallbacks.
+
+Implemented
+-----------
+1. Homework generation now prefers the persistent Gemini File Search textbook
+   accelerator. The selected Chapter/Unit is used as the retrieval target, so a
+   ready textbook does not need to be re-attached/read as a complete PDF on every
+   Generate click.
+2. Question Paper generation uses the same chapter-first File Search path with
+   structured JSON output. Existing R33.10 normalization, marks/pattern/source
+   validation and Teacher Review workflow remain in force.
+3. Single-question replacement also uses chapter-first retrieval before the
+   existing cached-PDF fallback.
+4. Generate buttons no longer block on the full provider PDF cache before the
+   first request. Source preparation starts proactively in the background.
+5. Source readiness accepts either a persistent File Search accelerator or the
+   existing reusable Gemini Files API cache. The cache remains the compatibility
+   fallback for first-run preparation, accelerator outages, and files that cannot
+   use File Search.
+6. Source-status polling interval reduced from 1500 ms to 900 ms after a real
+   preparation response, while the server remains the authority for retry/fallback.
+7. Cloudflare R2 large-Textbook code already present in R2.5.39 is preserved.
+   .env.example now documents the four server-only R2 variables. No credential or
+   secret is embedded in this ZIP.
+
+Preserved safety / compatibility
+--------------------------------
+- Canonical school_subject_teacher_assignments / current server-side scope checks.
+- Teacher/Class Teacher/Headmaster role gate for academic AI routes.
+- Textbook-only Homework source policy.
+- R33.10 Question Paper marks/pattern/source validation.
+- Existing Gemini cached-PDF generation fallback.
+- Existing Supabase metadata and small-file compatibility storage.
+- Existing Cloudflare R2 multipart upload, retry/resume, ownership checks and
+  private server-side signing.
+- No destructive SQL or data migration.
+
+Deployment requirement for R2
+-----------------------------
+R2 becomes active only when these existing server secrets are configured:
+CLOUDFLARE_R2_ACCOUNT_ID
+CLOUDFLARE_R2_ACCESS_KEY_ID
+CLOUDFLARE_R2_SECRET_ACCESS_KEY
+CLOUDFLARE_R2_BUCKET (default: edunixo-study-materials)
+
+If they are not configured, the app does not invent credentials and keeps the
+existing compatible storage behavior.
+
+Validation
+----------
+- Full TS/TSX syntax-transpile scan: 218 files, 0 syntax error files.
+- Static speed-path assertions: PASS.
+- R2 route/config preservation assertion: PASS.
+- Cached-PDF fallback preservation assertion: PASS.
+- Client retry-after-425 preservation assertion: PASS.
+
+Runtime note
+------------
+A live latency benchmark cannot be performed in this build container because it
+has no production GEMINI_API_KEY, Cloudflare R2 credentials, or real Teacher
+session. AI Studio/Render runtime should be tested with one already-indexed book:
+Homework Chapter -> Generate, Question Paper Chapter -> Generate, then repeat the
+same chapter once to verify the persistent fast path.

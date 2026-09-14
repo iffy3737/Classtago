@@ -1,0 +1,17 @@
+Classtago R2.5.44 — School Frontend Contrast Hardening
+
+Scope
+- School-specific public frontend only.
+- No auth, role, admission, result, timetable, attendance, Supabase schema, or API behavior changed.
+
+Fixes
+- Restores intended dark glass surfaces for school header, mobile menu, quick navigation and footer in Light/Aurora modes.
+- Restores high-contrast hero / Digital Reception tiles instead of washed grey cards.
+- Forces correct WebKit text-fill colors so Chrome/Android cannot retain white text on light cards.
+- Strengthens small labels and supporting text on light school sections.
+- Keeps dark-surface text white/light and light-surface text dark/readable.
+
+Data/DB
+- No SQL migration.
+- No database mutation.
+- No credentials added.

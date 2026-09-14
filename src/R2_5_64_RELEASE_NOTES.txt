@@ -1,0 +1,13 @@
+Classtago R2.5.64
+INBUILT ANDROID SIM SMS GATEWAY — PHASE 1
+
+- Adds Classtago-owned Android SIM SMS gateway; httpSMS is not required.
+- Adds school-scoped Supabase device registry + durable SMS queue + RLS/RPC controls.
+- Adds native SEND_SMS plugin, carrier-send result handling, multipart SMS and controlled retry queue.
+- Adds Headmaster + Clerk Inbuilt SMS Gateway control surface.
+- Headmaster audience-targeted SMS now queues to the authorized school Android phone when the gateway is enabled.
+- Adds global native queue runner while the authorized Classtago Android app is active.
+- Existing Website/In-App/WhatsApp/Email and all other ERP modules are preserved.
+- Version synchronized to 0.2.64 / Android versionCode 2564.
+
+Production activation requires applying the included Supabase migration and building/installing the Android app on a real SIM-capable phone. Full background/boot-resume sending is reserved for Phase 2 so long-lived credentials are not stored unsafely.
