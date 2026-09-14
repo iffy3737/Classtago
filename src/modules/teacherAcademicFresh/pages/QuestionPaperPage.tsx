@@ -72,7 +72,7 @@ const QUESTION_TYPES_BY_FAMILY: Record<QuestionSubjectFamily, string[]> = {
   general: ['MCQ','Fill in the Blanks','True / False','Match the Following','Very Short Answer','Short Answer','Long Answer'],
   science: ['MCQ','Fill in the Blanks','True / False','Match the Following','Very Short Answer','Short Answer','Long Answer','Definitions / Terms','Give Reasons','Diagram / Labeling','Observation / Activity'],
   maths: ['MCQ','Fill in the Blanks','Solve Problems / Sums','Word Problems','Mental Maths','Show Complete Working','Geometry / Construction','Very Short Answer','Short Answer'],
-  language: ['MCQ','Fill in the Blanks','Match the Following','Very Short Answer','Short Answer','Long Answer','Grammar / Language Practice','Comprehension','Vocabulary / Word Meaning','Sentence Making','Writing / Essay'],
+  language: ['MCQ','Fill in the Blanks','Match the Following','Very Short Answer','Short Answer','Long Answer','Grammar / Language Practice','Paragraph Answer','Comprehension','Vocabulary / Word Meaning','Sentence Making','Writing / Essay'],
   social: ['MCQ','Fill in the Blanks','True / False','Match the Following','Very Short Answer','Short Answer','Long Answer','Map Work','Timeline / Sequence','Identify / Name','Cause & Effect'],
   art: ['Drawing','Sketching','Colouring','Pattern / Design','Observation Drawing','Creative Composition','Craft / Activity'],
   computer: ['MCQ','Fill in the Blanks','True / False','Match the Following','Very Short Answer','Short Answer','Long Answer','Practical Task','Lab Exercise','Shortcut Keys','Identify Parts / Components'],
@@ -112,6 +112,7 @@ const resolvedAnswerLayout = (question: QuestionPaperQuestion) => {
   if (/diagram|draw|drawing|sketch|colour|color|pattern|design|craft|creative composition|label|map|construction/.test(type)) return 'diagram';
   if (/solve|sum|numerical|problem|working|calculate|geometry|practical task|lab exercise/.test(type)) return 'working';
   if (/very short|one word|one sentence/.test(type)) return 'very_short';
+  if (/paragraph/.test(type)) return 'paragraph';
   if (/long|essay|descriptive/.test(type)) return 'long';
   if (/short/.test(type)) return 'short';
   return 'default';
@@ -123,6 +124,7 @@ const resolvedAnswerLines = (question: QuestionPaperQuestion) => {
   const layout = resolvedAnswerLayout(question);
   if (layout === 'very_short') return Math.min(3, Math.max(2, marks));
   if (layout === 'short') return Math.min(8, Math.max(4, marks * 2));
+  if (layout === 'paragraph') return Math.min(14, Math.max(6, marks * 2));
   if (layout === 'long') return Math.min(18, Math.max(8, marks * 2));
   if (layout === 'default') return Math.min(12, Math.max(2, marks * 2));
   return 0;
@@ -495,7 +497,7 @@ export function QuestionPaperPage({ assignments, materials, initialTerm, initial
         assignmentId,
         materialIds: autoMaterialIds,
         chapterScope: chapters,
-        prompt: `Create a complete ${totalMarks}-mark ${examLabels[exam]} question paper. Use ONLY the automatically selected assigned Textbook and the selected chapter scope. Question source mode: ${questionSourceMode}. Use the Textbook/Subject language and native script automatically. Keep Fill in the Blanks visibly blank, provide clean MCQ options, and structure Match the Following as two shuffled columns. Do not include an answer key in the student paper.${mariaQuestionInstruction ? ` Additional Teacher instruction: ${mariaQuestionInstruction}` : ''}`,
+        prompt: `Create a complete ${totalMarks}-mark ${examLabels[exam]} question paper. Use ONLY the automatically selected assigned Textbook and the selected chapter scope. Question source mode: ${questionSourceMode}. Use the Textbook/Subject language and native script automatically. Keep Fill in the Blanks visibly blank, provide clean MCQ options, structure Match the Following as two shuffled columns, and for Paragraph Answer require a coherent paragraph response rather than bullets or one-word answers. Do not include an answer key in the student paper.${mariaQuestionInstruction ? ` Additional Teacher instruction: ${mariaQuestionInstruction}` : ''}`,
         structuredInputs: {
           exam,
           totalMarks,

@@ -393,8 +393,8 @@
 .edx-teacher-ai .qp-working-box.large { min-height: 66mm; }
 .edx-teacher-ai .qp-diagram-box.medium { min-height: 55mm; border-style: dashed; }
 .edx-teacher-ai .qp-diagram-box.large { min-height: 78mm; border-style: dashed; }
-.edx-teacher-ai .qp-match-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 11px; direction: ltr; }
-.edx-teacher-ai .qp-match-table th,.edx-teacher-ai .qp-match-table td { border: 1px solid #9ca3af; padding: 6px 7px; vertical-align: top; }
+.edx-teacher-ai .qp-match-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: inherit; font-family: inherit; line-height: 1.45; direction: ltr; }
+.edx-teacher-ai .qp-match-table th,.edx-teacher-ai .qp-match-table td { border: 1px solid #9ca3af; padding: 5px 7px; vertical-align: top; font: inherit; line-height: 1.45; }
 .edx-teacher-ai .qp-match-table th:first-child,.edx-teacher-ai .qp-match-table td:first-child { width: 10%; text-align: center; }
 .edx-teacher-ai .qp-match-table th:nth-child(2),.edx-teacher-ai .qp-match-table td:nth-child(2),.edx-teacher-ai .qp-match-table th:nth-child(3),.edx-teacher-ai .qp-match-table td:nth-child(3) { width: 35%; }
 .edx-teacher-ai .qp-match-table th:last-child,.edx-teacher-ai .qp-match-table td:last-child { width: 20%; text-align: center; }
@@ -407,7 +407,7 @@
   .edx-teacher-ai .question-row { margin: 5mm 0; break-inside: avoid; page-break-inside: avoid; }
   .edx-teacher-ai .qp-answer-area { break-inside: avoid; page-break-inside: avoid; }
   .edx-teacher-ai .qp-answer-line { height: 7.2mm; }
-  .edx-teacher-ai .qp-match-table { font-size: 9.5pt; }
+  .edx-teacher-ai .qp-match-table { font-size: inherit; font-family: inherit; line-height: 1.45; }
 }
 
 /* R33.13 Question Paper - selected pattern rows render as main paper sections. */
