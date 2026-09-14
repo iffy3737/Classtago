@@ -1,4 +1,5 @@
 package com.edunixo.app;
+import com.classtago.app.R;
 
 import android.Manifest;
 import android.app.NotificationChannel;
