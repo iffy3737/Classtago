@@ -1,0 +1,1 @@
+import{o as n}from"./index-DIqi-_QG.js";function i(t,e="Print Document"){if(!document.getElementById(t)){window.alert("Print content is not ready. Please generate or open the document first.");return}n({elementId:t,title:e})}export{i as p};

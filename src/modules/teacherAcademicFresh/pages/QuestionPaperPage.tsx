@@ -631,7 +631,7 @@ export function QuestionPaperPage({ assignments, materials, initialTerm, initial
       {!assignments.length && <div className="alert warning screen-only"><strong>No assigned subject scope is available.</strong> Question Paper generation stays locked until Headmaster/Academic Setup assigns this Teacher to a Class/Division/Subject.</div>}
       <div className="card screen-only">
         {(combinedLoading || combinedGroups.length > 0) && <div className="combined-paper-mode-box">
-          <div className="card-title-row"><div><h3>Paper Type</h3><small>Single Subject stays exactly as before. Subject Groups can be combined into one paper.</small></div>{combinedLoading && <small>Checking Subject Groups…</small>}</div>
+          <div className="card-title-row"><div><h3>Paper Type</h3></div>{combinedLoading && <small>Checking Subject Groups…</small>}</div>
           {!combinedLoading && combinedGroups.length > 0 && <div className="combined-mode-actions">
             <button type="button" className={`btn ${paperMode === 'single' ? 'primary' : 'ghost'}`} onClick={() => { setPaperMode('single'); setCombinedGroupId(''); setPaper(null); setError(''); }}>Single Subject</button>
             <button type="button" className={`btn ${paperMode === 'combined' ? 'primary' : 'ghost'}`} onClick={() => { setPaperMode('combined'); setCombinedGroupId((current) => current || combinedGroups[0]?.id || ''); setPaper(null); setError(''); }}>Combined Subject Group</button>
