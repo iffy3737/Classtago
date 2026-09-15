@@ -20,15 +20,18 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Create .env.mobile from secrets
+      - name: Create .env.mobile with native app flags
         run: |
           cat > src/.env.mobile << ENVEOF
           VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_EDUNIXO_API_BASE_URL=${{ secrets.VITE_EDUNIXO_API_BASE_URL }}
+          VITE_EDUNIXO_MOBILE_APP=true
+          VITE_EDUNIXO_APP_RUNTIME=true
+          VITE_EDUNIXO_MOBILE_SCHOOL_NAME=EDUNIXO
           ENVEOF
-          echo "--- .env.mobile created (values hidden) ---"
-          wc -l src/.env.mobile
+          echo "--- .env.mobile created ---"
+          sed 's/=.*/=***/' src/.env.mobile
 
       - name: Build mobile web app
         run: npm run build:mobile
