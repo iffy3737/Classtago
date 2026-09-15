@@ -20,7 +20,7 @@ const config: CapacitorConfig = {
       insetsHandling: 'css',
     },
     SplashScreen: {
-      launchAutoHide: false,
+      launchAutoHide: true,
       launchShowDuration: 1200,
       backgroundColor: '#F7F9FF',
       showSpinner: false,
