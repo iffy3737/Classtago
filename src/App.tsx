@@ -134,6 +134,36 @@ export default function App() {
     document.documentElement.style.colorScheme = 'light';
   }, [appearance]);
 
+  // Native Android back button handler. Layout, colors and fonts untouched.
+  useEffect(() => {
+    const handleNativeBack = (event: Event) => {
+      if (showLoginModal || showChangePassword || showPhase1Tools || showPlatformLogin || showLiveDemo || showAssistant) {
+        event.preventDefault();
+        if (showChangePassword) setShowChangePassword(false);
+        else if (showPhase1Tools) setShowPhase1Tools(false);
+        else if (showPlatformLogin) setShowPlatformLogin(false);
+        else if (showLiveDemo) setShowLiveDemo(false);
+        else if (showAssistant) setShowAssistant(false);
+        else if (showLoginModal) setShowLoginModal(false);
+        return;
+      }
+      if (currentView === 'database') {
+        event.preventDefault();
+        setCurrentView('erp');
+        return;
+      }
+      if (publicPortal === 'school') {
+        event.preventDefault();
+        setPublicPortal('platform');
+        setPublicSchoolBrand(null);
+        window.history.pushState({}, '', '/');
+        return;
+      }
+    };
+    window.addEventListener('edunixo:native-back', handleNativeBack as EventListener);
+    return () => window.removeEventListener('edunixo:native-back', handleNativeBack as EventListener);
+  }, [currentView, publicPortal, showLoginModal, showChangePassword, showPhase1Tools, showPlatformLogin, showLiveDemo, showAssistant]);
+
   // Load notices and restore session on initial mount
   const refreshNotices = () => {
     setNotices(LocalERPDatabase.getNotices());

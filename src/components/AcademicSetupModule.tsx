@@ -2383,7 +2383,7 @@ export default function AcademicSetupModule({
               )}
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {setup.subjectGroups.filter((grp) => !grp.combinedPaperEnabled).map((grp) => (
+                {setup.subjectGroups.filter((grp) => { const isCombined = grp.combinedPaperEnabled === true || String((grp as any).groupCode || "").toUpperCase().startsWith("CQP_"); return !isCombined; }).map((grp) => (
                   <div key={grp.id} className="p-4 bg-white border border-slate-200 rounded-xl space-y-2 shadow-sm">
                     <div className="flex justify-between items-center border-b border-slate-100 pb-1.5">
                       <span className="font-bold text-slate-800 text-xs">{grp.groupName}</span>
