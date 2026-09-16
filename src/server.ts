@@ -11861,7 +11861,7 @@ const R33_9_QUESTION_PAPER_SCHEMA:any={type:'object',properties:{title:{type:'st
     if(!supabaseAdmin)return null;
     const academicYear=qpAcademicYearKey(scope?.academicYear||'');
     const query=supabaseAdmin.from('edunixo_question_paper_patterns').select('*').eq('school_id',schoolId).eq('active',true);
-    const read=await query.limit(200);if(read.error)throw read.error;
+    const read=await query.limit(200);if(read.error){if(/does not exist|schema cache|could not find|relation .* does not exist/i.test(String(read.error.message||'')))return null;throw read.error;}
     const examKey=qpExamKey(exam);
     const candidates=(read.data||[]).filter((row:any)=>(!academicYear||qpAcademicYearKey(row.academic_year)===academicYear)&&(!row.exam||qpExamKey(row.exam)===examKey)&&(!row.class_name||qpNorm(row.class_name)===qpNorm(scope.className))&&(!row.subject_id||String(row.subject_id)===String(scope.subjectId||'')));
     candidates.sort((a:any,b:any)=>questionPatternSpecificity(b)-questionPatternSpecificity(a));
