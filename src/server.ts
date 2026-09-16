@@ -11943,18 +11943,24 @@ const R33_9_QUESTION_PAPER_SCHEMA:any={type:'object',properties:{title:{type:'st
         members.push({subjectId,subjectName:String(subject.subject_name||'Subject'),subjectCode:String(subject.subject_code||'')||undefined,assignmentId:allocation?String(allocation.id):undefined,teacherName:String(teacher?.full_name||'')||undefined,assigned:Boolean(allocation),assignedToCurrentTeacher:Boolean(allocation&&String(allocation.teacher_id||'')===String(comm?.teacherId||'')),suggestedMarks:saved?.totalMarks||undefined,savedPattern:saved?.pattern||undefined});
       }
       const collaborationKey=qpCollaborationKey(scope,req.activeUser.schoolId,exam||'combined',String(group.id));
-      // R33.19 bridge: canonical school_subject_teacher_assignments drive access,
-      // but historical Question Paper rows still reference edunixo_teacher_assignments.
-      // Resolve projection IDs by Class/Division/Subject snapshots before reading
-      // submitted collaboration components.
-      const projectionRead=await supabaseAdmin.from('edunixo_teacher_assignments').select('id,academic_year,class_name,division,subject_id,subject_name,active').eq('school_id',req.activeUser.schoolId).eq('active',true).limit(1000);
-      // R2.5.93 hotfix: tolerate missing edunixo_teacher_assignments legacy table; canonical school_subject_teacher_assignments is the source of truth.
-      const groupSubjectIds=new Set(members.map((m:any)=>String(m.subjectId||'')).filter(Boolean));
-      const projectionIds=(projectionRead.data||[]).filter((row:any)=>groupSubjectIds.has(String(row.subject_id||''))&&qpProjectionScopeMatch(row,{...scope,subjectId:row.subject_id,subjectName:row.subject_name})).map((row:any)=>String(row.id)).filter(Boolean);
+      // R2.5.98: Combined Question Papers use canonical school_subject_teacher_assignments
+      // directly. The live Supabase project intentionally has no legacy
+      // edunixo_teacher_assignments projection, so the collaboration queue must never
+      // depend on that obsolete table.
+      const canonicalAssignmentIds=members.map((m:any)=>String(m.assignmentId||'')).filter(Boolean);
       const latestBySubject=new Map<string,any>();
-      if(projectionIds.length){
-        const papers=await supabaseAdmin.from('edunixo_question_papers').select('id,assignment_id,pattern,total_marks,updated_at').in('assignment_id',projectionIds).order('updated_at',{ascending:false}).limit(300);
-        if(!papers.error){for(const paper of papers.data||[]){const meta=qpCombinedMetaFromPattern((paper as any).pattern);if(!meta||meta.collaborationKey!==collaborationKey||meta.combinedWorkflow!=='collaborative_component'||latestBySubject.has(meta.componentSubjectId))continue;latestBySubject.set(meta.componentSubjectId,{paper,meta});}}
+      if(canonicalAssignmentIds.length){
+        const papers=await supabaseAdmin.from('edunixo_question_papers').select('id,assignment_id,pattern,total_marks,updated_at').in('assignment_id',canonicalAssignmentIds).order('updated_at',{ascending:false}).limit(300);
+        if(papers.error){
+          const message=String(papers.error?.message||'');
+          if(!/does not exist|schema cache|could not find|relation .* does not exist/i.test(message))throw papers.error;
+        } else {
+          for(const paper of papers.data||[]){
+            const meta=qpCombinedMetaFromPattern((paper as any).pattern);
+            if(!meta||meta.collaborationKey!==collaborationKey||meta.combinedWorkflow!=='collaborative_component'||latestBySubject.has(meta.componentSubjectId))continue;
+            latestBySubject.set(meta.componentSubjectId,{paper,meta});
+          }
+        }
       }
       const canonicalSubmission=[...latestBySubject.values()][0]||null;
       const canonicalMeta=canonicalSubmission?.meta||null;
