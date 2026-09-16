@@ -104,11 +104,7 @@ export async function installNativeAppRuntime(): Promise<void> {
         return;
       }
 
-      if (window.history.length > 1) {
-        window.history.back();
-      } else {
-        void App.minimizeApp();
-      }
+      void App.minimizeApp();
     });
 
     App.addListener('appUrlOpen', ({ url }) => routeDeepLink(url));
