@@ -11948,7 +11948,7 @@ const R33_9_QUESTION_PAPER_SCHEMA:any={type:'object',properties:{title:{type:'st
       // Resolve projection IDs by Class/Division/Subject snapshots before reading
       // submitted collaboration components.
       const projectionRead=await supabaseAdmin.from('edunixo_teacher_assignments').select('id,academic_year,class_name,division,subject_id,subject_name,active').eq('school_id',req.activeUser.schoolId).eq('active',true).limit(1000);
-      if(projectionRead.error)throw projectionRead.error;
+      // R2.5.93 hotfix: tolerate missing edunixo_teacher_assignments legacy table; canonical school_subject_teacher_assignments is the source of truth.
       const groupSubjectIds=new Set(members.map((m:any)=>String(m.subjectId||'')).filter(Boolean));
       const projectionIds=(projectionRead.data||[]).filter((row:any)=>groupSubjectIds.has(String(row.subject_id||''))&&qpProjectionScopeMatch(row,{...scope,subjectId:row.subject_id,subjectName:row.subject_name})).map((row:any)=>String(row.id)).filter(Boolean);
       const latestBySubject=new Map<string,any>();
