@@ -17,6 +17,7 @@ import {
 import { translations } from '../lib/translations';
 import UrduWrapper from './UrduWrapper';
 import { LocalERPDatabase, supabase } from '../lib/supabase';
+import { cachedFetch } from '../lib/apiCache';
 import { AuthService } from '../lib/authService';
 import { PrintLetterhead, PrintSignatureArea } from './PrintPDFButton';
 // import SmartExamManager from './SmartExamManager';
@@ -309,9 +310,9 @@ export default function DashboardOverview({ lang, user, onRefreshData }: Dashboa
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session?.access_token) throw new Error('Clerk session unavailable.');
-        const response = await fetch('/api/admin/result-system-status', {
+        const response = await cachedFetch('/api/admin/result-system-status', {
           headers: { Authorization: `Bearer ${session.access_token}` },
-          cache: 'no-store'
+          cacheTtlMs: 5 * 60 * 1000
         });
         const body = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(body.error || 'Result System status verification failed.');
@@ -442,8 +443,9 @@ export default function DashboardOverview({ lang, user, onRefreshData }: Dashboa
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session?.access_token) throw new Error('Your secure session is unavailable. Please sign in again.');
-        const response = await fetch('/api/me/module-entitlements', {
-          headers: { Authorization: `Bearer ${session.access_token}` }
+        const response = await cachedFetch('/api/me/module-entitlements', {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+          cacheTtlMs: 5 * 60 * 1000
         });
         const body = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(body.error || 'Module entitlement lookup failed.');
@@ -941,9 +943,10 @@ export default function DashboardOverview({ lang, user, onRefreshData }: Dashboa
         .limit(60);
 
       const admissionPromise = user.role === 'headmaster'
-        ? fetch('/api/school-website/admission-applications?status=verified', {
-            headers: { Authorization: `Bearer ${authToken}` }
-          }).then(r => r.ok ? r.json().catch(() => ({})) : {}).catch(() => ({}))
+        ? cachedFetch('/api/school-website/admission-applications?status=verified', {
+            headers: { Authorization: `Bearer ${authToken}` },
+            cacheTtlMs: 3 * 60 * 1000
+          }).then((r: any) => r.data || {}).catch(() => ({}))
         : Promise.resolve({});
 
       const signupPromise = (user.role === 'teacher' || user.role === 'class_teacher')
