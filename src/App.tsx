@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   GraduationCap, Bot, Database, Sparkles, X, Shield, ShieldCheck,
   BookOpen, Calendar, Users, FileText, ClipboardList, Settings, Landmark, CheckCircle2, Loader2, KeyRound, ScanLine
@@ -110,11 +110,15 @@ export default function App() {
   const [teacherProfileGateError, setTeacherProfileGateError] = useState('');
   const [teacherProfileMissing, setTeacherProfileMissing] = useState<string[]>([]);
 
+  const sessionRestoredRef = useRef(false);
+  const enginesInstalledRef = useRef<string>('');
+
   // R33.12 global numeric-entry UX: when a number field receives focus,
   // select its current value so typing replaces the old/default value instead of
   // appending beside a stubborn trailing 0. This applies across the ERP without
   // changing the stored numeric types or validation rules of individual modules.
   useEffect(() => {
+    if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) return;
     const handleNumberFocus = (event: FocusEvent) => {
       const target = event.target;
       if (!(target instanceof HTMLInputElement) || target.type !== 'number' || target.disabled || target.readOnly) return;
@@ -165,6 +169,16 @@ export default function App() {
   }, [currentView, publicPortal, showLoginModal, showChangePassword, showPhase1Tools, showPlatformLogin, showLiveDemo, showAssistant]);
 
   // Load notices and restore session on initial mount
+  useEffect(() => {
+    const active = document.activeElement;
+    if (active instanceof HTMLElement) {
+      const tag = active.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
+        try { active.blur(); } catch {}
+      }
+    }
+  }, [currentView, publicPortal, showLoginModal, showAssistant, showChangePassword]);
+
   const refreshNotices = () => {
     setNotices(LocalERPDatabase.getNotices());
     setDeveloperMode(localStorage.getItem('isDeveloperMode') === 'true');
@@ -172,6 +186,9 @@ export default function App() {
 
   useEffect(() => {
     refreshNotices();
+
+    if (sessionRestoredRef.current) return;
+    sessionRestoredRef.current = true;
 
     // Restore the authenticated identity, but do not allow the session itself to
     // collapse the public website and ERP into one surface. On the web, the
@@ -423,6 +440,9 @@ export default function App() {
 
   useEffect(() => {
     if (!user?.id || user.role === 'super_admin' || !schoolId) return;
+    const engineKey = `${user.id}:${schoolId}`;
+    if (enginesInstalledRef.current === engineKey) return;
+    enginesInstalledRef.current = engineKey;
     const stopRealtime = installPhase1Realtime(schoolId);
     const stopSync = installPhase1SyncEngine({ schoolId, userId: user.id });
     const stopPresence = installPhase6Collaboration(schoolId);
