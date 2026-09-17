@@ -927,14 +927,34 @@ export default function DashboardOverview({ lang, user, onRefreshData }: Dashboa
     try {
       const { data: sessionData } = await supabase.auth.getSession();
       const authUserId = sessionData.session?.user?.id;
-      if (!authUserId) return;
+      const authToken = sessionData.session?.access_token;
+      if (!authUserId || !authToken) return;
 
-      const cloudResponse = await supabase
+      // R2.5.98 performance: cloud notifications and role-specific synthetic
+      // queues run in parallel instead of one-after-another. Previously this
+      // serial chain alone took 5-9 seconds on every dashboard load.
+      const cloudPromise = supabase
         .from('edunixo_user_notifications')
         .select('id,title,body,notification_type,source_key,is_read,created_at')
         .eq('recipient_user_id', authUserId)
         .order('created_at', { ascending: false })
         .limit(60);
+
+      const admissionPromise = user.role === 'headmaster'
+        ? fetch('/api/school-website/admission-applications?status=verified', {
+            headers: { Authorization: `Bearer ${authToken}` }
+          }).then(r => r.ok ? r.json().catch(() => ({})) : {}).catch(() => ({}))
+        : Promise.resolve({});
+
+      const signupPromise = (user.role === 'teacher' || user.role === 'class_teacher')
+        ? loadStudentSignupApprovalQueue().catch(() => ({ requests: [], recentAdmissions: [] }))
+        : Promise.resolve({ requests: [], recentAdmissions: [] });
+
+      const [cloudResponse, admissionPayload, queue] = await Promise.all([
+        cloudPromise,
+        admissionPromise,
+        signupPromise
+      ]);
 
       const cloudRows = cloudResponse.error ? [] : (cloudResponse.data || []);
       const cloudNotifs: SystemNotification[] = cloudRows.map((row: any) => ({
@@ -950,76 +970,60 @@ export default function DashboardOverview({ lang, user, onRefreshData }: Dashboa
 
       const synthetic: SystemNotification[] = [];
       if (user.role === 'headmaster') {
-        try {
-          const admissionResponse = await fetch('/api/school-website/admission-applications?status=verified', {
-            headers: { Authorization: `Bearer ${sessionData.session.access_token}` }
+        const applications = Array.isArray((admissionPayload as any)?.applications) ? (admissionPayload as any).applications : [];
+        const sourceKeys = new Set<string>((cloudRows as any[]).map((row: any) => String(row.source_key || '')));
+        const readIds = new Set<string>(JSON.parse(localStorage.getItem('edunixo_admission_notification_reads') || '[]'));
+        for (const application of applications) {
+          const applicationId = String(application?.id || '');
+          if (!applicationId) continue;
+          const hasCloud = Array.from(sourceKeys).some(key => key.includes(`admission-intake:`) && key.includes(`:${applicationId}:`));
+          if (hasCloud) continue;
+          const id = `admission:${applicationId}`;
+          synthetic.push({
+            id,
+            recipientId: authUserId,
+            title: 'Admission Intake Ready for Review',
+            content: `${String(application?.studentName || 'Student')} (${String(application?.referenceCode || 'Admission application')}) is verified and waiting for Headmaster decision.`,
+            date: String(application?.createdAt || new Date().toISOString()),
+            isRead: readIds.has(id),
+            type: 'admission_intake_ready'
           });
-          if (admissionResponse.ok) {
-            const admissionPayload = await admissionResponse.json().catch(() => ({}));
-            const applications = Array.isArray(admissionPayload?.applications) ? admissionPayload.applications : [];
-            const sourceKeys = new Set<string>((cloudRows as any[]).map((row: any) => String(row.source_key || '')));
-            const readIds = new Set<string>(JSON.parse(localStorage.getItem('edunixo_admission_notification_reads') || '[]'));
-            for (const application of applications) {
-              const applicationId = String(application?.id || '');
-              if (!applicationId) continue;
-              const hasCloud = Array.from(sourceKeys).some(key => key.includes(`admission-intake:`) && key.includes(`:${applicationId}:`));
-              if (hasCloud) continue;
-              const id = `admission:${applicationId}`;
-              synthetic.push({
-                id,
-                recipientId: authUserId,
-                title: 'Admission Intake Ready for Review',
-                content: `${String(application?.studentName || 'Student')} (${String(application?.referenceCode || 'Admission application')}) is verified and waiting for Headmaster decision.`,
-                date: String(application?.createdAt || new Date().toISOString()),
-                isRead: readIds.has(id),
-                type: 'admission_intake_ready'
-              });
-            }
-          }
-        } catch {
-          // Admission Applications remains the canonical queue; a temporary fetch failure
-          // must not hide working native cloud notifications.
         }
       }
       if (user.role === 'teacher' || user.role === 'class_teacher') {
-        try {
-          const queue = await loadStudentSignupApprovalQueue();
-          const sourceKeys = new Set<string>((cloudRows as any[]).map((row: any) => String(row.source_key || '')));
-          const readIds = new Set<string>(JSON.parse(localStorage.getItem('edunixo_signup_notification_reads') || '[]'));
-          for (const request of queue.requests) {
-            const hasCloud = Array.from(sourceKeys).some(key =>
-              (request.requestId && key.endsWith(`:${request.requestId}`) && key.includes('student-signup-request:')) ||
-              (key.endsWith(`:${request.accountUserId}`) && key.includes('student-account-signup:'))
-            );
-            if (hasCloud) continue;
-            const id = `signup:${request.accountUserId}`;
-            synthetic.push({
-              id,
-              recipientId: authUserId,
-              title: 'Student Signup Approval Required',
-              content: `${request.studentName} (${request.grNumber}) signed up for the Student Portal and is waiting for your Class Teacher approval.${request.requestCode ? ` Request ${request.requestCode}.` : ''}`,
-              date: request.requestedAt || new Date().toISOString(),
-              isRead: readIds.has(id),
-              type: 'student_account_signup'
-            });
-          }
-          const admissionReadIds = new Set<string>(JSON.parse(localStorage.getItem('edunixo_new_admission_notification_reads') || '[]'));
-          for (const admission of queue.recentAdmissions || []) {
-            const hasCloud = Array.from(sourceKeys).some(key => key.includes('student-new-admission:') && key.endsWith(`:${admission.studentId}`));
-            if (hasCloud) continue;
-            const id = `new-admission:${admission.studentId}`;
-            synthetic.push({
-              id,
-              recipientId: authUserId,
-              title: 'New Admission Added to Your Class',
-              content: `${admission.studentName} (GR ${admission.grNumber}) has been admitted to ${admission.className}${admission.divisionName ? ` · ${admission.divisionName}` : ''}.`,
-              date: admission.admittedAt || new Date().toISOString(),
-              isRead: admissionReadIds.has(id),
-              type: 'student_new_admission'
-            });
-          }
-        } catch {
-          // The Teacher approval page will expose any backend/configuration error explicitly.
+        const sourceKeys = new Set<string>((cloudRows as any[]).map((row: any) => String(row.source_key || '')));
+        const readIds = new Set<string>(JSON.parse(localStorage.getItem('edunixo_signup_notification_reads') || '[]'));
+        for (const request of (queue as any).requests || []) {
+          const hasCloud = Array.from(sourceKeys).some(key =>
+            (request.requestId && key.endsWith(`:${request.requestId}`) && key.includes('student-signup-request:')) ||
+            (key.endsWith(`:${request.accountUserId}`) && key.includes('student-account-signup:'))
+          );
+          if (hasCloud) continue;
+          const id = `signup:${request.accountUserId}`;
+          synthetic.push({
+            id,
+            recipientId: authUserId,
+            title: 'Student Signup Approval Required',
+            content: `${request.studentName} (${request.grNumber}) signed up for the Student Portal and is waiting for your Class Teacher approval.${request.requestCode ? ` Request ${request.requestCode}.` : ''}`,
+            date: request.requestedAt || new Date().toISOString(),
+            isRead: readIds.has(id),
+            type: 'student_account_signup'
+          });
+        }
+        const admissionReadIds = new Set<string>(JSON.parse(localStorage.getItem('edunixo_new_admission_notification_reads') || '[]'));
+        for (const admission of (queue as any).recentAdmissions || []) {
+          const hasCloud = Array.from(sourceKeys).some(key => key.includes('student-new-admission:') && key.endsWith(`:${admission.studentId}`));
+          if (hasCloud) continue;
+          const id = `new-admission:${admission.studentId}`;
+          synthetic.push({
+            id,
+            recipientId: authUserId,
+            title: 'New Admission Added to Your Class',
+            content: `${admission.studentName} (GR ${admission.grNumber}) has been admitted to ${admission.className}${admission.divisionName ? ` · ${admission.divisionName}` : ''}.`,
+            date: admission.admittedAt || new Date().toISOString(),
+            isRead: admissionReadIds.has(id),
+            type: 'student_new_admission'
+          });
         }
       }
 
@@ -1032,7 +1036,6 @@ export default function DashboardOverview({ lang, user, onRefreshData }: Dashboa
         });
       setNotifications(merged);
     } catch {
-      // Keep browser notifications available when cloud notifications are temporarily unavailable.
       setNotifications(localNotifs);
     }
   };
