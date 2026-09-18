@@ -5,7 +5,16 @@ const config: CapacitorConfig = {
   appName: 'Classtago',
   webDir: 'mobile-dist',
   server: {
+    // R2.5.98 URL mode: the native shell loads the live Classtago website so
+    // every web/backend update is reflected instantly without an APK rebuild.
+    url: 'https://edunixo-production-final.onrender.com/?edunixoApp=1',
+    cleartext: false,
     androidScheme: 'https',
+    allowNavigation: [
+      'edunixo-production-final.onrender.com',
+      '*.onrender.com',
+      '*.supabase.co',
+    ],
   },
   android: {
     allowMixedContent: false,
@@ -14,14 +23,16 @@ const config: CapacitorConfig = {
   },
   plugins: {
     CapacitorHttp: {
-      enabled: true,
+      // R2.5.98 URL mode keeps native fetch override disabled so that the live
+      // website's own /api routing and cookie handling work unchanged.
+      enabled: false,
     },
     SystemBars: {
       insetsHandling: 'css',
     },
     SplashScreen: {
       launchAutoHide: true,
-      launchShowDuration: 1200,
+      launchShowDuration: 800,
       backgroundColor: '#F7F9FF',
       showSpinner: false,
       androidScaleType: 'CENTER_CROP',
