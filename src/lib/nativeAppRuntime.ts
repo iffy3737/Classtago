@@ -56,7 +56,15 @@ function routeDeepLink(raw: string): void {
  * desktop/mobile web; this adapter only activates inside the installed app.
  */
 export async function installNativeAppRuntime(): Promise<void> {
-  if (installed || !IS_EDUNIXO_NATIVE_APP || typeof window === 'undefined') return;
+  // R2.5.98 URL mode: the native shell loads the live website with
+  // ?edunixoApp=1 so we must also detect Capacitor and the URL flag in
+  // addition to the bundled VITE_EDUNIXO_MOBILE_APP env flag.
+  const isNativeRuntime = IS_EDUNIXO_NATIVE_APP
+    || (typeof window !== 'undefined'
+        && (window as any)?.Capacitor?.isNativePlatform?.() === true)
+    || (typeof window !== 'undefined'
+        && new URLSearchParams(window.location.search).get('edunixoApp') === '1');
+  if (installed || !isNativeRuntime || typeof window === 'undefined') return;
   installed = true;
 
   document.documentElement.classList.add('edunixo-native-shell');
