@@ -312,7 +312,7 @@ export default function DashboardOverview({ lang, user, onRefreshData }: Dashboa
         if (!session?.access_token) throw new Error('Clerk session unavailable.');
         const response = await cachedFetch('/api/admin/result-system-status', {
           headers: { Authorization: `Bearer ${session.access_token}` },
-          cacheTtlMs: 5 * 60 * 1000
+          cacheTtlMs: 30 * 60 * 1000
         });
         const body = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(body.error || 'Result System status verification failed.');
@@ -1128,6 +1128,10 @@ export default function DashboardOverview({ lang, user, onRefreshData }: Dashboa
 
   useEffect(() => {
     loadData();
+
+    // R2.5.98 performance: notifications are not required for the first paint.
+    // Defer them off the critical path so the dashboard can render immediately.
+    window.setTimeout(() => { void loadNotifications(); }, 2000);
 
     const handleRefresh = () => {
       loadData();
