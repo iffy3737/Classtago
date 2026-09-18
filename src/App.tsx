@@ -111,6 +111,26 @@ export default function App() {
   const [teacherProfileMissing, setTeacherProfileMissing] = useState<string[]>([]);
 
   const sessionRestoredRef = useRef(false);
+
+  // R2.5.98 native voice: request microphone permission once on the native app
+  // so that Maria AI Voice Assistant can actually capture speech. Android 6+
+  // requires an explicit runtime grant in addition to the manifest declaration.
+  useEffect(() => {
+    if (!IS_EDUNIXO_NATIVE_APP || typeof window === 'undefined') return;
+    const requestedKey = 'edunixo.native.micPermissionRequested.v2';
+    if (localStorage.getItem(requestedKey) === '1') return;
+    localStorage.setItem(requestedKey, '1');
+    void (async () => {
+      try {
+        const mediaDevices = navigator.mediaDevices;
+        if (!mediaDevices?.getUserMedia) return;
+        const stream = await mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach((track) => track.stop());
+      } catch (error) {
+        console.warn('[Classtago native] Microphone permission not yet granted.', error);
+      }
+    })();
+  }, []);
   const enginesInstalledRef = useRef<string>('');
 
   // R33.12 global numeric-entry UX: when a number field receives focus,
