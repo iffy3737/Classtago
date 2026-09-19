@@ -1,37 +1,20 @@
-/**
- * Classtago Bottom Navigation — Material 3 style Android tab bar.
- * Shows only in the native/URL app runtime. Uses the existing hash-based
- * router so it never bypasses role or plan gates.
- */
 import { useEffect, useState } from 'react';
 import { Home, Calendar, BarChart3, User } from 'lucide-react';
-import { IS_EDUNIXO_APP_RUNTIME } from '../lib/mobileRuntime';
 
-type Tab = {
-  id: string;
-  label: string;
-  hash: string;
-  matchPrefixes: string[];
-};
-
-const TABS: Tab[] = [
-  { id: 'home',       label: 'Home',       hash: 'module=overview',              matchPrefixes: ['overview'] },
-  { id: 'attendance', label: 'Attendance', hash: 'module=attendance',            matchPrefixes: ['attendance', 'leave_management'] },
-  { id: 'results',    label: 'Results',    hash: 'module=result_management',     matchPrefixes: ['result_management', 'exams', 'analytics'] },
-  { id: 'profile',    label: 'Profile',    hash: 'module=security',              matchPrefixes: ['security', 'profile'] },
+const TABS = [
+  { id: 'home',       label: 'Home',       hash: 'module=overview',           matchPrefixes: ['overview'] },
+  { id: 'attendance', label: 'Attendance', hash: 'module=attendance',         matchPrefixes: ['attendance', 'leave_management'] },
+  { id: 'results',    label: 'Results',    hash: 'module=result_management',  matchPrefixes: ['result_management', 'exams', 'analytics'] },
+  { id: 'profile',    label: 'Profile',    hash: 'module=security',           matchPrefixes: ['security', 'profile'] },
 ];
 
-const ICONS: Record<string, any> = {
-  home: Home,
-  attendance: Calendar,
-  results: BarChart3,
-  profile: User,
-};
+const ICONS = { home: Home, attendance: Calendar, results: BarChart3, profile: User };
 
 export default function BottomNav() {
   const [activeId, setActiveId] = useState('home');
 
   useEffect(() => {
+    console.log('[BottomNav] MOUNTED — bottom nav is in the DOM');
     if (typeof window === 'undefined') return;
     const readHash = () => {
       const rawHash = window.location.hash.replace(/^#/, '');
@@ -45,9 +28,7 @@ export default function BottomNav() {
     return () => window.removeEventListener('hashchange', readHash);
   }, []);
 
-  if (!IS_EDUNIXO_APP_RUNTIME) return null;
-
-  const go = (tab: Tab) => {
+  const go = (tab: any) => {
     const next = `#${tab.hash}`;
     if (window.location.hash !== next) {
       window.location.hash = tab.hash;
@@ -57,9 +38,15 @@ export default function BottomNav() {
   };
 
   return (
-    <nav className="cs-bottom-nav" aria-label="Primary navigation">
+    <nav className="cs-bottom-nav" aria-label="Primary navigation" style={{
+      position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 60,
+      background: '#FFFFFF', borderTop: '1px solid #F5ECF7',
+      boxShadow: '0 -8px 28px -8px rgba(255, 52, 115, 0.15)',
+      padding: '8px 6px calc(10px + env(safe-area-inset-bottom, 0px))',
+      display: 'flex', justifyContent: 'space-around', alignItems: 'stretch'
+    }}>
       {TABS.map((tab) => {
-        const Icon = ICONS[tab.id];
+        const Icon = (ICONS as any)[tab.id];
         const isActive = activeId === tab.id;
         return (
           <button
@@ -67,12 +54,23 @@ export default function BottomNav() {
             type="button"
             className={`cs-nav-item ${isActive ? 'cs-nav-item-active' : ''}`}
             onClick={() => go(tab)}
-            aria-current={isActive ? 'page' : undefined}
+            style={{
+              flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
+              justifyContent: 'center', gap: '3px', background: 'transparent',
+              border: 'none', padding: '6px 4px', cursor: 'pointer'
+            }}
           >
-            <span className="cs-nav-icon-wrap">
-              <Icon className="cs-nav-icon" size={22} />
+            <span className="cs-nav-icon-wrap" style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: '58px', height: '30px', borderRadius: '100px',
+              background: isActive ? 'linear-gradient(135deg, #FF3473, #FFA202)' : 'transparent'
+            }}>
+              <Icon size={22} style={{ color: isActive ? '#FFF' : '#6B5E7B' }} />
             </span>
-            <span className="cs-nav-label">{tab.label}</span>
+            <span style={{
+              fontSize: '11px', fontWeight: 700,
+              color: isActive ? '#FF3473' : '#6B5E7B'
+            }}>{tab.label}</span>
           </button>
         );
       })}

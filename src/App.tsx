@@ -835,7 +835,7 @@ export default function App() {
       )}
 
       {/* Android-style bottom navigation — app runtime only */}
-      {user && user.role !== 'super_admin' && <BottomNav />}
+      {user && <BottomNav />}
 
       <SmartPrintCenter />
       <GlobalActionConfirm />
