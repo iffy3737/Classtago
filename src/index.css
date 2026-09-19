@@ -1,4 +1,3 @@
-@import './styles/premium-theme.css';
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Noto+Nastaliq+Urdu:wght@400;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@300;400;500;600;700&family=Noto+Sans+Gujarati:wght@400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&family=Noto+Sans+Kannada:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;500;600;700&family=Noto+Sans+Meetei+Mayek:wght@400;500;600;700&family=Noto+Sans+Ol+Chiki:wght@400;500;600;700&family=Noto+Sans+Oriya:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@400;500;600;700&display=swap');
 /* Classtago Mobile Premium R2.3
    Tailwind utility CSS is precompiled into this file.
@@ -13954,4 +13953,129 @@ html, body, #root { max-width: 100%; }
   .edx-platform-growth-actions button { min-width: 0; flex: 1 1 140px; }
   .edx-platform-campaign-head,
   .edx-platform-plan-head { min-width: 0; }
+}
+/**
+ * Classtago Premium Theme — Bright Spring Palette
+ * Loaded AFTER index.css. Safe to delete to revert.
+ */
+
+:root {
+  --cs-lilac: #ECBEED;
+  --cs-lilac-deep: #D68FD9;
+  --cs-pink: #FF3473;
+  --cs-pink-deep: #D91B5C;
+  --cs-orange: #FFA202;
+  --cs-orange-deep: #E08800;
+  --cs-rose: #FE9BBA;
+  --cs-mint: #93D7D6;
+  --cs-mint-deep: #5DBFBE;
+
+  --cs-primary: #FF3473;
+  --cs-primary-2: #FFA202;
+  --cs-bg: #FFF9FC;
+  --cs-surface: #FFFFFF;
+  --cs-surface-2: #FDF3F8;
+  --cs-ink: #1A0F2E;
+  --cs-muted: #6B5E7B;
+  --cs-border: #F5ECF7;
+
+  --cs-radius-sm: 12px;
+  --cs-radius-md: 18px;
+  --cs-radius-lg: 24px;
+  --cs-radius-xl: 28px;
+  --cs-radius-pill: 100px;
+
+  --cs-shadow-sm: 0 2px 8px -2px rgba(255, 52, 115, 0.08);
+  --cs-shadow-md: 0 8px 24px -8px rgba(255, 52, 115, 0.15);
+  --cs-shadow-lg: 0 20px 40px -12px rgba(255, 52, 115, 0.25);
+}
+
+body, #root, .edunixo-theme-root {
+  background: var(--cs-bg) !important;
+  color: var(--cs-ink);
+}
+
+.rounded-2xl, .rounded-3xl {
+  border-radius: var(--cs-radius-lg) !important;
+}
+
+.bg-white {
+  background: var(--cs-surface) !important;
+}
+
+.border-slate-200, .border-slate-100, .border-slate-300 {
+  border-color: var(--cs-border) !important;
+}
+
+button[class*="bg-slate-950"],
+button[class*="bg-blue-600"],
+button[class*="bg-indigo-600"],
+button[class*="bg-cyan-600"] {
+  background: linear-gradient(135deg, var(--cs-pink), var(--cs-orange)) !important;
+  border-color: transparent !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 6px 18px -6px rgba(255, 52, 115, 0.5) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+button[class*="bg-slate-950"]:active,
+button[class*="bg-blue-600"]:active,
+button[class*="bg-indigo-600"]:active,
+button[class*="bg-cyan-600"]:active {
+  transform: scale(0.97);
+  box-shadow: 0 3px 10px -4px rgba(255, 52, 115, 0.6) !important;
+}
+
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="search"], textarea, select {
+  border-radius: var(--cs-radius-sm) !important;
+  border-color: var(--cs-border) !important;
+  background: var(--cs-surface) !important;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--cs-pink) !important;
+  box-shadow: 0 0 0 3px rgba(255, 52, 115, 0.12) !important;
+  outline: none !important;
+}
+
+.divide-slate-100 > *, .divide-slate-200 > * {
+  border-color: var(--cs-border) !important;
+}
+
+.bg-cyan-50, .bg-blue-50, .bg-indigo-50 {
+  background: linear-gradient(135deg, rgba(236, 190, 237, 0.35), rgba(147, 215, 214, 0.35)) !important;
+}
+.bg-emerald-50 {
+  background: linear-gradient(135deg, rgba(147, 215, 214, 0.35), rgba(93, 191, 190, 0.35)) !important;
+}
+.bg-amber-50, .bg-orange-50 {
+  background: linear-gradient(135deg, rgba(255, 194, 88, 0.3), rgba(255, 162, 2, 0.25)) !important;
+}
+.bg-rose-50 {
+  background: linear-gradient(135deg, rgba(254, 155, 186, 0.35), rgba(255, 52, 115, 0.2)) !important;
+}
+
+.edx-mobile-main {
+  background: var(--cs-bg);
+}
+
+.edx-mobile-main, .content, main {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+@keyframes cs-page-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.edx-mobile-main > * {
+  animation: cs-page-in 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*:focus-visible {
+  outline-color: var(--cs-pink) !important;
+}
+
+button, [role="button"] {
+  -webkit-user-select: none;
+  user-select: none;
 }
