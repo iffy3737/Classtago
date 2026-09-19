@@ -153,6 +153,14 @@ export default function RoleModuleMenu({
     [role, isClassTeacher]
   );
   const [open, setOpen] = useState(false);
+
+  // R2.5.98: listen for the global hamburger menu event dispatched by TopBar.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handler = () => setOpen(true);
+    window.addEventListener('edunixo:open-menu', handler);
+    return () => window.removeEventListener('edunixo:open-menu', handler);
+  }, []);
   const [query, setQuery] = useState('');
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     () => new Set(catalogue[0]?.id ? [catalogue[0].id] : [])

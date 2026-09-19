@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { LogOut, ShieldAlert, GraduationCap, Database, Globe2, Sparkles, UserCircle2, KeyRound } from 'lucide-react';
+import { LogOut, ShieldAlert, GraduationCap, Database, Globe2, Sparkles, UserCircle2, KeyRound, Menu } from 'lucide-react';
 import { Language, User } from '../types';
 import { translations } from '../lib/translations';
 import { LanguageOption } from '../lib/languageCatalog';
@@ -58,6 +58,14 @@ export default function TopBar({
     return (
       <header className="edx-mobile-topbar no-print">
         <div className="edx-mobile-topbar-inner">
+          <button
+            type="button"
+            className="edx-mobile-hamburger"
+            onClick={() => window.dispatchEvent(new CustomEvent('edunixo:open-menu'))}
+            aria-label="Open menu"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
           <div className="edx-mobile-brand-lockup">
             <div className="edx-mobile-brand-mark"><GraduationCap className="h-5 w-5" /></div>
             <div className="min-w-0">
