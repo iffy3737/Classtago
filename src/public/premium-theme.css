@@ -639,3 +639,54 @@ html, body {
     scroll-behavior: auto !important;
   }
 }
+
+/* ============================================================
+   PHASE 5c — Module Dock Menu Button (make prominent)
+   The "MODULES / Teacher Dashboard" card button at top.
+   ============================================================ */
+
+/* Main button — pink-orange gradient */
+html body .erp-module-dock button[aria-label] {
+  background: linear-gradient(135deg, #FF3473 0%, #FFA202 100%) !important;
+  border-color: transparent !important;
+  box-shadow: 0 8px 24px -8px rgba(255, 52, 115, 0.5) !important;
+  color: #FFFFFF !important;
+}
+html body .erp-module-dock button[aria-label]:active {
+  transform: scale(0.97);
+  box-shadow: 0 4px 12px -6px rgba(255, 52, 115, 0.6) !important;
+}
+
+/* Icon square inside — glass white on gradient */
+html body .erp-module-dock button[aria-label] > span:first-child {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.15) !important;
+  backdrop-filter: blur(10px);
+}
+html body .erp-module-dock button[aria-label] > span:first-child svg {
+  color: #FFFFFF !important;
+  stroke-width: 2.5 !important;
+}
+
+/* Small uppercase "MODULES" label — white */
+html body .erp-module-dock button[aria-label] [class*="text-cyan-300"] {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Card title inside — white bold */
+html body .erp-module-dock button[aria-label] [class*="text-white"],
+html body .erp-module-dock button[aria-label] [class*="text-slate-100"] {
+  color: #FFFFFF !important;
+}
+
+/* Any remaining cyan text in the dock — pink accent */
+html body .erp-module-dock [class*="text-cyan-300"] {
+  color: #FF3473 !important;
+}
+
+/* Dock container — subtle pink border to match */
+html body .erp-module-dock {
+  border-color: rgba(255, 52, 115, 0.15) !important;
+  background: linear-gradient(135deg, rgba(255, 52, 115, 0.04), rgba(255, 162, 2, 0.04)) !important;
+}
