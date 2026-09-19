@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.webkit.PermissionRequest;
 import android.webkit.WebView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -58,18 +59,18 @@ public class MainActivity extends BridgeActivity {
                 });
             }
         }
-    }
 
-    @Override
-    public void onBackPressed() {
-        // R2.5.98 URL mode: honor the WebView history instead of exiting the app.
-        // If the WebView can go back, do so; otherwise minimize the app (never
-        // hard-exit) so the user's place is preserved.
-        WebView webView = getBridge() != null ? getBridge().getWebView() : null;
-        if (webView != null && webView.canGoBack()) {
-            webView.goBack();
-        } else {
-            moveTaskToBack(true);
-        }
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                WebView wv = getBridge() != null ? getBridge().getWebView() : null;
+                if (wv != null && wv.canGoBack()) {
+                    wv.goBack();
+                } else {
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            }
+        });
     }
 }
