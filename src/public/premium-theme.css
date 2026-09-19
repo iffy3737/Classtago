@@ -511,3 +511,131 @@ button[aria-label*="menu" i]:active,
 button[aria-label*="Menu" i]:active {
   transform: scale(0.94);
 }
+
+/* ============================================================
+   PHASE 5 — Page Transitions & Micro-interactions
+   Smooth animations when navigating between pages and modules.
+   ============================================================ */
+
+/* Base page enter animation — every page container fades + slides */
+@keyframes cs-page-enter {
+  0%   { opacity: 0; transform: translateY(12px) scale(0.995); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes cs-page-exit {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-8px) scale(0.995); }
+}
+
+/* Apply enter animation to the main content area when it changes */
+.edx-mobile-main > *,
+.edunixo-mobile-runtime .edx-mobile-main > div {
+  animation: cs-page-enter 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+/* Modal / dialog entrance animation */
+@keyframes cs-modal-enter {
+  0%   { opacity: 0; transform: translateY(24px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Target React portal dialogs and fixed overlays */
+body > div[role="dialog"],
+body > div[aria-modal="true"],
+.edx-role-module-drawer,
+[class*="fixed inset-0"][class*="z-50"] {
+  animation: cs-modal-enter 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Drawer slide-in from left/right */
+@keyframes cs-drawer-slide-left {
+  0%   { transform: translateX(-100%); opacity: 0.4; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes cs-drawer-slide-right {
+  0%   { transform: translateX(100%); opacity: 0.4; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+.edx-role-module-drawer.left-0 {
+  animation: cs-drawer-slide-left 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.edx-role-module-drawer.right-0 {
+  animation: cs-drawer-slide-right 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Overlay backdrop fade */
+@keyframes cs-overlay-fade {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+.edx-role-module-overlay-backdrop {
+  animation: cs-overlay-fade 0.22s ease-out !important;
+}
+
+/* Card tap feedback — subtle scale + glow */
+button,
+a,
+[role="button"],
+[class*="rounded-2xl"][class*="border"],
+[class*="rounded-3xl"][class*="border"] {
+  transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.16s ease,
+              background-color 0.16s ease;
+}
+button:active,
+[role="button"]:active {
+  transform: scale(0.97);
+}
+
+/* Card hover (desktop only — safe for mobile) */
+@media (hover: hover) {
+  [class*="rounded-2xl"][class*="border"]:hover {
+    box-shadow: 0 12px 32px -10px rgba(255, 52, 115, 0.2) !important;
+    transform: translateY(-2px);
+  }
+}
+
+/* Smooth scroll throughout the app */
+html, body {
+  scroll-behavior: smooth;
+}
+
+/* Scroll containers — momentum */
+.edx-mobile-main,
+.edx-role-module-drawer > div,
+[class*="overflow-y-auto"] {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Text/fade-in for the initial dashboard load */
+@keyframes cs-fade-in {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+.edunixo-mobile-runtime .edx-mobile-main {
+  animation: cs-fade-in 0.35s ease-out;
+}
+
+/* View Transitions API — modern Chrome 111+ */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root) {
+  animation: cs-page-exit 0.2s ease-in;
+}
+::view-transition-new(root) {
+  animation: cs-page-enter 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
