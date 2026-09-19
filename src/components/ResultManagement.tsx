@@ -3384,10 +3384,11 @@ export default function ResultManagement({
             if(!cancelled) setPrintableProgressCards(Array.isArray(payload.batches)?payload.batches:[]);
           } catch(e:any) { if(!cancelled) { setPrintableProgressCards([]); setProgressCardsError(e?.message||'Progress Card Print Queue could not be loaded.'); } }
           finally { if(!cancelled) setProgressCardsLoading(false); }
-        })();
-        return ()=>{cancelled=true};
-      }
-  }, [clerkTab, activeLedgerCategory, isClerk]);
+      })();
+      return ()=>{cancelled=true};
+    }
+  }
+}, [clerkTab, activeLedgerCategory, isClerk]);
 
   const handleDownloadMarkList = (ml: any) => {
     try {
