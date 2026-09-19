@@ -176,3 +176,44 @@ html body .edx-mobile-main > * {
   background: #FE9BBA !important;
   color: #1A0F2E !important;
 }
+
+/* ============================================================
+   PHASE 2 — Typography upgrade (Material 3 + Notion inspired)
+   ============================================================ */
+
+/* Bigger base font for readability */
+html body {
+  font-size: 16px !important;
+  line-height: 1.55 !important;
+  letter-spacing: -0.005em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Titles — larger, tighter tracking */
+html body h1 { font-size: 28px !important; font-weight: 800 !important; line-height: 34px !important; letter-spacing: -0.02em !important; }
+html body h2 { font-size: 22px !important; font-weight: 800 !important; line-height: 28px !important; letter-spacing: -0.015em !important; }
+html body h3 { font-size: 18px !important; font-weight: 700 !important; line-height: 24px !important; letter-spacing: -0.01em !important; }
+
+/* Module list titles — bump up text sizes */
+html body [class*="text-xs"]  { font-size: 13px !important; line-height: 18px !important; }
+html body [class*="text-sm"]  { font-size: 15px !important; line-height: 21px !important; }
+html body [class*="text-base"]{ font-size: 17px !important; line-height: 24px !important; }
+html body [class*="text-lg"]  { font-size: 19px !important; line-height: 26px !important; }
+html body [class*="text-xl"]  { font-size: 22px !important; line-height: 28px !important; }
+html body [class*="text-2xl"] { font-size: 26px !important; line-height: 32px !important; }
+
+/* Font weight boosts for titles/buttons */
+html body button,
+html body [role="button"] { font-weight: 700 !important; }
+
+/* Small labels — better tracking */
+html body [class*="text-[10px]"],
+html body [class*="text-[11px]"] {
+  letter-spacing: 0.03em !important;
+}
+
+/* Buttons — bigger tap targets */
+html body button:not([class*="p-0"]):not([class*="w-"]):not([class*="h-"]) {
+  min-height: 44px;
+}
