@@ -13954,9 +13954,3 @@ html, body, #root { max-width: 100%; }
   .edx-platform-campaign-head,
   .edx-platform-plan-head { min-width: 0; }
 }
-/**
- * Classtago Premium Theme — Bright Spring Palette
- * Loaded AFTER index.css. Safe to delete to revert.
- */
-
-:root {
