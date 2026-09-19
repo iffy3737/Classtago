@@ -18,16 +18,28 @@ function envFlag(name: string): boolean {
 
 function browserRequestsAppRuntime(): boolean {
   if (typeof window === 'undefined') return false;
+
+  // R2.5.98 URL mode: once the app runtime flag has been seen, remember it in
+  // localStorage so subsequent URL rewrites (login, navigation) don't lose it.
+  try {
+    if (localStorage.getItem('edunixo.app.runtimeFlag') === '1') return true;
+  } catch {}
+
   const host = String(window.location.hostname || '').trim().toLowerCase();
   const path = String(window.location.pathname || '/').toLowerCase();
   const params = new URLSearchParams(window.location.search || '');
 
-  return host.startsWith('app.')
+  const detected = host.startsWith('app.')
     || host.startsWith('erp.')
     || path === '/app'
     || path.startsWith('/app/')
     || params.get('edunixoApp') === '1'
     || params.get('app') === '1';
+
+  if (detected) {
+    try { localStorage.setItem('edunixo.app.runtimeFlag', '1'); } catch {}
+  }
+  return detected;
 }
 
 /** Native/packaged mobile build flag kept separate for API routing. */
