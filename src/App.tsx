@@ -835,7 +835,19 @@ export default function App() {
       )}
 
       {/* Android-style bottom navigation — app runtime only */}
-      {user && <BottomNav />}
+      {user && (
+        <>
+          <div style={{
+            position: 'fixed', top: '80px', left: '10px', right: '10px',
+            zIndex: 999999, padding: '12px', background: '#FF0000',
+            color: '#FFFFFF', fontSize: '14px', fontWeight: 'bold',
+            textAlign: 'center', borderRadius: '8px'
+          }}>
+            DEBUG: user exists — BottomNav should render
+          </div>
+          <BottomNav />
+        </>
+      )}
 
       <SmartPrintCenter />
       <GlobalActionConfirm />
