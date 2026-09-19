@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.webkit.PermissionRequest;
 import android.webkit.WebView;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -59,18 +58,18 @@ public class MainActivity extends BridgeActivity {
                 });
             }
         }
+    }
 
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                WebView wv = getBridge() != null ? getBridge().getWebView() : null;
-                if (wv != null && wv.canGoBack()) {
-                    wv.goBack();
-                } else {
-                    setEnabled(false);
-                    getOnBackPressedDispatcher().onBackPressed();
-                }
-            }
-        });
+    @Override
+    public void onBackPressed() {
+        // R2.5.98: onBackPressed works on all Android versions when
+        // enableOnBackInvokedCallback is NOT set. If WebView has history, go back;
+        // otherwise minimize the app so the user keeps their place.
+        WebView wv = getBridge() != null ? getBridge().getWebView() : null;
+        if (wv != null && wv.canGoBack()) {
+            wv.goBack();
+        } else {
+            moveTaskToBack(true);
+        }
     }
 }
