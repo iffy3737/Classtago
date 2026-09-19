@@ -59,4 +59,17 @@ public class MainActivity extends BridgeActivity {
             }
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        // R2.5.98 URL mode: honor the WebView history instead of exiting the app.
+        // If the WebView can go back, do so; otherwise minimize the app (never
+        // hard-exit) so the user's place is preserved.
+        WebView webView = getBridge() != null ? getBridge().getWebView() : null;
+        if (webView != null && webView.canGoBack()) {
+            webView.goBack();
+        } else {
+            moveTaskToBack(true);
+        }
+    }
 }
