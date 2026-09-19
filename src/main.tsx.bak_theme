@@ -15,7 +15,6 @@ import {installMobileRuntime} from './lib/mobileRuntime';
 import {installNativeAppRuntime} from './lib/nativeAppRuntime';
 import './index.css';
 
-
 installMobileRuntime();
 void installNativeAppRuntime();
 
