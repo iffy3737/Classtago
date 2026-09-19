@@ -16,6 +16,7 @@
         <uses-feature android:name="android.hardware.microphone" android:required="false" />
 
     <application
+        android:enableOnBackInvokedCallback="true"
         android:hardwareAccelerated="true"
         android:allowBackup="false"
         android:fullBackupContent="false"
