@@ -302,3 +302,45 @@ html body button:not([class*="p-0"]):not([class*="w-"]):not([class*="h-"]) {
 .edunixo-app-runtime .edx-mobile-main {
   padding-bottom: calc(78px + env(safe-area-inset-bottom, 0px)) !important;
 }
+
+/* ============================================================
+   PHASE 3b — FORCE bottom nav visible (specificity override)
+   ============================================================ */
+
+html body .cs-bottom-nav {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: auto !important;
+  z-index: 60 !important;
+  background: #FFFFFF !important;
+  border-top: 1px solid #F5ECF7 !important;
+  box-shadow: 0 -8px 28px -8px rgba(255, 52, 115, 0.15) !important;
+  padding: 8px 6px calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+  justify-content: space-around !important;
+  align-items: stretch !important;
+  min-height: 62px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Hide on large desktop screens */
+@media (min-width: 1024px) {
+  html body .cs-bottom-nav { display: none !important; }
+}
+
+/* Also add a temporary visible marker to verify it's in DOM */
+html body .cs-bottom-nav::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #FF3473, #FFA202);
+  pointer-events: none;
+}
