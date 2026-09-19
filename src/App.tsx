@@ -17,6 +17,7 @@ import UrduWrapper from './components/UrduWrapper';
 import SmartPrintCenter from './components/SmartPrintCenter';
 import GlobalActionConfirm from './components/GlobalActionConfirm';
 import AppearanceSwitcher from './components/AppearanceSwitcher';
+import BottomNav from './components/BottomNav';
 import { FALLBACK_LANGUAGE_CATALOGUE, LanguageOption, getLanguageOption, mergeLanguageCatalogues, normalizeLanguageCode, resolvedDirection } from './lib/languageCatalog';
 import { FALLBACK_FONT_CATALOGUE, FontOption, ensureWebFontLoaded, fontCssStack, getFontsForLanguage, normalizeFontCode, resolveFont } from './lib/fontCatalog';
 import { EdunixoAppearance, persistAppearance, readStoredAppearance } from './lib/appearance';
@@ -832,6 +833,9 @@ export default function App() {
       {user && currentView === 'erp' && IS_EDUNIXO_NATIVE_APP && user.role === 'super_admin' && (
         <PlatformSmsGatewayRuntime enabledForRole />
       )}
+
+      {/* Android-style bottom navigation — app runtime only */}
+      {user && currentView === 'erp' && <BottomNav />}
 
       <SmartPrintCenter />
       <GlobalActionConfirm />
