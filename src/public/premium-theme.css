@@ -344,3 +344,170 @@ html body .cs-bottom-nav::before {
   background: linear-gradient(90deg, #FF3473, #FFA202);
   pointer-events: none;
 }
+
+/* ============================================================
+   PHASE 4 — Role Module Menu Redesign (Light Premium)
+   Transforms the dark navy drawer into a light, colourful
+   Android-style menu matching the Spring theme.
+   ============================================================ */
+
+/* Overlay — softer pink backdrop */
+.edx-role-module-overlay-backdrop {
+  background-color: rgba(26, 15, 46, 0.55) !important;
+  backdrop-filter: blur(6px) !important;
+}
+
+/* Main drawer — light background + premium shadow */
+.edx-role-module-drawer {
+  background: #FFF9FC !important;
+  border-color: #F5ECF7 !important;
+  box-shadow: 0 30px 80px -10px rgba(255, 52, 115, 0.35) !important;
+}
+
+/* Header — gradient pink-orange */
+.edx-role-module-drawer-header {
+  background: linear-gradient(135deg, #FF3473 0%, #FFA202 100%) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 10px 30px -8px rgba(255, 52, 115, 0.5) !important;
+  color: #FFFFFF !important;
+}
+.edx-role-module-drawer-header p[class*="text-cyan-300"] {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+.edx-role-module-drawer-header h2,
+.edx-role-module-drawer-header [class*="text-white"] {
+  color: #FFFFFF !important;
+}
+.edx-role-module-drawer-header [class*="text-slate-400"] {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+/* Close button — soft white on gradient */
+.edx-role-module-drawer-header button[aria-label] {
+  background: rgba(255, 255, 255, 0.22) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  color: #FFFFFF !important;
+  backdrop-filter: blur(10px);
+}
+
+/* Search bar — clean white */
+.edx-role-module-search {
+  background: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 4px 14px -4px rgba(26, 15, 46, 0.15) !important;
+}
+.edx-role-module-search svg { color: #FF3473 !important; }
+.edx-role-module-search input {
+  background: transparent !important;
+  color: #1A0F2E !important;
+}
+.edx-role-module-search input::placeholder {
+  color: #9CA3AF !important;
+}
+
+/* Content area — light */
+.edx-role-module-drawer > div {
+  background: #FFF9FC !important;
+}
+
+/* Category + module cards — white with soft shadow */
+.edx-role-module-drawer section {
+  background: #FFFFFF !important;
+  border-color: #F5ECF7 !important;
+  box-shadow: 0 2px 12px -4px rgba(255, 52, 115, 0.08) !important;
+}
+
+/* Category header buttons — clean */
+.edx-role-module-drawer section > button {
+  background: transparent !important;
+  color: #1A0F2E !important;
+}
+.edx-role-module-drawer section > button:hover {
+  background: rgba(255, 52, 115, 0.04) !important;
+}
+
+/* Category label text — dark */
+.edx-role-module-drawer [class*="text-slate-100"],
+.edx-role-module-drawer [class*="text-white"] {
+  color: #1A0F2E !important;
+}
+.edx-role-module-drawer [class*="text-slate-300"] {
+  color: #4B5563 !important;
+}
+.edx-role-module-drawer [class*="text-slate-400"],
+.edx-role-module-drawer [class*="text-slate-500"] {
+  color: #6B5E7B !important;
+}
+.edx-role-module-drawer [class*="text-slate-600"] {
+  color: #9CA3AF !important;
+}
+
+/* Category icon square — gradient */
+.edx-role-module-drawer [class*="bg-cyan-300/10"] {
+  background: linear-gradient(135deg, rgba(236, 190, 237, 0.55), rgba(147, 215, 214, 0.55)) !important;
+  color: #B04A6E !important;
+}
+.edx-role-module-drawer [class*="text-cyan-300"] {
+  color: #FF3473 !important;
+}
+
+/* Active/selected module — pink highlight */
+.edx-role-module-drawer [class*="border-cyan-300/35"] {
+  border-color: #FF3473 !important;
+  background: rgba(255, 52, 115, 0.06) !important;
+}
+.edx-role-module-drawer [class*="bg-cyan-300/[0.085]"] {
+  background: rgba(255, 52, 115, 0.08) !important;
+}
+.edx-role-module-drawer [class*="bg-cyan-300"][class*="text-slate-950"] {
+  background: linear-gradient(135deg, #FF3473, #FFA202) !important;
+  color: #FFFFFF !important;
+}
+
+/* Nested feature list — soft background */
+.edx-role-module-drawer [class*="bg-slate-950/45"] {
+  background: #FDF3F8 !important;
+  border-color: #F5ECF7 !important;
+}
+.edx-role-module-drawer [class*="bg-slate-950/75"] {
+  background: #FFFFFF !important;
+}
+
+/* Divider borders — soft pink */
+.edx-role-module-drawer [class*="border-white/"] {
+  border-color: #F5ECF7 !important;
+}
+
+/* Hover states for features */
+.edx-role-module-drawer button:hover {
+  background-color: rgba(255, 52, 115, 0.04) !important;
+}
+
+/* Shortcut chips — pink tint */
+.edx-role-module-drawer [class*="bg-violet-300/10"] {
+  background: rgba(255, 52, 115, 0.1) !important;
+  color: #B04A6E !important;
+}
+.edx-role-module-drawer [class*="text-violet-300"],
+.edx-role-module-drawer [class*="text-violet-200"] {
+  color: #FF3473 !important;
+}
+
+/* Locked badge — keep amber but soft */
+.edx-role-module-drawer [class*="bg-amber-300/10"] {
+  background: rgba(255, 162, 2, 0.12) !important;
+  color: #B45309 !important;
+  border-color: rgba(255, 162, 2, 0.3) !important;
+}
+
+/* ============================================================
+   PHASE 4b — Hamburger Button (TopBar) — make it look like native menu
+   ============================================================ */
+button[aria-label*="menu" i],
+button[aria-label*="Menu" i] {
+  transition: transform 0.15s ease;
+}
+button[aria-label*="menu" i]:active,
+button[aria-label*="Menu" i]:active {
+  transform: scale(0.94);
+}
