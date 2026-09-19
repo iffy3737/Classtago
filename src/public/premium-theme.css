@@ -736,89 +736,60 @@ html body .erp-module-dock {
 }
 
 /* ============================================================
-   PHASE 5e — Move menu button to TOP-LEFT floating (native style)
+   PHASE 5f — Hamburger in TopBar + hide dock button
    ============================================================ */
 
-/* Make the dock a floating button top-left */
-html body .erp-module-dock {
-  position: fixed !important;
-  top: max(12px, env(safe-area-inset-top)) !important;
-  left: 12px !important;
-  right: auto !important;
-  bottom: auto !important;
-  z-index: 100 !important;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  width: auto !important;
-  max-width: none !important;
-  margin: 0 !important;
-  backdrop-filter: none !important;
-  border-radius: 0 !important;
-}
-
-/* Hide everything inside dock except the actual button */
-html body .erp-module-dock > div > *:not(button[aria-label]) {
-  display: none !important;
-}
-
-html body .erp-module-dock > div {
+.edx-mobile-hamburger {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  flex-shrink: 0 !important;
   display: flex !important;
-  gap: 0 !important;
-  padding: 0 !important;
-  flex-direction: row !important;
   align-items: center !important;
-  justify-content: flex-start !important;
-}
-
-/* Compact circular button */
-html body .erp-module-dock button[aria-label] {
-  width: 48px !important;
-  height: 48px !important;
-  min-height: 48px !important;
-  min-width: 48px !important;
-  padding: 0 !important;
+  justify-content: center !important;
   border-radius: 14px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  background: linear-gradient(135deg, #FF3473 0%, #FFA202 100%) !important;
   border: none !important;
-  box-shadow: 0 6px 18px -6px rgba(255, 52, 115, 0.6) !important;
-  transition: transform 0.15s ease !important;
+  background: linear-gradient(135deg, #FF3473 0%, #FFA202 100%) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 6px 18px -6px rgba(255, 52, 115, 0.55) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+  margin-right: 6px !important;
+  cursor: pointer !important;
 }
-
-html body .erp-module-dock button[aria-label]:active {
-  transform: scale(0.92) !important;
+.edx-mobile-hamburger:active {
+  transform: scale(0.94) !important;
 }
-
-/* Hide the text label ("MODULES / Teacher Dashboard") */
-html body .erp-module-dock button[aria-label] > span:last-child {
-  display: none !important;
-}
-
-/* Icon container — glass look */
-html body .erp-module-dock button[aria-label] > span:first-child {
-  width: 32px !important;
-  height: 32px !important;
-  min-width: 32px !important;
-  background: rgba(255, 255, 255, 0.25) !important;
-  border-radius: 10px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  box-shadow: none !important;
-}
-
-/* Icon — white bold */
-html body .erp-module-dock button[aria-label] svg {
+.edx-mobile-hamburger svg {
   color: #FFFFFF !important;
   stroke: #FFFFFF !important;
   stroke-width: 2.5 !important;
 }
 
-/* Ensure it appears above the top nav bar */
+.edx-mobile-topbar-inner {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 10px 14px !important;
+}
+
+.edx-mobile-brand-lockup {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+html body .erp-module-dock button[aria-label] {
+  display: none !important;
+}
+
 html body .erp-module-dock {
-  isolation: isolate;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 0 8px 0 !important;
+  min-height: 0 !important;
+}
+html body .erp-module-dock > div {
+  gap: 0 !important;
+  padding: 0 !important;
 }
