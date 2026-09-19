@@ -7,7 +7,7 @@ const config: CapacitorConfig = {
   server: {
     // R2.5.98 URL mode: the native shell loads the live Classtago website so
     // every web/backend update is reflected instantly without an APK rebuild.
-    url: 'https://edunixo-production-final.onrender.com/?edunixoApp=1',
+    url: 'https://classtago.in/?edunixoApp=1',
     cleartext: false,
     androidScheme: 'https',
     allowNavigation: [
