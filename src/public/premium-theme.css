@@ -690,3 +690,47 @@ html body .erp-module-dock {
   border-color: rgba(255, 52, 115, 0.15) !important;
   background: linear-gradient(135deg, rgba(255, 52, 115, 0.04), rgba(255, 162, 2, 0.04)) !important;
 }
+
+/* ============================================================
+   PHASE 5d — FIX: menu button visibility (override 5c)
+   ============================================================ */
+
+/* Force gradient on button */
+html body .erp-module-dock button[aria-label] {
+  background: linear-gradient(135deg, #FF3473 0%, #FFA202 100%) !important;
+  background-color: #FF3473 !important;
+  border: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* ALL children text white */
+html body .erp-module-dock button[aria-label] span,
+html body .erp-module-dock button[aria-label] p,
+html body .erp-module-dock button[aria-label] div {
+  color: #FFFFFF !important;
+}
+
+/* SVG icons white */
+html body .erp-module-dock button[aria-label] svg {
+  stroke: #FFFFFF !important;
+  color: #FFFFFF !important;
+  fill: none !important;
+}
+
+/* Icon square background - glass */
+html body .erp-module-dock button[aria-label] > span:first-child {
+  background: rgba(255, 255, 255, 0.28) !important;
+  color: #FFFFFF !important;
+}
+
+/* Make dock sticky at top */
+html body .erp-module-dock {
+  position: sticky !important;
+  top: 4px !important;
+  z-index: 70 !important;
+  background: #FFFFFF !important;
+  border-radius: 20px !important;
+  box-shadow: 0 6px 20px -6px rgba(255, 52, 115, 0.2) !important;
+  margin-bottom: 12px !important;
+}
