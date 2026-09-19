@@ -14,6 +14,15 @@ import AppErrorBoundary from './components/AppErrorBoundary';
 import {installMobileRuntime} from './lib/mobileRuntime';
 import {installNativeAppRuntime} from './lib/nativeAppRuntime';
 import './index.css';
+import themeUrl from './styles/premium-theme.css?url';
+
+if (typeof document !== 'undefined' && !document.getElementById('premium-theme-css')) {
+  const link = document.createElement('link');
+  link.id = 'premium-theme-css';
+  link.rel = 'stylesheet';
+  link.href = themeUrl;
+  document.head.appendChild(link);
+}
 
 installMobileRuntime();
 void installNativeAppRuntime();
