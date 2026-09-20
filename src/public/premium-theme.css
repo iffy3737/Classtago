@@ -2582,3 +2582,25 @@ html body .edx-mobile-topbar-actions {
   flex: 0 0 auto !important;
   margin-left: auto !important;
 }
+
+/* ============================================================
+   LANGUAGE BUTTON — half size
+   ============================================================ */
+
+html body .edx-mobile-topbar-actions [class*="LanguageSelector"] button,
+html body .edx-mobile-topbar-actions button[aria-label*="language" i],
+html body .edx-mobile-topbar-actions [class*="LanguageSelector"] > button {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+}
+
+html body .edx-mobile-topbar-actions [class*="LanguageSelector"] button svg,
+html body .edx-mobile-topbar-actions button[aria-label*="language" i] svg,
+html body .edx-mobile-topbar-actions [class*="LanguageSelector"] button > svg:first-of-type {
+  width: 14px !important;
+  height: 14px !important;
+}
