@@ -875,3 +875,44 @@ body::before {
     radial-gradient(circle at 20% 10%, rgba(255, 162, 2, 0.08), transparent 45%),
     radial-gradient(circle at 80% 90%, rgba(236, 190, 237, 0.15), transparent 45%);
 }
+
+/* ============================================================
+   PHASE 8 — Fix: revert pink dominance, back to premium cream
+   ============================================================ */
+
+/* Soft cream background — only hint of pink */
+html, body, #root, .edunixo-theme-root, .edunixo-interface-root {
+  background: #FDFAFB !important;
+  background-color: #FDFAFB !important;
+}
+
+.edunixo-mobile-runtime .edx-mobile-main,
+.edunixo-app-runtime .edx-mobile-main {
+  background: #FDFAFB !important;
+}
+
+.edx-mobile-topbar {
+  background: #FDFAFB !important;
+}
+
+/* Remove the pink radial gradient overlay */
+body::before {
+  background: none !important;
+}
+
+/* Cards stay white, pop against cream */
+html body .bg-white {
+  background: #FFFFFF !important;
+  box-shadow: 0 2px 12px -6px rgba(255, 52, 115, 0.1) !important;
+}
+
+/* Keep subtle pink only on accent areas */
+html body [class*="bg-pink-50"],
+html body [class*="bg-rose-50"] {
+  background: linear-gradient(135deg, rgba(255, 52, 115, 0.06), rgba(255, 162, 2, 0.06)) !important;
+}
+
+/* Bottom nav stays white */
+.cs-bottom-nav {
+  background: #FFFFFF !important;
+}
