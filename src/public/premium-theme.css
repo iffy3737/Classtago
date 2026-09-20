@@ -1280,3 +1280,125 @@ html body [class*="rounded-3xl"][class*="bg-white"] {
   border: 1px solid #E2E8F0 !important;
   box-shadow: 0 2px 12px -6px rgba(15, 23, 42, 0.08) !important;
 }
+
+/* ============================================================
+   PHASE 12 — Final fixes: topbar spacing, bottom nav active, 
+   menu search ring, keyboard stability, remove pink leftovers
+   ============================================================ */
+
+/* ---- ISSUE 1: TopBar — language box smaller so "Classtago" text visible ---- */
+.edx-mobile-topbar-inner {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 10px 12px !important;
+}
+.edx-mobile-brand-lockup {
+  flex: 0 1 auto !important;
+  min-width: 0 !important;
+  max-width: 30% !important;
+}
+.edx-mobile-brand-lockup h1,
+.edx-mobile-brand-lockup p {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  font-size: 12px !important;
+}
+.edx-mobile-brand-mark {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  flex-shrink: 0 !important;
+}
+.edx-mobile-brand-mark svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+/* Language selector — compress */
+.edx-mobile-topbar-inner button[aria-label*="language" i],
+.edx-mobile-topbar-inner [class*="LanguageSelector"] button,
+.edx-mobile-topbar-actions button:first-child {
+  max-width: 110px !important;
+  min-width: 0 !important;
+  padding: 6px 10px !important;
+  font-size: 12px !important;
+  height: 36px !important;
+}
+
+/* ---- ISSUE 2: Bottom nav active indicator follows current page ---- */
+/* These are set by JS but ensure visual fallback is correct */
+.cs-nav-item .cs-nav-icon-wrap {
+  transition: background-image 0.25s ease, background-color 0.25s ease,
+              transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+.cs-nav-item:not(.cs-nav-item-active) .cs-nav-icon-wrap {
+  background-image: none !important;
+  background-color: transparent !important;
+  transform: translateY(0) !important;
+  box-shadow: none !important;
+}
+.cs-nav-item:not(.cs-nav-item-active) .cs-nav-icon {
+  color: #6B5E7B !important;
+}
+.cs-nav-item:not(.cs-nav-item-active) .cs-nav-label {
+  color: #6B5E7B !important;
+  -webkit-text-fill-color: #6B5E7B !important;
+  background-image: none !important;
+}
+
+/* ---- ISSUE 3: Menu search — full ring, no half-cut outline ---- */
+.edx-role-module-search {
+  border-radius: 14px !important;
+  outline: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+.edx-role-module-search:focus-within {
+  border-color: #6366F1 !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+  outline: none !important;
+}
+.edx-role-module-search input {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.edx-role-module-search input:focus,
+.edx-role-module-search input:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* ---- ISSUE 4: Menu search — keyboard stays open on tap ---- */
+/* Prevent blur on tap outside input within menu drawer */
+.edx-role-module-drawer {
+  -webkit-tap-highlight-color: transparent;
+}
+.edx-role-module-drawer input {
+  /* Ensure input is not the pointerdown target for blur handlers */
+  -webkit-user-modify: read-write;
+}
+
+/* ---- BONUS: Remove pink leftovers in menu footer ---- */
+.edx-role-module-drawer [class*="text-rose-"],
+.edx-role-module-drawer [class*="text-pink-"] {
+  color: #6366F1 !important;
+}
+.edx-role-module-drawer button[class*="text-rose-"],
+.edx-role-module-drawer button [class*="text-rose-"],
+.edx-role-module-drawer [class*="text-rose-700"],
+.edx-role-module-drawer [class*="text-rose-600"],
+.edx-role-module-drawer [class*="text-rose-500"] {
+  color: #6366F1 !important;
+}
+
+/* Menu footer items (FAQS, ABOUT CLASSTAGO) — clean borders, not pink */
+.edx-role-module-drawer [class*="border-rose-"],
+.edx-role-module-drawer [class*="border-pink-"] {
+  border-color: #E2E8F0 !important;
+}
+.edx-role-module-drawer [class*="bg-rose-50"],
+.edx-role-module-drawer [class*="bg-pink-50"] {
+  background: #F8FAFC !important;
+}
