@@ -33,9 +33,9 @@ void installNativeAppRuntime();
   };
   const blurIfTextField = () => {
     const active = document.activeElement;
-    if (isTextField(active) && active instanceof HTMLElement) {
-      try { active.blur(); } catch {}
-    }
+    if (!isTextField(active) || !(active instanceof HTMLElement)) return;
+    if (active.closest('.edx-role-module-drawer')) return;
+    try { active.blur(); } catch {}
   };
   // 1) Route/hash change — the app re-renders into a new page.
   window.addEventListener('hashchange', () => setTimeout(blurIfTextField, 0));

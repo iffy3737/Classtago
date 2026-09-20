@@ -27,10 +27,20 @@ export default function BottomNav() {
     };
     readHash();
     window.addEventListener('hashchange', readHash);
-    return () => window.removeEventListener('hashchange', readHash);
+    window.addEventListener('popstate', readHash);
+    window.addEventListener('edunixo:route-change', readHash);
+    const interval = window.setInterval(readHash, 500);
+    return () => {
+      window.removeEventListener('hashchange', readHash);
+      window.removeEventListener('popstate', readHash);
+      window.removeEventListener('edunixo:route-change', readHash);
+      window.clearInterval(interval);
+    };
   }, []);
 
   const go = (tab: any) => {
+    // Set active immediately so the indicator follows the tap.
+    setActiveId(tab.id);
     try {
       const opener = (window as any).__classtago_maria_open_role_module;
       if (typeof opener === 'function' && opener(tab.moduleId, tab.featureId)) return;
