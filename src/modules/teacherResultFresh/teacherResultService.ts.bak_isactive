@@ -220,7 +220,7 @@ export async function loadClassSubjectStatuses(context:TeacherCloudContext, clas
   const readAssignments = async () => {
     // Production source-of-truth: canonical Academic Assignment table. An empty
     // canonical result is intentional and must not be filled from legacy rows.
-    let canonical:any=supabase.from('school_subject_teacher_assignments').select('*').eq('school_id',context.schoolId).eq('academic_year_id',classScope.academicYearId).eq('class_id',classScope.classId).eq('is_active', true);
+    let canonical:any=supabase.from('school_subject_teacher_assignments').select('*').eq('school_id',context.schoolId).eq('academic_year_id',classScope.academicYearId).eq('class_id',classScope.classId);
     if (classScope.divisionId) canonical=canonical.eq('division_id',classScope.divisionId); else canonical=canonical.is('division_id',null);
     const current=await canonical;
     if (!current.error) return current.data||[];
