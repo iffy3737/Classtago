@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { BellRing, CheckCircle2, Clock3, FileText, LogOut, PackageCheck, RefreshCw, ShieldCheck, UserRound, UsersRound } from 'lucide-react';
+import { Calendar as MI_Cal, BarChart3 as MI_Bar, FileText as MI_File, Users as MI_Users, MessageSquare as MI_Msg, CircleDollarSign as MI_Fee, Award as MI_Award, FileUp as MI_Up, UsersRound as MI_Gate, PackageCheck as MI_Pkg, BellRing as MI_Bell, Clock3 as MI_Clock, BookOpen as MI_Book, ClipboardList as MI_List, GraduationCap as MI_Grad, Bell as MI_BellSimple } from 'lucide-react';
 import RoleHeroCard from '../../components/RoleHeroCard';
+import ModulesPreviewCard from '../../components/ModulesPreviewCard';
 import type { User } from '../../types';
 import { supabase } from '../../lib/supabase';
 import { getNativeBellStatus, isNativeBellPlatform, openNativeBellNotificationSettings, requestNativeExactAlarmAccess, syncNativeBellSchedule } from '../../lib/bellAlarmNative';
@@ -48,6 +50,22 @@ export default function PeonPortalWorkspace({user,activeModuleId='pn-home',onNav
           { value: 'Active', label: 'Status' },
         ]}
         showSparkle={false}
-      />{cards}<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{[['pn-bell-timing','Bell Timing & Alarm',BellRing],['pn-gate-visitor','Gate & Visitor Desk',UsersRound],['pn-dispatch','Dispatch & Delivery',PackageCheck],['pn-leave','My Leave',Clock3],['pn-notices','Notices & Instructions',FileText],['pn-profile','Profile & Security',ShieldCheck]].map(([id,label,Icon]:any)=><button key={id} type="button" onClick={()=>onNavigate?.(id)} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-left"><Icon className="h-5 w-5 text-blue-600"/><b className="text-sm text-slate-800">{label}</b></button>)}</div>{notice}</div>;
+      />
+
+      <ModulesPreviewCard
+        title="Modules"
+        items={[
+          { id: 'bell', label: 'Bell Timing & Alarm', subtitle: 'Mandatory bell service · Daily schedule', icon: MI_Bell, gradient: 'linear-gradient(135deg, #FF3473, #D91B5C)', route: 'pn-bell-timing' },
+          { id: 'gate', label: 'Gate & Visitor Desk', subtitle: 'Visitors · Deliveries · Entry log', icon: MI_Gate, gradient: 'linear-gradient(135deg, #FFA202, #E08800)', route: 'pn-gate-visitor' },
+          { id: 'dispatch', label: 'Dispatch & Delivery', subtitle: 'Courier · Registered post', icon: MI_Pkg, gradient: 'linear-gradient(135deg, #8B5CF6, #6D28D9)', route: 'pn-dispatch' },
+          { id: 'notices', label: 'Notices & Instructions', subtitle: 'School announcements · Office orders', icon: MI_File, gradient: 'linear-gradient(135deg, #14B8A6, #0F766E)', route: 'pn-notices' }
+        ]}
+        onNavigate={(route, featureId) => {
+          const opener = (window as any).__classtago_maria_open_role_module;
+          if (typeof opener === 'function') opener(route, featureId);
+        }}
+        onViewAll={() => window.dispatchEvent(new CustomEvent('edunixo:open-menu'))}
+      />
+{cards}<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{[['pn-bell-timing','Bell Timing & Alarm',BellRing],['pn-gate-visitor','Gate & Visitor Desk',UsersRound],['pn-dispatch','Dispatch & Delivery',PackageCheck],['pn-leave','My Leave',Clock3],['pn-notices','Notices & Instructions',FileText],['pn-profile','Profile & Security',ShieldCheck]].map(([id,label,Icon]:any)=><button key={id} type="button" onClick={()=>onNavigate?.(id)} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-left"><Icon className="h-5 w-5 text-blue-600"/><b className="text-sm text-slate-800">{label}</b></button>)}</div>{notice}</div>;
 }
 function GateList({title,rows,nameKey,onReturn}:{title:string;rows:any[];nameKey:string;onReturn:(id:string)=>void}){return <section className="rounded-3xl border border-slate-200 bg-white p-5"><h3 className="font-black text-slate-900">{title}</h3><div className="mt-3 space-y-2">{rows.map(p=><div key={p.id} className="flex items-center justify-between gap-3 rounded-xl bg-slate-50 p-3"><div><b className="text-sm">{p[nameKey]}</b><div className="text-xs text-slate-500">{p.passNo} · {p.reason}</div></div><button type="button" onClick={()=>onReturn(p.id)} className="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-bold text-white">Mark Returned</button></div>)}{!rows.length&&<p className="text-xs text-slate-500">No approved person currently out.</p>}</div></section>}

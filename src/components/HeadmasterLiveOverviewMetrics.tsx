@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import RoleHeroCard from './RoleHeroCard';
+import ModulesPreviewCard from './ModulesPreviewCard';
 import { BadgeCheck, Cloud, GraduationCap, Loader2, RefreshCw, UserRoundCheck, Users } from 'lucide-react';
+import { Calendar as MI_Cal, BarChart3 as MI_Bar, FileText as MI_File, Users as MI_Users, MessageSquare as MI_Msg, CircleDollarSign as MI_Fee, Award as MI_Award, FileUp as MI_Up, UsersRound as MI_Gate, PackageCheck as MI_Pkg, BellRing as MI_Bell, Clock3 as MI_Clock, BookOpen as MI_Book, ClipboardList as MI_List, GraduationCap as MI_Grad, Bell as MI_BellSimple } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 type Snapshot = {
@@ -62,6 +64,22 @@ export default function HeadmasterLiveOverviewMetrics() {
         ctaLabel={loading ? 'Loading\u2026' : 'Refresh Live Data'}
         onCtaClick={() => void load()}
       />
+
+      <ModulesPreviewCard
+        title="Modules"
+        items={[
+          { id: 'attendance', label: 'Attendance', subtitle: 'Daily registers · Student & Staff', icon: MI_Cal, gradient: 'linear-gradient(135deg, #FF3473, #D91B5C)', route: 'hm-student-attendance' },
+          { id: 'results', label: 'Result Management', subtitle: 'Marks · Result books · Progress cards', icon: MI_Bar, gradient: 'linear-gradient(135deg, #FFA202, #E08800)', route: 'hm-result-management' },
+          { id: 'communication', label: 'Communication', subtitle: 'Notices · Messages · SMS', icon: MI_Msg, gradient: 'linear-gradient(135deg, #8B5CF6, #6D28D9)', route: 'hm-communication' },
+          { id: 'fees', label: 'Fees', subtitle: 'Ledger · Collection · Reports', icon: MI_Fee, gradient: 'linear-gradient(135deg, #14B8A6, #0F766E)', route: 'hm-smart-fees-desk' }
+        ]}
+        onNavigate={(route, featureId) => {
+          const opener = (window as any).__classtago_maria_open_role_module;
+          if (typeof opener === 'function') opener(route, featureId);
+        }}
+        onViewAll={() => window.dispatchEvent(new CustomEvent('edunixo:open-menu'))}
+      />
+
       {error && <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-semibold text-rose-700">{error}</div>}
     </div>
   );
