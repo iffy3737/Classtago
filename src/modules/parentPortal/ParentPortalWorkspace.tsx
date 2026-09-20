@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import RoleHeroCard from '../../components/RoleHeroCard';
+import ModulesPreviewCard from '../../components/ModulesPreviewCard';
 import {
   AlertCircle, Bell, BookMarked, BookOpen, CalendarCheck, CheckCircle2, ChevronDown,
   CircleDollarSign, Clock3, Download, FileCheck2, FileText, GraduationCap, Library,
   Link2, Loader2, RefreshCw, School, ShieldCheck, UserRound, UsersRound
 } from 'lucide-react';
+import { Calendar as MI_Cal, BarChart3 as MI_Bar, FileText as MI_File, Users as MI_Users, MessageSquare as MI_Msg, CircleDollarSign as MI_Fee, Award as MI_Award, FileUp as MI_Up, UsersRound as MI_Gate, PackageCheck as MI_Pkg, BellRing as MI_Bell, Clock3 as MI_Clock, BookOpen as MI_Book, ClipboardList as MI_List, GraduationCap as MI_Grad, Bell as MI_BellSimple } from 'lucide-react';
 import type { Language, User } from '../../types';
 import type { RoleModuleFeature, RoleVisibleModule } from '../../lib/roleModuleBlueprint';
 import type { StudentPortalSnapshot, StudentServiceRequest } from '../studentPortal/studentPortalService';
@@ -228,6 +230,22 @@ export default function ParentPortalWorkspace({ user, module, feature, onNavigat
           ctaLabel="Open Child Attendance"
           onCtaClick={() => onNavigate?.('pa-attendance')}
         />
+
+      <ModulesPreviewCard
+        title="Modules"
+        items={[
+          { id: 'attendance', label: 'Child Attendance', subtitle: 'Daily attendance · Monthly view', icon: MI_Cal, gradient: 'linear-gradient(135deg, #FF3473, #D91B5C)', route: 'pa-attendance' },
+          { id: 'homework', label: 'Child Homework', subtitle: 'Assigned work · Study material', icon: MI_Book, gradient: 'linear-gradient(135deg, #FFA202, #E08800)', route: 'pa-homework-material' },
+          { id: 'results', label: 'Child Results', subtitle: 'Marks · Progress cards', icon: MI_Bar, gradient: 'linear-gradient(135deg, #8B5CF6, #6D28D9)', route: 'pa-results-progress' },
+          { id: 'fees', label: 'Child Fees & Receipts', subtitle: 'Ledger · Payment history', icon: MI_Fee, gradient: 'linear-gradient(135deg, #14B8A6, #0F766E)', route: 'pa-fees' }
+        ]}
+        onNavigate={(route, featureId) => {
+          const opener = (window as any).__classtago_maria_open_role_module;
+          if (typeof opener === 'function') opener(route, featureId);
+        }}
+        onViewAll={() => window.dispatchEvent(new CustomEvent('edunixo:open-menu'))}
+      />
+
       </div>
       <div className="px-5 sm:px-7 pb-5">{mariaStatus&&<div className="mb-5 rounded-2xl border border-violet-200 bg-violet-50 p-4 text-xs font-bold leading-5 text-violet-900"><b>Maria:</b> {mariaStatus}</div>}{error&&<div className="mb-5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs font-bold text-rose-800">{error}</div>}{message&&module.id!=='pa-leave'&&module.id!=='pa-certificate-requests'&&module.id!=='pa-profile'&&<div className="mb-5 rounded-2xl border border-slate-200 bg-white p-4 text-xs font-bold">{message}</div>}{content}<div className="mt-7 flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-[11px] leading-6 text-slate-500"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600"/><span>Privacy boundary: Parent access is derived only from Headmaster-approved, school-scoped Parent-child link records. Marks, attendance, Result Book, Teacher drafts, other students and administrative edit/approval controls remain inaccessible.</span><button onClick={()=>void refresh()} className="ml-auto shrink-0 rounded-lg border border-slate-200 p-2 text-slate-600" title="Refresh"><RefreshCw className="h-4 w-4"/></button></div></div></section>;
 }

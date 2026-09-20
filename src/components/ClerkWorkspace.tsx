@@ -5,12 +5,14 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import RoleHeroCard from './RoleHeroCard';
+import ModulesPreviewCard from './ModulesPreviewCard';
 import * as XLSX from 'xlsx';
 import { 
   Users, BookOpen, Edit, FileText, Calendar, Plus, Trash2, Landmark, 
   CheckCircle, Clock, CircleDollarSign, Search, Filter, 
   Printer, Download, Eye, FileUp, Award, Shield, User, HelpCircle, ArrowRight
 } from 'lucide-react';
+import { Calendar as MI_Cal, BarChart3 as MI_Bar, FileText as MI_File, Users as MI_Users, MessageSquare as MI_Msg, CircleDollarSign as MI_Fee, Award as MI_Award, FileUp as MI_Up, UsersRound as MI_Gate, PackageCheck as MI_Pkg, BellRing as MI_Bell, Clock3 as MI_Clock, BookOpen as MI_Book, ClipboardList as MI_List, GraduationCap as MI_Grad, Bell as MI_BellSimple } from 'lucide-react';
 import { Language, User as UserType, ClassStructure, FeeRecord } from '../types';
 import UrduWrapper from './UrduWrapper';
 import { LocalERPDatabase, supabase } from '../lib/supabase';
@@ -1169,6 +1171,22 @@ export default function ClerkWorkspace({ lang, user, classes, onRefreshData, ini
             ctaLabel={dashboardLoading ? 'Refreshing\u2026' : 'Refresh Cloud'}
             onCtaClick={() => void loadClerkDashboard()}
           />
+
+      <ModulesPreviewCard
+        title="Modules"
+        items={[
+          { id: 'admissions', label: 'Admission Desk', subtitle: 'New admission · Bulk import', icon: MI_Up, gradient: 'linear-gradient(135deg, #FF3473, #D91B5C)', route: 'admissions' },
+          { id: 'certificates', label: 'Certificates', subtitle: 'Bonafide · LC · Custom', icon: MI_Award, gradient: 'linear-gradient(135deg, #FFA202, #E08800)', route: 'certificates' },
+          { id: 'fees', label: 'Fees Counter', subtitle: 'Collect · Receipts · Reports', icon: MI_Fee, gradient: 'linear-gradient(135deg, #8B5CF6, #6D28D9)', route: 'fees' },
+          { id: 'documents', label: 'Documents Vault', subtitle: 'Student documents · Compliance', icon: MI_File, gradient: 'linear-gradient(135deg, #14B8A6, #0F766E)', route: 'documents' }
+        ]}
+        onNavigate={(route, featureId) => {
+          const opener = (window as any).__classtago_maria_open_role_module;
+          if (typeof opener === 'function') opener(route, featureId);
+        }}
+        onViewAll={() => window.dispatchEvent(new CustomEvent('edunixo:open-menu'))}
+      />
+
           {dashboardError && <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-semibold text-rose-700">{dashboardError}</div>}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
