@@ -2604,3 +2604,90 @@ html body .edx-mobile-topbar-actions [class*="LanguageSelector"] button > svg:fi
   width: 14px !important;
   height: 14px !important;
 }
+
+/* ============================================================
+   OVERRIDE — Language button smaller + brand left-aligned
+   ============================================================ */
+
+/* ---- TopBar layout: left-aligned brand ---- */
+html body .edx-mobile-topbar-inner {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  padding: 8px 12px !important;
+}
+
+/* Brand — sits right next to hamburger, left-aligned */
+html body .edx-mobile-topbar-inner > .edx-mobile-brand-lockup {
+  margin: 0 !important;
+  padding: 0 !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  align-items: flex-start !important;
+  text-align: left !important;
+}
+html body .edx-mobile-topbar-inner > .edx-mobile-brand-lockup .edx-mobile-brand-eyebrow,
+html body .edx-mobile-topbar-inner > .edx-mobile-brand-lockup h1 {
+  text-align: left !important;
+  margin-left: 0 !important;
+}
+
+/* Actions — push to right */
+html body .edx-mobile-topbar-inner > .edx-mobile-topbar-actions {
+  margin-left: auto !important;
+  flex: 0 0 auto !important;
+}
+
+/* ---- Language button — FORCE smaller with ID-level specificity ---- */
+html body header.edx-mobile-topbar .edx-mobile-topbar-actions > div:first-child > * > button,
+html body header.edx-mobile-topbar .edx-mobile-topbar-actions > div:first-child button,
+html body header.edx-mobile-topbar .edx-mobile-topbar-actions button {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  min-height: 28px !important;
+  max-height: 28px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+  font-size: 0 !important;
+  overflow: hidden !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Globe icon stays 22x22 */
+html body header.edx-mobile-topbar .edx-mobile-topbar-actions button svg {
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  min-height: 22px !important;
+  flex-shrink: 0 !important;
+  color: #6366F1 !important;
+  stroke: #6366F1 !important;
+}
+
+/* Hide any text span inside language button */
+html body header.edx-mobile-topbar .edx-mobile-topbar-actions button > span,
+html body header.edx-mobile-topbar .edx-mobile-topbar-actions button > div,
+html body header.edx-mobile-topbar .edx-mobile-topbar-actions button > p {
+  display: none !important;
+}
+
+/* Logout button matches language button size */
+html body .edx-mobile-logout {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  min-height: 28px !important;
+  max-height: 28px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+}
+html body .edx-mobile-logout svg {
+  width: 16px !important;
+  height: 16px !important;
+}
