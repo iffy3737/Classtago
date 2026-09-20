@@ -2691,3 +2691,54 @@ html body .edx-mobile-logout svg {
   width: 16px !important;
   height: 16px !important;
 }
+
+/* ============================================================
+   HEADMASTER ASSIGNED DUTIES — Premium card
+   ============================================================ */
+
+.cs-hm-section {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 20px -8px rgba(99, 102, 241, 0.12), 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+.cs-hm-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.cs-hm-icon {
+  width: 36px; height: 36px; border-radius: 12px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15));
+  display: flex; align-items: center; justify-content: center;
+  color: #6366F1; flex-shrink: 0;
+}
+.cs-hm-title { font-size: 17px; font-weight: 900; color: #0F172A; letter-spacing: -0.01em; margin: 0; }
+.cs-hm-sub { font-size: 12.5px; color: #64748B; line-height: 1.5; margin: 0 0 16px; }
+.cs-hm-card {
+  background: #F8FAFC; border-radius: 16px; padding: 14px;
+  margin-bottom: 10px; border: 1px solid #E2E8F0;
+}
+.cs-hm-card-label {
+  font-size: 10px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.08em; margin-bottom: 8px;
+}
+.cs-hm-label-indigo { color: #6366F1; }
+.cs-hm-label-violet { color: #8B5CF6; }
+.cs-hm-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.cs-hm-chip {
+  padding: 5px 10px; border-radius: 100px; font-size: 11px; font-weight: 700;
+  background: #FFFFFF; border: 1px solid #E2E8F0; color: #0F172A;
+}
+.cs-hm-chip-indigo { background: #EEF2FF; border-color: #C7D2FE; color: #4338CA; }
+.cs-hm-chip-violet { background: #F5F3FF; border-color: #DDD6FE; color: #6D28D9; }
+.cs-hm-stat { font-size: 13px; font-weight: 800; color: #0F172A; margin-bottom: 8px; }
+.cs-hm-stat small { font-size: 11px; font-weight: 600; color: #64748B; }
+.cs-hm-empty { font-size: 12.5px; color: #94A3B8; font-weight: 500; font-style: italic; margin: 0; }
+.cs-hm-cta {
+  width: 100%; padding: 13px; background: #FFFFFF;
+  border: 1.5px solid #E2E8F0; border-radius: 14px;
+  font-size: 13px; font-weight: 800; color: #0F172A;
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px; margin-top: 6px; cursor: pointer;
+}
+.cs-hm-cta:active { background: #EEF2FF; border-color: #C7D2FE; }
+.cs-hm-cta span { color: #6366F1; font-weight: 900; }
