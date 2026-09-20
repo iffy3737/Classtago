@@ -1,7 +1,6 @@
 /**
- * ModulesPreviewCard — clean Android-style list of top modules.
- * Reusable across all roles. Shows 4-5 modules with colored gradient icons,
- * chevron, "View all" link that opens the full RoleModuleMenu.
+ * ModulesPreviewCard — clean Android-style modules.
+ * Each module is a separate card with its own rounded border + shadow.
  */
 import React from 'react';
 import { ChevronRight, ArrowRight } from 'lucide-react';
@@ -41,17 +40,15 @@ export default function ModulesPreviewCard({ items, onNavigate, onViewAll, title
           </button>
         )}
       </div>
-      <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-        {items.map((item, idx) => {
+      <div className="space-y-3">
+        {items.map((item) => {
           const Icon = item.icon;
           return (
             <button
               key={item.id}
               type="button"
               onClick={() => onNavigate(item.route, item.featureId)}
-              className={`cs-module-row flex w-full items-center gap-4 p-4 text-left transition ${
-                idx > 0 ? 'border-t border-slate-100' : ''
-              }`}
+              className="cs-module-row flex w-full items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition"
             >
               <span
                 className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-white shadow-md"
