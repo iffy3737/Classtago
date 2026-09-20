@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import RoleHeroCard from '../../components/RoleHeroCard';
 import {
   AlertCircle, Bell, BookMarked, BookOpen, CalendarCheck, CalendarDays, CheckCircle2,
   ChevronRight, CircleDollarSign, Clock3, Download, FileCheck2, FileText, GraduationCap,
@@ -173,21 +172,5 @@ export default function StudentPortalWorkspace({ user, module, feature, onNaviga
     content = <EmptyState title={module.label} text="This Student module is secured and ready. No unrelated administrative workspace is exposed." />;
   }
 
-  return <section className="edx-student-portal edx-theme-safe animate-fade-in overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-50 shadow-xl">{header}
-      <div className="p-5 sm:p-7 pt-5">
-        <RoleHeroCard
-          name={profile?.fullName || user.name}
-          role="student"
-          workspaceLabel="Student Workspace"
-          subtitle="Your attendance, homework, results and school updates — all in one place."
-          stats={[
-            { value: snapshot?.attendance?.rate == null ? '—' : `${snapshot.attendance.rate}%`, label: 'Attendance' },
-            { value: (snapshot?.homework?.rows || []).length, label: 'Homework' },
-            { value: (snapshot?.results?.rows || []).length, label: 'Results' },
-          ]}
-          ctaLabel="View My Timetable"
-          onCtaClick={() => onNavigate?.('st-timetable')}
-        />
-      </div>
-      <div className="px-5 sm:px-7 pb-5">{error && <div className="mb-5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs font-bold text-rose-800">{error}</div>}{content}<div className="mt-7 flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-[11px] leading-6 text-slate-500"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600"/><span>Privacy boundary: this workspace resolves the signed-in Student through the canonical Student Master link and returns only own/published records. Teacher drafts, other students, school-wide edit controls and approval actions are never exposed.</span></div></div></section>;
+  return <section className="edx-student-portal edx-theme-safe animate-fade-in overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-50 shadow-xl">{header}<div className="p-5 sm:p-7">{error && <div className="mb-5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs font-bold text-rose-800">{error}</div>}{content}<div className="mt-7 flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-[11px] leading-6 text-slate-500"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600"/><span>Privacy boundary: this workspace resolves the signed-in Student through the canonical Student Master link and returns only own/published records. Teacher drafts, other students, school-wide edit controls and approval actions are never exposed.</span></div></div></section>;
 }
