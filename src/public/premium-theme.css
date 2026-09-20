@@ -1402,3 +1402,51 @@ html body [class*="rounded-3xl"][class*="bg-white"] {
 .edx-role-module-drawer [class*="bg-pink-50"] {
   background: #F8FAFC !important;
 }
+
+/* ============================================================
+   PHASE 13 — Language bar smaller (text size normal)
+   ============================================================ */
+
+.edx-mobile-brand-lockup {
+  flex: 0 1 auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+}
+.edx-mobile-brand-lockup h1,
+.edx-mobile-brand-lockup p,
+.edx-mobile-brand-lockup .edx-mobile-brand-eyebrow {
+  font-size: 13px !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+}
+.edx-mobile-brand-lockup h1 {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+}
+
+.edx-mobile-topbar-inner [class*="LanguageSelector"],
+.edx-mobile-topbar-inner [class*="language"] {
+  max-width: 100px !important;
+  min-width: 0 !important;
+}
+.edx-mobile-topbar-inner [class*="LanguageSelector"] button,
+.edx-mobile-topbar-inner button[aria-label*="language" i] {
+  max-width: 100px !important;
+  min-width: 88px !important;
+  padding: 6px 8px !important;
+  font-size: 13px !important;
+  height: 38px !important;
+  gap: 4px !important;
+}
+.edx-mobile-topbar-inner [class*="LanguageSelector"] button svg,
+.edx-mobile-topbar-inner button[aria-label*="language" i] svg {
+  width: 14px !important;
+  height: 14px !important;
+  flex-shrink: 0 !important;
+}
+
+.edx-mobile-topbar-inner {
+  padding: 8px 10px !important;
+  gap: 8px !important;
+}
