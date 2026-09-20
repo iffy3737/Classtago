@@ -771,3 +771,83 @@
   font-size: 13px !important;
   text-align: center !important;
 }
+
+/* ============================================================
+   Fix: Manual Paper Pattern — mobile layout
+   ============================================================ */
+
+.edx-teacher-ai .pattern-box {
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 16px !important;
+  padding: 16px !important;
+  margin: 4px 0 14px !important;
+}
+
+.edx-teacher-ai .pattern-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 70px auto 70px auto 36px !important;
+  gap: 6px !important;
+  align-items: center !important;
+  margin-bottom: 8px !important;
+  padding: 8px !important;
+  background: #F8FAFC !important;
+  border-radius: 12px !important;
+  border: 1px solid #E2E8F0 !important;
+}
+
+.edx-teacher-ai .pattern-row select,
+.edx-teacher-ai .pattern-row input {
+  width: 100% !important;
+  min-width: 0 !important;
+  padding: 9px 10px !important;
+  border-radius: 10px !important;
+  border: 1px solid #CBD5E1 !important;
+  background: #FFFFFF !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: #0F172A !important;
+}
+
+.edx-teacher-ai .pattern-row > span {
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  color: #64748B !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+}
+
+.edx-teacher-ai .pattern-row .icon-btn,
+.edx-teacher-ai .pattern-row button.icon-btn {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  border-radius: 10px !important;
+  background: #FEE2E2 !important;
+  color: #DC2626 !important;
+  border: none !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+}
+.edx-teacher-ai .pattern-row .icon-btn:active {
+  background: #FECACA !important;
+}
+
+/* Mobile — stack into 2 rows */
+@media (max-width: 640px) {
+  .edx-teacher-ai .pattern-row {
+    grid-template-columns: 1fr 60px 16px 60px 36px !important;
+    grid-template-areas:
+      "select count times marks del"
+      "label  label label label label" !important;
+    gap: 4px !important;
+    padding: 10px 8px !important;
+  }
+  .edx-teacher-ai .pattern-row > span:last-of-type {
+    display: none !important;
+  }
+}
