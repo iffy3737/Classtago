@@ -2108,6 +2108,4 @@ html body .cs-nav-item:not(.cs-nav-item-active) .cs-nav-label {
 }
 
 /* Separator between rows */
-.cs-module-row + .cs-module-row {
-  border-top: 1px solid #F1F5F9 !important;
-}
+/* Each row is now a separate card — no shared divider needed */
