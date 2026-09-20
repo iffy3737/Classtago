@@ -737,3 +737,37 @@
   color: #6366F1 !important;
   font-weight: 900 !important;
 }
+
+/* Fix: .btn.primary and .btn.ghost — active button indicator */
+.edx-teacher-ai .btn.primary {
+  background: linear-gradient(135deg, #6366F1, #8B5CF6) !important;
+  color: #FFFFFF !important;
+  border-color: transparent !important;
+  font-weight: 900 !important;
+  box-shadow: 0 4px 14px -6px rgba(99, 102, 241, 0.6) !important;
+}
+.edx-teacher-ai .btn.ghost {
+  background: #FFFFFF !important;
+  color: #64748B !important;
+  border: 1.5px solid #CBD5E1 !important;
+  font-weight: 800 !important;
+}
+.edx-teacher-ai .btn.ghost:active {
+  background: #EEF2FF !important;
+  color: #4338CA !important;
+  border-color: #A5B4FC !important;
+}
+
+/* Combined mode action group — clear spacing */
+.edx-teacher-ai .combined-mode-actions {
+  display: flex !important;
+  gap: 8px !important;
+  margin-bottom: 12px !important;
+}
+.edx-teacher-ai .combined-mode-actions .btn {
+  flex: 1 !important;
+  padding: 12px 14px !important;
+  border-radius: 12px !important;
+  font-size: 13px !important;
+  text-align: center !important;
+}
