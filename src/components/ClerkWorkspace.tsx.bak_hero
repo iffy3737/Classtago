@@ -4,7 +4,6 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
-import RoleHeroCard from './RoleHeroCard';
 import * as XLSX from 'xlsx';
 import { 
   Users, BookOpen, Edit, FileText, Calendar, Plus, Trash2, Landmark, 
@@ -1155,21 +1154,38 @@ export default function ClerkWorkspace({ lang, user, classes, onRefreshData, ini
       {/* ======================================================== */}
       {clerkTab === 'dashboard' && (
         <div className="space-y-6 text-left">
-          <RoleHeroCard
-            name={user.name}
-            role="clerk"
-            workspaceLabel="Clerk Workspace"
-            subtitle="Production metrics from the school cloud. Demo admissions are never seeded here."
-            stats={[
-              { value: dashboardLoading && !cloudDashboard ? '\u2026' : cloudDashboard?.kpis.admittedStudents == null ? '\u2014' : cloudDashboard.kpis.admittedStudents, label: 'Students' },
-              { value: dashboardLoading && !cloudDashboard ? '\u2026' : cloudDashboard?.kpis.admissionQueue == null ? '\u2014' : cloudDashboard.kpis.admissionQueue, label: 'Admissions' },
-              { value: dashboardLoading && !cloudDashboard ? '\u2026' : cloudDashboard?.kpis.feeClearanceRatio == null ? '\u2014' : `${cloudDashboard.kpis.feeClearanceRatio}%`, label: 'Fee Clearance' },
-              { value: dashboardLoading && !cloudDashboard ? '\u2026' : cloudDashboard?.kpis.readyForHeadmaster == null ? '\u2014' : cloudDashboard.kpis.readyForHeadmaster, label: 'Ready for HM' },
-            ]}
-            ctaLabel={dashboardLoading ? 'Refreshing\u2026' : 'Refresh Cloud'}
-            onCtaClick={() => void loadClerkDashboard()}
-          />
-          {dashboardError && <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-semibold text-rose-700">{dashboardError}</div>}
+          <section className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-slate-950 text-white shadow-xl">
+            <div className="relative p-5 sm:p-6">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(99,102,241,.28),transparent_38%),radial-gradient(circle_at_bottom_left,rgba(6,182,212,.2),transparent_35%)]" />
+              <div className="relative flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[.2em] text-cyan-300"><Shield className="h-4 w-4"/>Live School Operations</div>
+                  <h3 className="mt-2 text-xl font-black tracking-tight sm:text-2xl">Clerk Command Snapshot</h3>
+                  <p className="mt-1 max-w-2xl text-xs leading-5 text-slate-300">Production metrics come from the school cloud. Demo admissions are never seeded into this dashboard.</p>
+                </div>
+                <button type="button" onClick={() => void loadClerkDashboard()} disabled={dashboardLoading} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-black hover:bg-white/15 disabled:opacity-50">
+                  <Clock className={`h-4 w-4 ${dashboardLoading ? 'animate-spin' : ''}`} /> {dashboardLoading ? 'Refreshing…' : 'Refresh Cloud'}
+                </button>
+              </div>
+              {dashboardError && <div className="relative mt-4 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-xs font-semibold text-rose-100">{dashboardError}</div>}
+              <div className="relative mt-5 grid grid-cols-2 gap-3 lg:grid-cols-6">
+                {[
+                  ['Admitted Students', cloudDashboard?.kpis.admittedStudents, 'Student Master'],
+                  ['Active Logins', cloudDashboard?.kpis.activeStudentLogins, 'Approved accounts'],
+                  ['Documents', cloudDashboard?.kpis.documentCompliance, 'Compliance', true],
+                  ['Fee Clearance', cloudDashboard?.kpis.feeClearanceRatio, 'Ledger', true],
+                  ['Admission Queue', cloudDashboard?.kpis.admissionQueue, 'Applications'],
+                  ['Ready for HM', cloudDashboard?.kpis.readyForHeadmaster, 'Verified / approved']
+                ].map(([label, value, hint, percent]: any) => (
+                  <div key={label} className="rounded-2xl border border-white/10 bg-white/[.07] p-4 backdrop-blur">
+                    <div className="text-[9px] font-black uppercase tracking-wider text-slate-400">{label}</div>
+                    <div className="mt-2 text-2xl font-black">{dashboardLoading && !cloudDashboard ? '…' : value == null ? '—' : `${value}${percent ? '%' : ''}`}</div>
+                    <div className="mt-1 text-[9px] font-semibold text-cyan-200/80">{hint}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-white rounded-2xl border border-slate-200 p-5 space-y-4 shadow-sm">
