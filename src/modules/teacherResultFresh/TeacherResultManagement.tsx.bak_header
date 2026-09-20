@@ -41,16 +41,8 @@ function Banner({children,tone='slate'}:{children:any;tone?:'slate'|'amber'|'ros
 }
 
 function Header({title,subtitle,badge,onBack}:{title:string;subtitle:string;badge:string;onBack?:()=>void}) {
-  return <header className="cs-rm-header">
-    <div className="cs-rm-header-top">
-      <div className="min-w-0 flex-1">
-        {onBack && <button onClick={onBack} className="cs-rm-back-btn"><ArrowLeft className="h-3.5 w-3.5"/>Back</button>}
-        <p className="cs-rm-eyebrow">Classtago Result Management</p>
-        <h1 className="cs-rm-title">{title}</h1>
-        <p className="cs-rm-subtitle">{subtitle}</p>
-      </div>
-      <span className="cs-rm-badge">{badge}</span>
-    </div>
+  return <header className="rounded-[1.6rem] border border-slate-800 bg-slate-950 p-5 text-white shadow-lg">
+    <div className="flex flex-wrap items-start justify-between gap-4"><div>{onBack&&<button onClick={onBack} className="mb-3 inline-flex items-center gap-1 text-xs font-bold text-cyan-300"><ArrowLeft className="h-3.5 w-3.5"/>Back</button>}<p className="text-[10px] font-black uppercase tracking-[.2em] text-cyan-300">Classtago Result Management</p><h1 className="mt-1 text-2xl font-black">{title}</h1><p className="mt-1 max-w-3xl text-xs leading-5 text-slate-300">{subtitle}</p></div><span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-slate-200">{badge}</span></div>
   </header>;
 }
 
