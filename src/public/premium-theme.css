@@ -3110,3 +3110,144 @@ html body .edx-mobile-logout svg {
   margin: 0;
   padding: 8px 0;
 }
+
+/* ============================================================
+   GLOBAL POLISH — applied to all pages automatically
+   ============================================================ */
+
+/* ---- SECTION HEADERS ---- */
+html body h1, html body h2, html body h3, html body h4 {
+  color: #0F172A !important;
+  letter-spacing: -0.01em !important;
+}
+html body h2 { font-size: 18px !important; font-weight: 800 !important; }
+html body h3 { font-size: 16px !important; font-weight: 800 !important; }
+
+/* ---- CARDS (bg-white + rounded) ---- */
+html body [class*="bg-white"][class*="rounded-2xl"],
+html body [class*="bg-white"][class*="rounded-3xl"],
+html body [class*="bg-white"][class*="rounded-xl"] {
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 2px 12px -6px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.03) !important;
+  background: #FFFFFF !important;
+}
+
+/* ---- OUTLINED BUTTONS (border + no bg) ---- */
+html body button[class*="border-slate-200"],
+html body button[class*="border-slate-300"],
+html body a[class*="border-slate-200"],
+html body a[class*="border-slate-300"] {
+  border-color: #CBD5E1 !important;
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  font-weight: 800 !important;
+  transition: all 0.15s ease;
+}
+html body button[class*="border-slate-200"]:active,
+html body button[class*="border-slate-300"]:active {
+  background: #EEF2FF !important;
+  border-color: #A5B4FC !important;
+}
+
+/* ---- PRIMARY BUTTONS (dark bg) ---- */
+html body button[class*="bg-slate-950"]:not(.cs-module-row):not(.cs-acc-btn),
+html body button[class*="bg-slate-900"]:not(.cs-module-row):not(.cs-acc-btn) {
+  background: linear-gradient(135deg, #6366F1, #8B5CF6) !important;
+  border-color: transparent !important;
+  color: #FFFFFF !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 12px -6px rgba(99, 102, 241, 0.5) !important;
+}
+
+/* ---- INPUTS / SELECT / TEXTAREA ---- */
+html body input:not([type="checkbox"]):not([type="radio"]),
+html body textarea,
+html body select {
+  background: #FFFFFF !important;
+  border: 1px solid #CBD5E1 !important;
+  border-radius: 12px !important;
+  color: #0F172A !important;
+  font-weight: 600 !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+html body input:not([type="checkbox"]):not([type="radio"]):focus,
+html body textarea:focus,
+html body select:focus {
+  border-color: #6366F1 !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+  outline: none !important;
+}
+
+/* ---- TABLES ---- */
+html body table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+html body thead th {
+  background: #F8FAFC !important;
+  color: #475569 !important;
+  font-weight: 800 !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  padding: 12px !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+}
+html body tbody td {
+  padding: 12px !important;
+  border-bottom: 1px solid #F1F5F9 !important;
+  color: #0F172A !important;
+  font-size: 13px !important;
+}
+html body tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+/* ---- SMALL CHIPS / BADGES (common patterns) ---- */
+html body [class*="rounded-full"][class*="px-2"][class*="py-0.5"],
+html body [class*="rounded-full"][class*="px-2.5"][class*="py-1"],
+html body [class*="rounded-full"][class*="px-3"][class*="py-1"] {
+  font-weight: 800 !important;
+  font-size: 10px !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* ---- STATUS BADGES ---- */
+html body [class*="bg-emerald-50"] { background: #ECFDF5 !important; color: #047857 !important; }
+html body [class*="bg-amber-50"]   { background: #FFFBEB !important; color: #B45309 !important; }
+html body [class*="bg-rose-50"],
+html body [class*="bg-pink-50"]    { background: #FFF1F5 !important; color: #BE123C !important; }
+html body [class*="bg-slate-50"]   { background: #F8FAFC !important; }
+
+/* ---- LIST DIVIDERS ---- */
+html body [class*="divide-slate-100"] > * + *,
+html body [class*="divide-slate-200"] > * + * {
+  border-color: #F1F5F9 !important;
+}
+
+/* ---- SMALL UPPERCASE LABELS ---- */
+html body [class*="text-[9px]"][class*="uppercase"],
+html body [class*="text-[10px]"][class*="uppercase"] {
+  color: #94A3B8 !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important;
+}
+
+/* ---- EMPTY STATES (dashed borders) ---- */
+html body [class*="border-dashed"] {
+  border-color: #CBD5E1 !important;
+  background: #F8FAFC !important;
+  border-radius: 16px !important;
+  color: #64748B !important;
+  font-weight: 600 !important;
+}
+
+/* ---- PAGE TRANSITIONS ---- */
+@keyframes cs-global-page-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.edx-mobile-main > section,
+.edx-mobile-main > div > section {
+  animation: cs-global-page-in 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
