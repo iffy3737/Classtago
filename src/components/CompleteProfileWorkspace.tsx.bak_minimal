@@ -85,7 +85,10 @@ export default function CompleteProfileWorkspace({ user, onProfileSaved, forcedT
   }, [user.id]);
 
   const completion = useMemo(() => {
-    const required: Array<string | undefined> = [fullName, phone];
+    const required: Array<string | undefined> = [fullName, phone, photoDataUrl || photoUrl, details.motherTongue];
+    if (!isStudentAccount) required.push(details.gender, details.dob, details.address);
+    if (isStaff) required.push(details.designation, details.qualification, details.joiningDate);
+    if (isParentAccount) required.push(details.emergencyContactPhone);
     const complete = required.filter(value => safe(value)).length;
     return Math.round((complete / Math.max(1, required.length)) * 100);
   }, [fullName, phone, photoDataUrl, photoUrl, details, isStaff, isStudentAccount, isParentAccount]);
@@ -194,7 +197,7 @@ export default function CompleteProfileWorkspace({ user, onProfileSaved, forcedT
         <ProfileSection title="Profile Photo & Contact" subtitle="Your photo and permitted contact details are shared across the ERP header and dashboard.">
           <div className="grid gap-5 lg:grid-cols-[180px_1fr]">
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-center"><img src={photoDataUrl || photoUrl || user.photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=240&auto=format&fit=crop&q=80'} className="mx-auto h-28 w-28 rounded-2xl border-4 border-white object-cover shadow" alt="Profile" /><label className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-xl bg-slate-950 px-4 py-2.5 text-xs font-black text-white"><ImagePlus className="h-4 w-4" />Choose Photo *<input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={event => handlePhoto(event.target.files?.[0] || null)} /></label>{photoFileName && <p className="mt-2 truncate text-[10px] font-bold text-emerald-700">{photoFileName}</p>}</div>
-            <div className="grid gap-4 sm:grid-cols-2"><Field label="Full Name *"><input value={fullName} onChange={e => setFullName(e.target.value)} disabled={!fullNameEditable} required className="edx-complete-profile-input" /></Field><Field label={isParentAccount ? 'Verified Parent Mobile *' : 'Mobile Number *'}><input type="tel" value={phone} onChange={e => setPhone(e.target.value)} disabled={isParentAccount} className="edx-complete-profile-input" />{isParentAccount && <span className="mt-1.5 block text-[10px] font-bold leading-4 text-amber-700">This number verified the Parent-child link and cannot be changed from self-service. Request a verified contact correction through the school.</span>}</Field>{!isStudentAccount && <div className="sm:col-span-2"><Field label="Residential Address"><textarea rows={3} value={details.address} onChange={e => patch('address', e.target.value)} className="edx-complete-profile-input" /></Field></div>}</div>
+            <div className="grid gap-4 sm:grid-cols-2"><Field label="Full Name *"><input value={fullName} onChange={e => setFullName(e.target.value)} disabled={!fullNameEditable} required className="edx-complete-profile-input" /></Field><Field label={isParentAccount ? 'Verified Parent Mobile *' : 'Mobile Number *'}><input type="tel" value={phone} onChange={e => setPhone(e.target.value)} disabled={isParentAccount} className="edx-complete-profile-input" />{isParentAccount && <span className="mt-1.5 block text-[10px] font-bold leading-4 text-amber-700">This number verified the Parent-child link and cannot be changed from self-service. Request a verified contact correction through the school.</span>}</Field>{!isStudentAccount && <div className="sm:col-span-2"><Field label="Residential Address *"><textarea rows={3} value={details.address} onChange={e => patch('address', e.target.value)} className="edx-complete-profile-input" /></Field></div>}</div>
           </div>
         </ProfileSection>
 
@@ -202,10 +205,10 @@ export default function CompleteProfileWorkspace({ user, onProfileSaved, forcedT
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {isStaff && <Field label="Father's Name"><input value={details.fatherName} onChange={e => patch('fatherName', e.target.value)} className="edx-complete-profile-input" /></Field>}
             {isStaff && <Field label="Mother's Name"><input value={details.motherName} onChange={e => patch('motherName', e.target.value)} className="edx-complete-profile-input" /></Field>}
-            {!isStudentAccount && <Field label="Gender"><select value={details.gender} onChange={e => patch('gender', e.target.value)} className="edx-complete-profile-input"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></Field>}
-            {!isStudentAccount && <Field label="Date of Birth"><input type="date" value={details.dob} onChange={e => patch('dob', e.target.value)} className="edx-complete-profile-input" /></Field>}
+            {!isStudentAccount && <Field label="Gender *"><select value={details.gender} onChange={e => patch('gender', e.target.value)} className="edx-complete-profile-input"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></Field>}
+            {!isStudentAccount && <Field label="Date of Birth *"><input type="date" value={details.dob} onChange={e => patch('dob', e.target.value)} className="edx-complete-profile-input" /></Field>}
             {!isStudentAccount && <Field label="Blood Group"><select value={details.bloodGroup} onChange={e => patch('bloodGroup', e.target.value)} className="edx-complete-profile-input"><option value="">Select</option>{BLOOD_GROUPS.map(item => <option key={item}>{item}</option>)}</select></Field>}
-            <Field label="Mother Tongue"><select value={details.motherTongue} onChange={e => patch('motherTongue', e.target.value)} className="edx-complete-profile-input"><option value="">Select language</option>{FALLBACK_LANGUAGE_CATALOGUE.map(option => <option key={option.code} value={option.code}>{languageDisplayName(option)}</option>)}<option value="other">Other / Custom</option></select></Field>
+            <Field label="Mother Tongue *"><select value={details.motherTongue} onChange={e => patch('motherTongue', e.target.value)} className="edx-complete-profile-input"><option value="">Select language</option>{FALLBACK_LANGUAGE_CATALOGUE.map(option => <option key={option.code} value={option.code}>{languageDisplayName(option)}</option>)}<option value="other">Other / Custom</option></select></Field>
             <Field label="Preferred Communication Language"><select value={details.preferredLanguage} onChange={e => patch('preferredLanguage', e.target.value)} className="edx-complete-profile-input"><option value="">School default</option>{FALLBACK_LANGUAGE_CATALOGUE.map(option => <option key={option.code} value={option.code}>{languageDisplayName(option)}</option>)}<option value="other">Other / Custom</option></select></Field>
             <Field label="Emergency Contact Name"><input value={details.emergencyContactName} onChange={e => patch('emergencyContactName', e.target.value)} className="edx-complete-profile-input" /></Field>
             <Field label="Emergency Contact Number"><input type="tel" value={details.emergencyContactPhone} onChange={e => patch('emergencyContactPhone', e.target.value)} className="edx-complete-profile-input" /></Field>
@@ -215,10 +218,10 @@ export default function CompleteProfileWorkspace({ user, onProfileSaved, forcedT
 
         {isStaff && <ProfileSection title="Professional Details" subtitle="Professional details are attached to your account; login ID and assigned duties cannot be changed here.">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <Field label="Designation"><input value={details.designation} onChange={e => patch('designation', e.target.value)} className="edx-complete-profile-input" /></Field>
-            <Field label="Qualification"><input value={details.qualification} onChange={e => patch('qualification', e.target.value)} placeholder="e.g. M.A., B.Ed." className="edx-complete-profile-input" /></Field>
+            <Field label="Designation *"><input value={details.designation} onChange={e => patch('designation', e.target.value)} className="edx-complete-profile-input" /></Field>
+            <Field label="Qualification *"><input value={details.qualification} onChange={e => patch('qualification', e.target.value)} placeholder="e.g. M.A., B.Ed." className="edx-complete-profile-input" /></Field>
             <Field label="Appointment Date"><input type="date" value={details.appointmentDate} onChange={e => patch('appointmentDate', e.target.value)} className="edx-complete-profile-input" /></Field>
-            <Field label="Joining Date"><input type="date" value={details.joiningDate} onChange={e => patch('joiningDate', e.target.value)} className="edx-complete-profile-input" /></Field>
+            <Field label="Joining Date *"><input type="date" value={details.joiningDate} onChange={e => patch('joiningDate', e.target.value)} className="edx-complete-profile-input" /></Field>
           </div>
         </ProfileSection>}
 
