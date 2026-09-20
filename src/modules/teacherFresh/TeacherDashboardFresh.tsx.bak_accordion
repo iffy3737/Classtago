@@ -49,9 +49,6 @@ function uniqueScopes(assignments: TeacherScopeAssignment[], classTeacherOnly = 
 }
 
 export default function TeacherDashboardFresh({ context, loading, error, onNavigate }: Props) {
-
-  const [expandedClassKey, setExpandedClassKey] = useState<string | null>(null);
-  const [expandedSubjectId, setExpandedSubjectId] = useState<string | null>(null);
   const [attendancePending, setAttendancePending] = useState<number | null>(null);
   const [attendanceCheckError, setAttendanceCheckError] = useState('');
   const [cloudFeed, setCloudFeed] = useState<TeacherDashboardCloudFeed | null>(null);
@@ -265,176 +262,43 @@ export default function TeacherDashboardFresh({ context, loading, error, onNavig
         <div className="flex items-start gap-3"><Bell className="mt-0.5 h-5 w-5 shrink-0 text-rose-600"/><div><p className="font-black text-rose-900">Result correction returned by Class Teacher</p><p className="mt-1 text-xs leading-5 text-rose-700">{returnedResultCount} Subject Mark List correction request(s) are waiting. Open Subject Marks List, correct the returned sheet and resubmit it to the Class Teacher.</p></div></div>
       </button>}
 
-      <section className="cs-accordion-section">
-        <div className="cs-acc-header">
-          <div className="cs-acc-icon cs-acc-icon-indigo">
-            <GraduationCap className="h-5 w-5" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <h2 className="cs-acc-title">My Classes</h2>
-            <p className="cs-acc-sub">Tap a class to view subjects, students and actions.</p>
-          </div>
-        </div>
-
-        {teachingClassGroups.length === 0 ? (
-          <div className="cs-acc-empty">
-            <b>No active Teacher assignment is configured.</b>
-            <br/>
-            Headmaster must assign Class Teacher duty and/or Subject Teaching scope.
-          </div>
-        ) : (
-          <div className="cs-acc-list">
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="mb-4 flex items-start justify-between gap-4"><div><h2 className="font-black text-slate-950">My Classes</h2><p className="mt-1 text-xs leading-5 text-slate-500"><b>Purpose:</b> this shows the Class / Division groups where you teach or hold Class Teacher duty. Subjects are grouped inside each class. Attendance appears only on your Headmaster-assigned Class Teacher class.</p></div><GraduationCap className="h-5 w-5 shrink-0 text-slate-400" /></div>
+        {teachingClassGroups.length === 0 ? <div className="rounded-xl border border-dashed border-amber-300 bg-amber-50 p-6 text-sm text-amber-800"><b>No active Teacher assignment is configured.</b><br/>Headmaster must assign Class Teacher duty and/or Subject Teaching scope in Academic Assignments.</div> : (
+          <div className="grid gap-3 lg:grid-cols-2">
             {teachingClassGroups.map(group => {
               const a = group.representative;
               const subjectNames = [...new Set(group.subjects.map(s => s.subjectName))];
-              const isOpen = expandedClassKey === group.key;
-              const studentCount = rosterCounts[group.key] ?? a.studentCount ?? 'Not configured';
-              return (
-                <div key={group.key} className={`cs-acc-item ${isOpen ? 'cs-acc-item-open' : ''}`}>
-                  <button
-                    type="button"
-                    className="cs-acc-summary"
-                    onClick={() => setExpandedClassKey(isOpen ? null : group.key)}
-                    aria-expanded={isOpen}
-                  >
-                    <div className="cs-acc-summary-left">
-                      <span className="cs-acc-summary-title">
-                        {a.className} · {a.division}
-                      </span>
-                      <span className="cs-acc-summary-meta">
-                        {subjectNames.length} subject{subjectNames.length === 1 ? '' : 's'} · {studentCount} student{studentCount === 1 ? '' : 's'}
-                      </span>
-                    </div>
-                    <span className={`cs-acc-badge ${group.isClassTeacher ? 'cs-acc-badge-ct' : 'cs-acc-badge-tc'}`}>
-                      {group.isClassTeacher ? 'Class Teacher' : 'Teaching Class'}
-                    </span>
-                    <span className={`cs-acc-arrow ${isOpen ? 'cs-acc-arrow-open' : ''}`}>▼</span>
-                  </button>
-
-                  {isOpen && (
-                    <div className="cs-acc-body">
-                      {subjectNames.length > 0 && (
-                        <div className="cs-acc-chips">
-                          {subjectNames.map(name => (
-                            <span key={name} className="cs-acc-chip">{name}</span>
-                          ))}
-                        </div>
-                      )}
-
-                      <div className="cs-acc-stats">
-                        <span className="cs-acc-stat">
-                          <b>{studentCount}</b>
-                          <small>Students</small>
-                        </span>
-                        <span className="cs-acc-stat">
-                          <b>{subjectNames.length}</b>
-                          <small>Subjects</small>
-                        </span>
-                      </div>
-
-                      <div className="cs-acc-actions">
-                        <button type="button" onClick={() => onNavigate?.('tr-my-students-list')} className="cs-acc-btn">Student List</button>
-                        {group.isClassTeacher && (
-                          <button type="button" onClick={() => onNavigate?.('tr-attendance-daily')} className="cs-acc-btn cs-acc-btn-primary">Attendance</button>
-                        )}
-                        {subjectNames.length > 0 && (
-                          <button type="button" onClick={() => onNavigate?.('tr-result-subject-marks')} className="cs-acc-btn">Subject Marks</button>
-                        )}
-                        {subjectNames.length > 0 && (
-                          <button type="button" onClick={() => onNavigate?.('tr-ai-homework')} className="cs-acc-btn">Homework</button>
-                        )}
-                        <button type="button" onClick={() => onNavigate?.('tr-my-students-performance')} className="cs-acc-btn">Performance</button>
-                        <button type="button" onClick={() => onNavigate?.(group.isClassTeacher ? 'tr-class-timetable' : 'tr-my-timetable')} className="cs-acc-btn">Timetable</button>
-                      </div>
-                    </div>
-                  )}
+              return <article key={group.key} className={`rounded-xl border p-4 ${group.isClassTeacher ? 'border-cyan-200 bg-cyan-50/30' : 'border-slate-200 bg-white'}`}>
+                <div className="flex items-start justify-between gap-3"><div><p className="font-black text-slate-900">{a.className} · {a.division}</p><p className="mt-1 text-xs font-semibold text-slate-500">{subjectNames.length ? `${subjectNames.length} subject(s) assigned to you in this class` : 'Class Teacher duty only; no subject allocation in this class'}</p></div><span className={`rounded-full px-2.5 py-1 text-[10px] font-black uppercase ${group.isClassTeacher ? 'bg-cyan-100 text-cyan-800' : 'bg-slate-100 text-slate-600'}`}>{group.isClassTeacher ? 'Class Teacher Class' : 'Teaching Class'}</span></div>
+                <div className="mt-3 flex flex-wrap gap-1.5">{subjectNames.length ? subjectNames.map(name => <span key={name} className="rounded-full bg-white px-2.5 py-1 text-[10px] font-bold text-slate-700 ring-1 ring-slate-200">{name}</span>) : <span className="text-[11px] text-slate-500">No subject chip for this class.</span>}</div>
+                <div className="mt-4 grid grid-cols-2 gap-2 text-xs"><span className="rounded-lg bg-slate-50 p-2"><b>{rosterCounts[group.key] ?? a.studentCount ?? 'Not configured'}</b><br/>Students</span><span className="rounded-lg bg-slate-50 p-2"><b>{subjectNames.length}</b><br/>My subjects here</span></div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button onClick={() => onNavigate?.('tr-my-students-list')} className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-bold hover:bg-slate-50">Student List</button>
+                  {group.isClassTeacher && <button onClick={() => onNavigate?.('tr-attendance-daily')} className="rounded-lg bg-slate-950 px-2.5 py-1.5 text-[11px] font-bold text-white">Class Attendance</button>}
+                  {subjectNames.length > 0 && <button onClick={() => onNavigate?.('tr-result-subject-marks')} className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-bold hover:bg-slate-50">Subject Marks</button>}
+                  {subjectNames.length > 0 && <button onClick={() => onNavigate?.('tr-ai-homework')} className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-bold hover:bg-slate-50">Homework</button>}
+                  <button onClick={() => onNavigate?.('tr-my-students-performance')} className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-bold hover:bg-slate-50">Performance</button>
+                  <button onClick={() => onNavigate?.(group.isClassTeacher ? 'tr-class-timetable' : 'tr-my-timetable')} className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-bold hover:bg-slate-50">Timetable</button>
                 </div>
-              );
+              </article>;
             })}
           </div>
         )}
       </section>
 
-      <section className="cs-accordion-section">
-        <div className="cs-acc-header">
-          <div className="cs-acc-icon cs-acc-icon-violet">
-            <BookOpen className="h-5 w-5" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <h2 className="cs-acc-title">My Subjects</h2>
-            <p className="cs-acc-sub">Subject-wise teaching workspace. Attendance remains a Class Teacher action.</p>
-          </div>
-        </div>
-
-        {!groupedSubjectIds.length ? (
-          <div className="cs-acc-empty">
-            <b>No Subject Teacher allocation found.</b>
-          </div>
-        ) : (
-          <div className="cs-acc-list">
-            {groupedSubjectIds.map(subjectId => {
-              const rows = subjectAssignments.filter(a => a.subjectId === subjectId);
-              const subject = rows[0];
-              const totalStudents = rows.reduce((sum, row) => sum + Number(rosterCounts[classScopeKey(row)] ?? row.studentCount ?? 0), 0);
-              const media = [...new Set(rows.map(x => x.medium).filter(Boolean))];
-              const isOpen = expandedSubjectId === subjectId;
-              return (
-                <div key={subjectId} className={`cs-acc-item ${isOpen ? 'cs-acc-item-open' : ''}`}>
-                  <button
-                    type="button"
-                    className="cs-acc-summary"
-                    onClick={() => setExpandedSubjectId(isOpen ? null : subjectId)}
-                    aria-expanded={isOpen}
-                  >
-                    <div className="cs-acc-summary-left">
-                      <span className="cs-acc-summary-title">
-                        {subject.subjectName}
-                        {subject.subjectCode ? <small className="cs-acc-code">{subject.subjectCode}</small> : null}
-                      </span>
-                      <span className="cs-acc-summary-meta">
-                        {rows.length} class scope{rows.length === 1 ? '' : 's'} · {totalStudents || 0} student{totalStudents === 1 ? '' : 's'}
-                      </span>
-                    </div>
-                    <span className="cs-acc-arrow">{isOpen ? '▲' : '▼'}</span>
-                  </button>
-
-                  {isOpen && (
-                    <div className="cs-acc-body">
-                      <div className="cs-acc-chips">
-                        {rows.map(x => (
-                          <span key={x.id} className="cs-acc-chip cs-acc-chip-violet">{x.className} · {x.division}</span>
-                        ))}
-                      </div>
-
-                      <div className="cs-acc-stats">
-                        <span className="cs-acc-stat">
-                          <b>{rows.length}</b>
-                          <small>Classes</small>
-                        </span>
-                        <span className="cs-acc-stat">
-                          <b>{totalStudents || '—'}</b>
-                          <small>Students</small>
-                        </span>
-                        <span className="cs-acc-stat">
-                          <b>{media.join(', ') || 'School'}</b>
-                          <small>Medium</small>
-                        </span>
-                      </div>
-
-                      <div className="cs-acc-actions">
-                        <button type="button" onClick={() => onNavigate?.('tr-study-material')} className="cs-acc-btn cs-acc-btn-primary">Study Material</button>
-                        <button type="button" onClick={() => onNavigate?.('tr-ai-lesson-plan')} className="cs-acc-btn">Lesson Plan</button>
-                        <button type="button" onClick={() => onNavigate?.('tr-ai-homework')} className="cs-acc-btn">Homework</button>
-                        <button type="button" onClick={() => onNavigate?.('tr-question-paper-first-term')} className="cs-acc-btn">Question Paper</button>
-                        <button type="button" onClick={() => onNavigate?.('tr-result-subject-marks')} className="cs-acc-btn">Subject Marks</button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="mb-4 flex items-start justify-between gap-4"><div><h2 className="font-black text-slate-950">My Subjects</h2><p className="mt-1 text-xs leading-5 text-slate-500"><b>Purpose:</b> this is your subject-wise teaching workspace. It groups the same subject across all classes assigned by the Headmaster. Attendance is intentionally not a subject action.</p></div><BookOpen className="h-5 w-5 shrink-0 text-slate-400" /></div>
+        {!groupedSubjectIds.length ? <div className="rounded-xl border border-dashed border-slate-300 p-6 text-sm text-slate-500">No Subject Teacher allocation found.</div> : <div className="space-y-3">{groupedSubjectIds.map(subjectId => {
+          const rows = subjectAssignments.filter(a => a.subjectId === subjectId); const subject = rows[0];
+          const totalStudents = rows.reduce((sum, row) => sum + Number(rosterCounts[classScopeKey(row)] ?? row.studentCount ?? 0), 0);
+          const media = [...new Set(rows.map(x => x.medium).filter(Boolean))];
+          return <article key={subjectId} className="rounded-xl border border-slate-200 p-4">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between"><div><p className="font-black text-slate-900">{subject.subjectName}{subject.subjectCode ? <span className="ml-2 font-mono text-[10px] font-semibold text-slate-400">{subject.subjectCode}</span> : null}</p><p className="mt-1 text-xs text-slate-500">Headmaster assigned in {rows.length} Class / Division scope(s)</p><div className="mt-2 flex flex-wrap gap-1.5">{rows.map(x => <span key={x.id} className="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold text-slate-700">{x.className} · {x.division}</span>)}</div></div><span className="w-fit rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-800">Syllabus tracking not connected</span></div>
+            <div className="mt-4 grid gap-2 sm:grid-cols-4 text-xs"><span className="rounded-lg bg-slate-50 p-3"><b>{rows.length}</b><br/>Assigned classes</span><span className="rounded-lg bg-slate-50 p-3"><b>{totalStudents || 'Not configured'}</b><br/>Students in scope</span><span className="rounded-lg bg-slate-50 p-3"><b>{media.join(', ') || 'School medium'}</b><br/>Medium</span><span className="rounded-lg bg-slate-50 p-3"><b>Not tracked yet</b><br/>Syllabus progress</span></div>
+            <div className="mt-3 flex flex-wrap gap-2"><button onClick={() => onNavigate?.('tr-study-material')} className="rounded-lg bg-slate-950 px-3 py-2 text-xs font-bold text-white">Study Material</button><button onClick={() => onNavigate?.('tr-ai-lesson-plan')} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold">Lesson Plan</button><button onClick={() => onNavigate?.('tr-ai-homework')} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold">Homework</button><button onClick={() => onNavigate?.('tr-question-paper-first-term')} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold">Question Paper</button><button onClick={() => onNavigate?.('tr-result-subject-marks')} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold">Subject Marks</button></div>
+          </article>;
+        })}</div>}
       </section>
 
       <div className="grid gap-5 xl:grid-cols-2">

@@ -2803,3 +2803,262 @@ html body .edx-mobile-logout svg {
   line-height: 1.35;
   margin-top: 2px;
 }
+
+/* ============================================================
+   ACCORDION — My Classes + My Subjects
+   ============================================================ */
+
+.cs-accordion-section {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 20px -8px rgba(99, 102, 241, 0.12), 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.cs-acc-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.cs-acc-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.cs-acc-icon-indigo {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15));
+  color: #6366F1;
+}
+.cs-acc-icon-violet {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(217, 70, 239, 0.15));
+  color: #8B5CF6;
+}
+
+.cs-acc-title {
+  font-size: 17px;
+  font-weight: 900;
+  color: #0F172A;
+  letter-spacing: -0.01em;
+  margin: 0;
+  line-height: 1.2;
+}
+.cs-acc-sub {
+  font-size: 12px;
+  color: #64748B;
+  line-height: 1.4;
+  margin: 2px 0 0;
+}
+
+.cs-acc-empty {
+  background: #FEF3C7;
+  border: 1px solid #FDE68A;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 12.5px;
+  color: #92400E;
+  line-height: 1.5;
+}
+
+.cs-acc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Item container */
+.cs-acc-item {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 18px;
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.cs-acc-item-open {
+  border-color: #C7D2FE;
+  box-shadow: 0 4px 16px -6px rgba(99, 102, 241, 0.18);
+}
+
+/* Summary row (always visible) */
+.cs-acc-summary {
+  width: 100%;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+.cs-acc-summary:active {
+  background: #F8FAFC;
+}
+
+.cs-acc-summary-left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cs-acc-summary-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0F172A;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cs-acc-code {
+  font-size: 10px;
+  font-weight: 600;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: 'JetBrains Mono', monospace;
+}
+.cs-acc-summary-meta {
+  font-size: 12px;
+  color: #64748B;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* Badge — class teacher / teaching class */
+.cs-acc-badge {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 8px;
+  border-radius: 100px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.cs-acc-badge-ct {
+  background: #EEF2FF;
+  color: #4338CA;
+}
+.cs-acc-badge-tc {
+  background: #F1F5F9;
+  color: #64748B;
+}
+
+/* Arrow */
+.cs-acc-arrow {
+  font-size: 12px;
+  color: #6366F1;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+  line-height: 1;
+}
+.cs-acc-arrow-open {
+  transform: rotate(0deg);
+}
+
+/* Expanded body */
+.cs-acc-body {
+  padding: 0 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: cs-acc-open 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes cs-acc-open {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Chips */
+.cs-acc-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.cs-acc-chip {
+  padding: 5px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #EEF2FF;
+  border: 1px solid #C7D2FE;
+  color: #4338CA;
+}
+.cs-acc-chip-violet {
+  background: #F5F3FF;
+  border-color: #DDD6FE;
+  color: #6D28D9;
+}
+
+/* Stats row */
+.cs-acc-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 8px;
+}
+.cs-acc-stat {
+  background: #F8FAFC;
+  border-radius: 12px;
+  padding: 10px 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cs-acc-stat b {
+  font-size: 16px;
+  font-weight: 900;
+  color: #0F172A;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.cs-acc-stat small {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Action buttons */
+.cs-acc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.cs-acc-btn {
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 11.5px;
+  font-weight: 800;
+  border: 1.5px solid #E2E8F0;
+  background: #FFFFFF;
+  color: #0F172A;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.cs-acc-btn:active {
+  background: #EEF2FF;
+  border-color: #C7D2FE;
+  transform: scale(0.97);
+}
+.cs-acc-btn-primary {
+  background: linear-gradient(135deg, #6366F1, #8B5CF6);
+  border-color: transparent;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px -6px rgba(99, 102, 241, 0.5);
+}
+.cs-acc-btn-primary:active {
+  background: #4F46E5;
+}
