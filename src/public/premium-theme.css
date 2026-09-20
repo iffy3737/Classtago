@@ -2051,3 +2051,52 @@ html body .cs-nav-item:not(.cs-nav-item-active) .cs-nav-label {
   transform: scale(0.97);
   box-shadow: 0 4px 12px -6px rgba(0, 0, 0, 0.25);
 }
+
+/* ============================================================
+   PHASE 18 — Force ModulesPreviewCard rows white (override Phase 9)
+   ============================================================ */
+
+.cs-module-row {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+  color: #0F172A !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+.cs-module-row:active {
+  background: #FFF1F5 !important;
+  transform: scale(0.99);
+}
+.cs-module-row span,
+.cs-module-row svg {
+  color: inherit;
+}
+
+/* Icon squares keep their inline gradient */
+.cs-module-row > span[style*="linear-gradient"] {
+  background-image: inherit !important;
+  background-color: transparent !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 12px -4px rgba(0,0,0,0.15) !important;
+}
+
+/* Module row text */
+.cs-module-row > span:not([style*="linear-gradient"]) > span:first-child {
+  color: #0F172A !important;
+  font-weight: 900 !important;
+}
+.cs-module-row > span:not([style*="linear-gradient"]) > span:last-child {
+  color: #6B7280 !important;
+  font-weight: 500 !important;
+}
+
+/* Chevron */
+.cs-module-row > svg {
+  color: #CBD5E1 !important;
+}
+
+/* Separator between rows */
+.cs-module-row + .cs-module-row {
+  border-top: 1px solid #F1F5F9 !important;
+}

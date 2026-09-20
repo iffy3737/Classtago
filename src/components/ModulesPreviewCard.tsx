@@ -49,7 +49,7 @@ export default function ModulesPreviewCard({ items, onNavigate, onViewAll, title
               key={item.id}
               type="button"
               onClick={() => onNavigate(item.route, item.featureId)}
-              className={`flex w-full items-center gap-4 p-4 text-left transition active:bg-pink-50/40 ${
+              className={`cs-module-row flex w-full items-center gap-4 p-4 text-left transition ${
                 idx > 0 ? 'border-t border-slate-100' : ''
               }`}
             >
