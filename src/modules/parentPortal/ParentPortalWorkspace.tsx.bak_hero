@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import RoleHeroCard from '../../components/RoleHeroCard';
 import {
   AlertCircle, Bell, BookMarked, BookOpen, CalendarCheck, CheckCircle2, ChevronDown,
   CircleDollarSign, Clock3, Download, FileCheck2, FileText, GraduationCap, Library,
@@ -213,21 +212,5 @@ export default function ParentPortalWorkspace({ user, module, feature, onNavigat
     content = <Empty title={module.label} body="This Parent module is secured to Headmaster-approved child links. No school-wide administrative data is exposed."/>;
   }
 
-  return <section className="edx-parent-portal edx-theme-safe overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-50 shadow-xl">{header}
-      <div className="p-5 sm:p-7 pt-5">
-        <RoleHeroCard
-          name={user.name}
-          role="parent"
-          workspaceLabel="Parent Workspace"
-          subtitle={profile ? `Viewing ${profile.fullName} · ${profile.className}` : 'Verified child access.'}
-          stats={[
-            { value: snapshot?.attendance?.rate == null ? '—' : `${snapshot.attendance.rate}%`, label: 'Attendance' },
-            { value: currentHomework.length, label: 'Homework' },
-            { value: snapshot?.results?.rows?.length || 0, label: 'Results' },
-          ]}
-          ctaLabel="Open Child Attendance"
-          onCtaClick={() => onNavigate?.('pa-attendance')}
-        />
-      </div>
-      <div className="px-5 sm:px-7 pb-5">{mariaStatus&&<div className="mb-5 rounded-2xl border border-violet-200 bg-violet-50 p-4 text-xs font-bold leading-5 text-violet-900"><b>Maria:</b> {mariaStatus}</div>}{error&&<div className="mb-5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs font-bold text-rose-800">{error}</div>}{message&&module.id!=='pa-leave'&&module.id!=='pa-certificate-requests'&&module.id!=='pa-profile'&&<div className="mb-5 rounded-2xl border border-slate-200 bg-white p-4 text-xs font-bold">{message}</div>}{content}<div className="mt-7 flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-[11px] leading-6 text-slate-500"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600"/><span>Privacy boundary: Parent access is derived only from Headmaster-approved, school-scoped Parent-child link records. Marks, attendance, Result Book, Teacher drafts, other students and administrative edit/approval controls remain inaccessible.</span><button onClick={()=>void refresh()} className="ml-auto shrink-0 rounded-lg border border-slate-200 p-2 text-slate-600" title="Refresh"><RefreshCw className="h-4 w-4"/></button></div></div></section>;
+  return <section className="edx-parent-portal edx-theme-safe overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-50 shadow-xl">{header}<div className="p-5 sm:p-7">{mariaStatus&&<div className="mb-5 rounded-2xl border border-violet-200 bg-violet-50 p-4 text-xs font-bold leading-5 text-violet-900"><b>Maria:</b> {mariaStatus}</div>}{error&&<div className="mb-5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs font-bold text-rose-800">{error}</div>}{message&&module.id!=='pa-leave'&&module.id!=='pa-certificate-requests'&&module.id!=='pa-profile'&&<div className="mb-5 rounded-2xl border border-slate-200 bg-white p-4 text-xs font-bold">{message}</div>}{content}<div className="mt-7 flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-[11px] leading-6 text-slate-500"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600"/><span>Privacy boundary: Parent access is derived only from Headmaster-approved, school-scoped Parent-child link records. Marks, attendance, Result Book, Teacher drafts, other students and administrative edit/approval controls remain inaccessible.</span><button onClick={()=>void refresh()} className="ml-auto shrink-0 rounded-lg border border-slate-200 p-2 text-slate-600" title="Refresh"><RefreshCw className="h-4 w-4"/></button></div></div></section>;
 }
