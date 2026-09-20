@@ -1,7 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import RoleHeroCard from '../../components/RoleHeroCard';
-import ModulesPreviewCard from '../../components/ModulesPreviewCard';
-import { Calendar as CalIcon2, BarChart3 as BarIcon2, FileText as FileIcon2, Users as UsersIcon2 } from 'lucide-react';
 import { schoolRelativeDateKey, schoolTodayKey } from '../../lib/schoolDate';
 import {
   AlertCircle, ArrowRight, Bell, BookOpen, CalendarClock, CheckCircle2,
@@ -184,18 +182,6 @@ export default function TeacherDashboardFresh({ context, loading, error, onNavig
         ]}
         ctaLabel="View My Academic Assignment"
         onCtaClick={() => onNavigate?.('tr-my-assignments')}
-      />
-
-      <ModulesPreviewCard
-        title="Modules"
-        items={[
-          { id: 'attendance', label: 'Attendance', subtitle: `Daily registers · ${classTeacherScopes.length} class${classTeacherScopes.length === 1 ? '' : 'es'}`, icon: CalIcon2, gradient: 'linear-gradient(135deg, #FF3473, #D91B5C)', route: 'tr-attendance-daily' },
-          { id: 'results', label: 'Result Management', subtitle: 'Marks · Result books · Progress cards', icon: BarIcon2, gradient: 'linear-gradient(135deg, #FFA202, #E08800)', route: 'tr-result-subject-marks' },
-          { id: 'qp', label: 'Question Paper', subtitle: 'AI generation · First/Second term', icon: FileIcon2, gradient: 'linear-gradient(135deg, #8B5CF6, #6D28D9)', route: 'tr-question-paper-first-term' },
-          { id: 'students', label: 'My Students', subtitle: `Class roster · ${subjectAssignments.length} subject${subjectAssignments.length === 1 ? '' : 's'}`, icon: UsersIcon2, gradient: 'linear-gradient(135deg, #14B8A6, #0F766E)', route: 'tr-my-students-list' },
-        ]}
-        onNavigate={(route, featureId) => onNavigate?.(route, featureId)}
-        onViewAll={() => window.dispatchEvent(new CustomEvent('edunixo:open-menu'))}
       />
 
       <section className="rounded-2xl border border-cyan-200 bg-cyan-50/50 p-5 shadow-sm">
