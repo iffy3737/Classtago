@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Award, FileSpreadsheet, BookOpen, UserSquare, Clock, 
   AlertTriangle, CheckCircle2, History, Bell, ShieldCheck, 
