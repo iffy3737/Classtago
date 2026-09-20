@@ -916,3 +916,149 @@ html body [class*="bg-rose-50"] {
 .cs-bottom-nav {
   background: #FFFFFF !important;
 }
+
+/* ============================================================
+   PHASE 9 — Deep Indigo / Violet theme (pink removed)
+   ============================================================ */
+
+:root {
+  --cs-primary: #6366F1 !important;
+  --cs-primary-2: #8B5CF6 !important;
+  --cs-pink: #6366F1 !important;
+  --cs-pink-deep: #4F46E5 !important;
+  --cs-orange: #8B5CF6 !important;
+  --cs-orange-deep: #7C3AED !important;
+  --cs-bg: #F1F5F9 !important;
+  --cs-bg-soft: #E2E8F0 !important;
+  --cs-border: #E2E8F0 !important;
+}
+
+/* Darker slate background */
+html, body, #root, .edunixo-theme-root, .edunixo-interface-root {
+  background: #F1F5F9 !important;
+  background-color: #F1F5F9 !important;
+}
+.edunixo-mobile-runtime .edx-mobile-main,
+.edunixo-app-runtime .edx-mobile-main {
+  background: #F1F5F9 !important;
+}
+.edx-mobile-topbar {
+  background: #F1F5F9 !important;
+}
+
+/* Remove any pink radial overlays */
+body::before {
+  background: none !important;
+}
+
+/* Cards */
+html body .bg-white {
+  background: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 2px 14px -6px rgba(99, 102, 241, 0.12) !important;
+}
+
+/* ALL primary buttons — indigo→violet */
+button[class*="bg-slate-950"],
+button[class*="bg-blue-600"],
+button[class*="bg-indigo-600"],
+button[class*="bg-cyan-600"],
+button[class*="bg-rose-"],
+button[class*="bg-pink-"],
+a[class*="bg-slate-950"],
+a[class*="bg-blue-"],
+a[class*="bg-indigo-"] {
+  background-image: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%) !important;
+  background-color: #6366F1 !important;
+  border-color: transparent !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 6px 18px -6px rgba(99, 102, 241, 0.5) !important;
+}
+
+/* Hamburger */
+.edx-mobile-hamburger {
+  background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%) !important;
+  box-shadow: 0 6px 18px -6px rgba(99, 102, 241, 0.55) !important;
+}
+
+/* Menu drawer header */
+.edx-role-module-drawer-header {
+  background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%) !important;
+  box-shadow: 0 10px 30px -8px rgba(99, 102, 241, 0.5) !important;
+}
+
+/* Menu — module icons (remove pink, use indigo) */
+.edx-role-module-drawer [class*="bg-cyan-300/10"] {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15)) !important;
+  color: #6366F1 !important;
+}
+.edx-role-module-drawer [class*="text-cyan-300"] {
+  color: #6366F1 !important;
+}
+
+/* Menu — active/selected */
+.edx-role-module-drawer [class*="border-cyan-300/35"] {
+  border-color: #6366F1 !important;
+  background: rgba(99, 102, 241, 0.06) !important;
+}
+.edx-role-module-drawer [class*="bg-cyan-300/[0.085]"] {
+  background: rgba(99, 102, 241, 0.08) !important;
+}
+.edx-role-module-drawer [class*="bg-cyan-300"][class*="text-slate-950"] {
+  background: linear-gradient(135deg, #6366F1, #8B5CF6) !important;
+  color: #FFFFFF !important;
+}
+
+/* Menu — shortcut chips */
+.edx-role-module-drawer [class*="bg-violet-300/10"] {
+  background: rgba(99, 102, 241, 0.1) !important;
+  color: #4F46E5 !important;
+}
+.edx-role-module-drawer [class*="text-violet-300"],
+.edx-role-module-drawer [class*="text-violet-200"] {
+  color: #6366F1 !important;
+}
+
+/* Menu — search icon */
+.edx-role-module-search svg {
+  color: #6366F1 !important;
+}
+
+/* Bottom nav — active tab */
+.cs-nav-item-active .cs-nav-icon-wrap {
+  background-image: linear-gradient(135deg, #6366F1, #8B5CF6) !important;
+  box-shadow: 0 8px 18px -8px rgba(99, 102, 241, 0.55) !important;
+}
+.cs-nav-item-active .cs-nav-label {
+  background-image: linear-gradient(90deg, #6366F1, #8B5CF6) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  color: #6366F1 !important;
+}
+
+/* Module dock button */
+html body .erp-module-dock button[aria-label] {
+  background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%) !important;
+  box-shadow: 0 8px 24px -8px rgba(99, 102, 241, 0.5) !important;
+}
+
+/* Pink/rose pastel backgrounds → indigo tint */
+html body [class*="bg-pink-50"],
+html body [class*="bg-rose-50"] {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.06), rgba(139, 92, 246, 0.06)) !important;
+}
+
+/* Input focus */
+html body input:not([type="checkbox"]):not([type="radio"]):focus,
+html body textarea:focus,
+html body select:focus {
+  border-color: #6366F1 !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+}
+
+/* Pink pastel avatar ring → indigo */
+html body [class*="border-pink"],
+html body [class*="ring-pink"] {
+  border-color: #6366F1 !important;
+}
