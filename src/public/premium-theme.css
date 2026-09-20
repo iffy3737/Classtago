@@ -1525,3 +1525,193 @@ html body [class*="rounded-3xl"][class*="bg-white"] {
   min-width: 40px !important;
   margin-right: 2px !important;
 }
+
+/* ============================================================
+   PHASE 15 — Clean TopBar + BIGGER bottom bar (match reference)
+   ============================================================ */
+
+/* ---- TOPBAR: clean layout ---- */
+.edx-mobile-topbar-inner {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 10px 14px !important;
+  min-height: 64px !important;
+}
+
+/* Brand — two lines like reference */
+.edx-mobile-brand-lockup {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+.edx-mobile-brand-lockup h1 {
+  font-size: 17px !important;
+  font-weight: 900 !important;
+  color: #0F172A !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.15 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+.edx-mobile-brand-lockup p,
+.edx-mobile-brand-lockup .edx-mobile-brand-eyebrow {
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  color: #E91E63 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  line-height: 1.15 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  display: block !important;
+}
+
+/* Remove the redundant purple logo mark */
+.edx-mobile-brand-mark {
+  display: none !important;
+}
+
+/* Actions container — right side */
+.edx-mobile-topbar-actions {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+/* ---- LANGUAGE SELECTOR — compact, icon-like like notification ---- */
+.edx-mobile-topbar-actions > div:first-child {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+/* Language button — small circular/square like a notification icon */
+.edx-mobile-topbar-actions [class*="LanguageSelector"] button,
+.edx-mobile-topbar-actions button[aria-label*="language" i],
+.edx-mobile-topbar-actions button[class*="selector" i] {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  max-width: 44px !important;
+  padding: 0 !important;
+  border-radius: 14px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 2px 8px -3px rgba(15, 23, 42, 0.08) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0 !important;
+  font-size: 0 !important; /* hide text label */
+  color: #6366F1 !important;
+}
+.edx-mobile-topbar-actions [class*="LanguageSelector"] button svg,
+.edx-mobile-topbar-actions button[aria-label*="language" i] svg {
+  width: 20px !important;
+  height: 20px !important;
+  color: #6366F1 !important;
+}
+
+/* Profile chip — compact */
+.edx-mobile-profile-chip {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 4px 6px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 2px 8px -3px rgba(15, 23, 42, 0.08) !important;
+}
+.edx-mobile-profile-chip img {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 10px !important;
+  object-fit: cover !important;
+}
+.edx-mobile-profile-chip button {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  padding: 0 !important;
+  border-radius: 10px !important;
+  background: #F1F5F9 !important;
+  border: none !important;
+  color: #6366F1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Hamburger — same size as notification */
+.edx-mobile-hamburger {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  border-radius: 14px !important;
+  margin-right: 0 !important;
+}
+
+/* ---- BOTTOM BAR — BIGGER (like reference) ---- */
+.cs-bottom-nav {
+  padding: 12px 8px calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+  min-height: 86px !important;
+  background: #FFFFFF !important;
+  border-top: 1px solid #E2E8F0 !important;
+  box-shadow: 0 -12px 32px -12px rgba(15, 23, 42, 0.12) !important;
+}
+
+.cs-nav-item {
+  padding: 6px 4px !important;
+  gap: 4px !important;
+}
+
+.cs-nav-icon-wrap {
+  width: 72px !important;
+  height: 40px !important;
+  border-radius: 100px !important;
+}
+
+.cs-nav-icon {
+  width: 26px !important;
+  height: 26px !important;
+  stroke-width: 2.4 !important;
+}
+
+.cs-nav-label {
+  font-size: 12.5px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.01em !important;
+}
+
+.cs-nav-item-active .cs-nav-label {
+  font-size: 13px !important;
+  font-weight: 900 !important;
+}
+
+/* Reserve more space at bottom of scroll for bigger nav */
+.edunixo-mobile-runtime .edx-mobile-main,
+.edunixo-app-runtime .edx-mobile-main {
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* Active pill — larger and more prominent */
+.cs-nav-item-active .cs-nav-icon-wrap {
+  background-image: linear-gradient(135deg, #FF8A00 0%, #FFC837 100%) !important;
+  box-shadow: 0 8px 22px -8px rgba(255, 138, 0, 0.55) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Inactive icon color */
+.cs-nav-item:not(.cs-nav-item-active) .cs-nav-icon {
+  color: #94A3B8 !important;
+}
+.cs-nav-item:not(.cs-nav-item-active) .cs-nav-label {
+  color: #64748B !important;
+}
