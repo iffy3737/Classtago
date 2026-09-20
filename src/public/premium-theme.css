@@ -1165,3 +1165,118 @@ html body [class*="bg-white/"] {
 html body [class*="rounded-xl"][style*="background"][style*="f" i] {
   /* ignore default */
 }
+
+/* ============================================================
+   PHASE 11 — FIX: slate boxes back to neutral + dark borders
+   ============================================================ */
+
+/* Override the earlier pink conversion of slate-50 */
+html body [class*="bg-slate-50"]:not([class*="bg-slate-500"]):not([class*="bg-slate-900"]):not([class*="bg-slate-50/"]) {
+  background-color: #F8FAFC !important;
+  background-image: none !important;
+}
+
+/* Override the earlier pink conversion of slate-100 */
+html body [class*="bg-slate-100"]:not([class*="bg-slate-1000"]) {
+  background-color: #F1F5F9 !important;
+  background-image: none !important;
+}
+
+/* Catch any subtle pink leftovers with a hard rule */
+html body [class*="bg-[#FDF3F8]" i],
+html body [class*="bg-[#F9E8F1]" i],
+html body [class*="bg-[#fdf3f8]" i],
+html body [class*="bg-[#f9e8f1]" i] {
+  background-color: #F8FAFC !important;
+  background-image: none !important;
+}
+
+/* Inner "info box" cards inside class/subject — clean neutral */
+html body [class*="rounded"][class*="bg-slate-50"],
+html body [class*="rounded-lg"][class*="bg-slate-100"],
+html body [class*="rounded-xl"][class*="bg-slate-100"] {
+  background-color: #F8FAFC !important;
+  border: 1px solid #E2E8F0 !important;
+}
+
+/* Class/badge chips — small pills like "Class 6 · All" */
+html body [class*="bg-pink-50"],
+html body [class*="bg-rose-50"],
+html body [class*="bg-pink-100"],
+html body [class*="bg-rose-100"] {
+  background-color: #EEF2FF !important;
+  background-image: none !important;
+  color: #4338CA !important;
+  border-color: #C7D2FE !important;
+}
+
+/* Text that was pink */
+html body [class*="text-pink-"],
+html body [class*="text-rose-"] {
+  color: #4338CA !important;
+}
+html body [class*="text-pink-500"],
+html body [class*="text-pink-600"],
+html body [class*="text-pink-700"],
+html body [class*="text-rose-500"],
+html body [class*="text-rose-600"],
+html body [class*="text-rose-700"] {
+  color: #6366F1 !important;
+}
+
+/* ============================================================
+   BUTTON BORDERS — darker, more visible
+   ============================================================ */
+
+/* All outlined buttons — dark slate border */
+html body button[class*="border-slate-200"],
+html body button[class*="border-slate-300"],
+html body button[class*="border-slate-100"],
+html body a[class*="border-slate-200"],
+html body a[class*="border-slate-300"] {
+  border-color: #94A3B8 !important;
+  border-width: 1.5px !important;
+  color: #1E293B !important;
+  background-color: #FFFFFF !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+}
+
+html body button[class*="border-slate-200"]:active,
+html body button[class*="border-slate-300"]:active {
+  border-color: #6366F1 !important;
+  background-color: #EEF2FF !important;
+}
+
+/* Also darken default button borders */
+html body button:not([class*="bg-gradient"]):not([class*="bg-slate-9"]):not([class*="bg-indigo"]):not([class*="bg-blue"]):not([class*="bg-cyan"]):not([class*="bg-purple"]):not([class*="bg-violet"]):not([class*="bg-rose"]):not([class*="bg-pink"]):not([class*="bg-emerald"]):not([class*="bg-green"]):not([class*="bg-amber"]):not([class*="bg-orange"]):not([class*="bg-red"]) {
+  /* Only if it has a border class already */
+}
+
+/* ============================================================
+   UNIFIED THEME — consistent look across the app
+   ============================================================ */
+
+/* Primary action buttons — indigo-violet consistently */
+html body button[class*="bg-rose-"],
+html body button[class*="bg-pink-"],
+html body button[class*="bg-orange-"],
+html body button[class*="bg-amber-"] {
+  background-image: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%) !important;
+  background-color: #6366F1 !important;
+  border-color: transparent !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px -6px rgba(99, 102, 241, 0.5) !important;
+}
+
+/* Section headers consistent slate */
+html body h1, html body h2, html body h3, html body h4 {
+  color: #0F172A !important;
+}
+
+/* All cards — same subtle border */
+html body [class*="rounded-2xl"][class*="bg-white"],
+html body [class*="rounded-3xl"][class*="bg-white"] {
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 2px 12px -6px rgba(15, 23, 42, 0.08) !important;
+}
