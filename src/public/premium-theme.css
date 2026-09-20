@@ -2742,3 +2742,64 @@ html body .edx-mobile-logout svg {
 }
 .cs-hm-cta:active { background: #EEF2FF; border-color: #C7D2FE; }
 .cs-hm-cta span { color: #6366F1; font-weight: 900; }
+
+/* ============================================================
+   SUMMARY CARDS — Premium grid cards
+   ============================================================ */
+
+.cs-summary-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 16px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 2px 12px -6px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 130px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.cs-summary-card:active {
+  transform: scale(0.98);
+}
+
+.cs-summary-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-bottom: 4px;
+}
+.cs-summary-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.cs-summary-value {
+  font-size: 26px;
+  font-weight: 900;
+  color: #0F172A;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-top: auto;
+}
+
+.cs-summary-label {
+  font-size: 12px;
+  font-weight: 800;
+  color: #0F172A;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.cs-summary-note {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #94A3B8;
+  line-height: 1.35;
+  margin-top: 2px;
+}
