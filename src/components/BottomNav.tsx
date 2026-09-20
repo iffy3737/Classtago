@@ -3,10 +3,10 @@ import { createPortal } from 'react-dom';
 import { Home, Calendar, BarChart3, User } from 'lucide-react';
 
 const TABS = [
-  { id: 'home',       label: 'Home',       hash: 'module=overview',           matchPrefixes: ['overview'] },
-  { id: 'attendance', label: 'Attendance', hash: 'module=attendance',         matchPrefixes: ['attendance', 'leave_management'] },
-  { id: 'results',    label: 'Results',    hash: 'module=result_management',  matchPrefixes: ['result_management', 'exams', 'analytics'] },
-  { id: 'profile',    label: 'Profile',    hash: 'module=security',           matchPrefixes: ['security', 'profile'] },
+  { id: 'home',       label: 'Home',       hash: 'module=overview',           moduleId: 'tr-teacher-dashboard',      featureId: undefined,  matchPrefixes: ['overview'] },
+  { id: 'attendance', label: 'Attendance', hash: 'module=attendance',         moduleId: 'tr-attendance-daily',       featureId: undefined,  matchPrefixes: ['attendance', 'leave_management'] },
+  { id: 'results',    label: 'Results',    hash: 'module=result_management',  moduleId: 'tr-result-subject-marks',   featureId: undefined,  matchPrefixes: ['result_management', 'exams', 'analytics'] },
+  { id: 'profile',    label: 'Profile',    hash: 'module=security',           moduleId: 'tr-complete-profile',       featureId: undefined,  matchPrefixes: ['security', 'profile'] },
 ];
 
 const ICONS = { home: Home, attendance: Calendar, results: BarChart3, profile: User };
@@ -31,6 +31,10 @@ export default function BottomNav() {
   }, []);
 
   const go = (tab: any) => {
+    try {
+      const opener = (window as any).__classtago_maria_open_role_module;
+      if (typeof opener === 'function' && opener(tab.moduleId, tab.featureId)) return;
+    } catch {}
     const next = `#${tab.hash}`;
     if (window.location.hash !== next) {
       window.location.hash = tab.hash;

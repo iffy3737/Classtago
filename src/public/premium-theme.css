@@ -842,3 +842,36 @@ html body .bg-white {
   border-color: #F5D9E5 !important;
   box-shadow: 0 3px 16px -6px rgba(233, 30, 99, 0.12) !important;
 }
+
+/* ============================================================
+   PHASE 7 — Deeper premium pink
+   ============================================================ */
+
+html, body, #root, .edunixo-theme-root, .edunixo-interface-root {
+  background: #FBE5EF !important;
+  background-color: #FBE5EF !important;
+}
+
+.edunixo-mobile-runtime .edx-mobile-main,
+.edunixo-app-runtime .edx-mobile-main {
+  background: #FBE5EF !important;
+}
+
+html body .bg-white {
+  box-shadow: 0 4px 18px -6px rgba(233, 30, 99, 0.18) !important;
+}
+
+.edx-mobile-topbar {
+  background: #FBE5EF !important;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255, 162, 2, 0.08), transparent 45%),
+    radial-gradient(circle at 80% 90%, rgba(236, 190, 237, 0.15), transparent 45%);
+}
