@@ -2309,3 +2309,200 @@ html body .cs-nav-item:not(.cs-nav-item-active) .cs-nav-label {
   color: var(--cs-primary) !important;
   stroke: var(--cs-primary) !important;
 }
+
+/* ============================================================
+   ULTIMATE TOPBAR FIX — works in APK (WebView) too
+   ============================================================ */
+
+/* Force brand always visible */
+html body .edx-mobile-topbar-inner .edx-mobile-brand-lockup,
+html body .edx-mobile-topbar .edx-mobile-brand-lockup,
+html body header.edx-mobile-topbar .edx-mobile-brand-lockup {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  overflow: hidden !important;
+  order: 2 !important;
+}
+
+html body .edx-mobile-topbar-inner .edx-mobile-brand-lockup .edx-mobile-brand-eyebrow,
+html body header.edx-mobile-topbar .edx-mobile-brand-eyebrow {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  color: #6366F1 !important;
+  line-height: 1.15 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 100% !important;
+}
+
+html body .edx-mobile-topbar-inner .edx-mobile-brand-lockup h1,
+html body header.edx-mobile-topbar .edx-mobile-brand-lockup h1 {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #64748B !important;
+  line-height: 1.15 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  letter-spacing: 0.02em !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 100% !important;
+}
+
+/* Hamburger order 1 */
+html body .edx-mobile-hamburger {
+  order: 1 !important;
+  flex: 0 0 auto !important;
+}
+
+/* Actions order 3 */
+html body .edx-mobile-topbar-actions {
+  order: 3 !important;
+  flex: 0 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+/* ============================================================
+   LANGUAGE BUTTON — show ONLY the globe icon
+   ============================================================ */
+
+/* Kill any text in the language button */
+html body .edx-mobile-topbar-actions [class*="LanguageSelector"] button,
+html body .edx-mobile-topbar-actions button[aria-label*="language" i] {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  max-width: 42px !important;
+  padding: 0 !important;
+  border-radius: 12px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0 !important;
+  overflow: hidden !important;
+  font-size: 0 !important;
+  color: transparent !important;
+  text-indent: -9999px !important;
+}
+
+/* Show ONLY the first svg (globe icon) */
+html body .edx-mobile-topbar-actions [class*="LanguageSelector"] button > svg:first-of-type,
+html body .edx-mobile-topbar-actions button[aria-label*="language" i] > svg:first-of-type {
+  text-indent: 0 !important;
+  width: 22px !important;
+  height: 22px !important;
+  color: #6366F1 !important;
+  stroke: #6366F1 !important;
+  stroke-width: 2.2 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  flex-shrink: 0 !important;
+}
+
+/* Hide everything else inside language button */
+html body .edx-mobile-topbar-actions [class*="LanguageSelector"] button > *:not(svg:first-of-type),
+html body .edx-mobile-topbar-actions button[aria-label*="language" i] > *:not(svg:first-of-type) {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* ============================================================
+   PROFILE CHIP — fix key/logout overlap
+   ============================================================ */
+
+html body .edx-mobile-profile-chip {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 3px 5px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 12px !important;
+  height: 42px !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+  flex-wrap: nowrap !important;
+}
+
+html body .edx-mobile-profile-chip img {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  border-radius: 8px !important;
+  object-fit: cover !important;
+  flex-shrink: 0 !important;
+}
+
+html body .edx-mobile-profile-chip > svg {
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  color: #6366F1 !important;
+  flex-shrink: 0 !important;
+}
+
+html body .edx-mobile-profile-chip > div {
+  display: none !important;
+}
+
+/* Both key + logout buttons — same size, no overlap */
+html body .edx-mobile-profile-chip button {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  max-width: 30px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 8px !important;
+  background: #F1F5F9 !important;
+  border: none !important;
+  color: #6366F1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  position: static !important;
+}
+
+html body .edx-mobile-profile-chip button svg {
+  width: 15px !important;
+  height: 15px !important;
+  min-width: 15px !important;
+  color: #6366F1 !important;
+  stroke: #6366F1 !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+}
+
+/* ============================================================
+   FONT SELECTOR — hide on mobile
+   ============================================================ */
+
+html body .edx-mobile-topbar-actions [class*="FontSelector"],
+html body .edx-mobile-topbar-actions [class*="font-selector"] {
+  display: none !important;
+}
