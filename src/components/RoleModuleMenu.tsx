@@ -599,9 +599,15 @@ export default function RoleModuleMenu({
                   value={query}
                   onChange={(event: ChangeEvent<HTMLInputElement>) => setQuery(event.target.value)}
                   placeholder={copy.search}
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck={false}
+                  inputMode="search"
+                  enterKeyHint="search"
                   className="w-full bg-transparent py-3 text-sm font-semibold text-white outline-none placeholder:text-slate-500"
-                  // R2.5.98: autoFocus removed so the mobile keyboard does not pop up
-                  // every time the module menu opens. The user can still tap the field.
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
                 />
               </label>
             </header>

@@ -23,18 +23,17 @@ export default function BottomNav() {
       const params = new URLSearchParams(rawHash);
       const mod = String(params.get('module') || 'overview').toLowerCase();
       const match = TABS.find((tab) => tab.matchPrefixes.some((p) => mod.startsWith(p)));
-      setActiveId(match?.id || 'home');
+      const next = match?.id || 'home';
+      setActiveId((current) => (current === next ? current : next));
     };
     readHash();
     window.addEventListener('hashchange', readHash);
     window.addEventListener('popstate', readHash);
     window.addEventListener('edunixo:route-change', readHash);
-    const interval = window.setInterval(readHash, 500);
     return () => {
       window.removeEventListener('hashchange', readHash);
       window.removeEventListener('popstate', readHash);
       window.removeEventListener('edunixo:route-change', readHash);
-      window.clearInterval(interval);
     };
   }, []);
 
