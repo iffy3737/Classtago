@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import RoleHeroCard from './RoleHeroCard';
 import { BadgeCheck, Cloud, GraduationCap, Loader2, RefreshCw, UserRoundCheck, Users } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -46,28 +47,22 @@ export default function HeadmasterLiveOverviewMetrics() {
     { label: 'Awaiting Confirmation', value: data?.kpis.approvedAwaitingConfirmation, hint: 'Headmaster action', icon: BadgeCheck }
   ];
 
-  return <section className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-slate-950 text-white shadow-xl">
-    <div className="relative p-5 sm:p-6">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(6,182,212,.20),transparent_38%),radial-gradient(circle_at_top_right,rgba(139,92,246,.24),transparent_36%)]" />
-      <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[.2em] text-cyan-300"><Cloud className="h-4 w-4"/>Live Supabase Snapshot</div>
-          <h2 className="mt-2 text-xl font-black tracking-tight">School at a glance</h2>
-          <p className="mt-1 text-xs text-slate-300">Only verified cloud data is shown. Unavailable sources display “—” rather than invented values.</p>
-        </div>
-        <button type="button" onClick={() => void load()} disabled={loading} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-black hover:bg-white/15 disabled:opacity-50">
-          {loading ? <Loader2 className="h-4 w-4 animate-spin"/> : <RefreshCw className="h-4 w-4"/>}Refresh
-        </button>
-      </div>
-      {error && <div className="relative mt-4 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-xs font-semibold text-rose-100">{error}</div>}
-      <div className="relative mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {metrics.map(({ label, value, hint, icon: Icon }) => <div key={label} className="rounded-2xl border border-white/10 bg-white/[.07] p-4 backdrop-blur">
-          <Icon className="h-5 w-5 text-cyan-200"/>
-          <div className="mt-3 text-2xl font-black">{loading && !data ? '…' : value == null ? '—' : value}</div>
-          <div className="mt-1 text-[10px] font-black uppercase tracking-wider text-slate-300">{label}</div>
-          <div className="mt-1 text-[9px] font-semibold text-cyan-200/70">{hint}</div>
-        </div>)}
-      </div>
+  return (
+    <div className="space-y-4">
+      <RoleHeroCard
+        role="headmaster"
+        workspaceLabel="Headmaster Workspace"
+        subtitle="Live school metrics from your cloud snapshot."
+        stats={[
+          { value: loading && !data ? '\u2026' : data?.kpis.totalStudents == null ? '\u2014' : data.kpis.totalStudents, label: 'Students' },
+          { value: loading && !data ? '\u2026' : data?.kpis.activeStaff == null ? '\u2014' : data.kpis.activeStaff, label: 'Staff' },
+          { value: loading && !data ? '\u2026' : data?.kpis.admissionsAwaitingReview == null ? '\u2014' : data.kpis.admissionsAwaitingReview, label: 'Admissions' },
+          { value: loading && !data ? '\u2026' : data?.kpis.approvedAwaitingConfirmation == null ? '\u2014' : data.kpis.approvedAwaitingConfirmation, label: 'Awaiting' },
+        ]}
+        ctaLabel={loading ? 'Loading\u2026' : 'Refresh Live Data'}
+        onCtaClick={() => void load()}
+      />
+      {error && <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-semibold text-rose-700">{error}</div>}
     </div>
-  </section>;
+  );
 }
