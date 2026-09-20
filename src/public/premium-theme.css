@@ -1450,3 +1450,78 @@ html body [class*="rounded-3xl"][class*="bg-white"] {
   padding: 8px 10px !important;
   gap: 8px !important;
 }
+
+/* ============================================================
+   PHASE 14 — FIX: hide duplicate Classtago + shrink language bar
+   ============================================================ */
+
+/* 1) HIDE the small "Classtago" eyebrow — school name already shows brand */
+.edx-mobile-brand-eyebrow {
+  display: none !important;
+}
+
+/* 2) Brand lockup — full width available for school name */
+.edx-mobile-brand-lockup {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  overflow: hidden !important;
+}
+.edx-mobile-brand-lockup h1 {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  color: #0F172A !important;
+  letter-spacing: -0.01em !important;
+}
+
+/* Also hide the tiny logo mark next to brand (redundant with school name) */
+.edx-mobile-brand-mark {
+  display: none !important;
+}
+
+/* 3) Topbar actions container — compact */
+.edx-mobile-topbar-actions {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+.edx-mobile-topbar-actions > div:first-child {
+  gap: 4px !important;
+  flex: 0 0 auto !important;
+}
+
+/* 4) Language selector — SHRINK aggressively */
+.edx-mobile-topbar-actions button:has(svg:first-child),
+.edx-mobile-topbar-inner button[class*="selector" i],
+.edx-mobile-topbar-inner [class*="LanguageSelector"] button {
+  max-width: 82px !important;
+  min-width: 72px !important;
+  width: auto !important;
+  padding: 6px 6px 6px 8px !important;
+  font-size: 12px !important;
+  height: 34px !important;
+  gap: 2px !important;
+  border-radius: 10px !important;
+}
+.edx-mobile-topbar-actions button svg:last-child {
+  width: 12px !important;
+  height: 12px !important;
+}
+
+/* 5) Topbar overall */
+.edx-mobile-topbar-inner {
+  padding: 8px 10px !important;
+  gap: 6px !important;
+}
+
+/* 6) Hamburger — keep same, but ensure no extra gap */
+.edx-mobile-hamburger {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  margin-right: 2px !important;
+}
