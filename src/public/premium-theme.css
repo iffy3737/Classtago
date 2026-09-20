@@ -793,3 +793,52 @@ html body .erp-module-dock > div {
   gap: 0 !important;
   padding: 0 !important;
 }
+
+/* ============================================================
+   PHASE 6 — Fix issues 1, 2, 5
+   ============================================================ */
+
+/* ---- ISSUE 1: TopBar — don't overlap system status bar ---- */
+.edx-mobile-topbar {
+  padding-top: max(12px, env(safe-area-inset-top)) !important;
+  background: #FFF9FC !important;
+}
+.edx-mobile-topbar-inner {
+  padding-top: 4px !important;
+  padding-bottom: 10px !important;
+}
+
+/* ---- ISSUE 2: Bottom nav — bigger icons + labels ---- */
+.cs-bottom-nav {
+  padding: 10px 8px calc(14px + env(safe-area-inset-bottom, 0px)) !important;
+  min-height: 72px !important;
+}
+.cs-nav-icon-wrap {
+  width: 66px !important;
+  height: 38px !important;
+}
+.cs-nav-icon {
+  width: 26px !important;
+  height: 26px !important;
+  stroke-width: 2.4 !important;
+}
+.cs-nav-label {
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
+.cs-nav-item-active .cs-nav-label {
+  font-size: 12.5px !important;
+}
+
+/* ---- ISSUE 5: Richer premium pink theme ---- */
+:root {
+  --cs-bg: #FDF5F8 !important;
+  --cs-bg-soft: #FBE8F0 !important;
+}
+html, body, #root, .edunixo-theme-root {
+  background: #FDF5F8 !important;
+}
+html body .bg-white {
+  border-color: #F5D9E5 !important;
+  box-shadow: 0 3px 16px -6px rgba(233, 30, 99, 0.12) !important;
+}
