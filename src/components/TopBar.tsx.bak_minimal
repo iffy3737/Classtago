@@ -66,8 +66,29 @@ export default function TopBar({
           >
             <Menu className="h-5 w-5" />
           </button>
+          <div className="edx-mobile-brand-lockup">
+            <div className="edx-mobile-brand-mark"><GraduationCap className="h-5 w-5" /></div>
+            <div className="min-w-0">
+              <p className="edx-mobile-brand-eyebrow">Classtago</p>
+              <h1>{schoolName || t.schoolName}</h1>
+            </div>
+          </div>
           <div className="edx-mobile-topbar-actions">
-            <LanguageSelector value={lang} options={languages} onChange={onLangChange} loading={languagesLoading} compact label="Interface language" purpose="interface" />
+            <div className="flex items-center gap-1.5">
+              <LanguageSelector value={lang} options={languages} onChange={onLangChange} loading={languagesLoading} compact label="Interface language" purpose="interface" />
+              <div className="hidden sm:block"><FontSelector value={interfaceFontCode} options={interfaceFonts} onChange={onInterfaceFontChange} usage="interface" loading={fontsLoading} compactIconOnly /></div>
+            </div>
+            {user && (
+              <div className="edx-mobile-profile-chip">
+                {user.photoUrl ? <img src={user.photoUrl} alt={user.name} /> : <UserCircle2 className="h-5 w-5 text-violet-600" />}
+                <div className="hidden min-w-0 sm:block">
+                  <strong>{user.name}</strong>
+                  <span>{t[user.role] || user.role}</span>
+                </div>
+                <button onClick={onChangePassword} aria-label="Change password" title="Change Password"><KeyRound className="h-4 w-4" /></button>
+                <button onClick={onLogout} aria-label="Logout" title={t.logout}><LogOut className="h-4 w-4" /></button>
+              </div>
+            )}
           </div>
         </div>
       </header>
