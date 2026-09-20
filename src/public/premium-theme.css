@@ -1715,3 +1715,206 @@ html body [class*="rounded-3xl"][class*="bg-white"] {
 .cs-nav-item:not(.cs-nav-item-active) .cs-nav-label {
   color: #64748B !important;
 }
+
+/* ============================================================
+   PHASE 16 — FINAL OVERRIDE (fixes everything)
+   ============================================================ */
+
+/* ---- BRAND: force visible, 2 lines ---- */
+html body .edx-mobile-brand-lockup {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1px !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  overflow: hidden !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+html body .edx-mobile-brand-lockup .edx-mobile-brand-eyebrow,
+html body .edx-mobile-brand-lockup > p {
+  display: block !important;
+  visibility: visible !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  color: #E91E63 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  line-height: 1.1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+html body .edx-mobile-brand-lockup h1 {
+  display: block !important;
+  visibility: visible !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  color: #0F172A !important;
+  line-height: 1.15 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+html body .edx-mobile-brand-mark {
+  display: none !important;
+}
+
+/* ---- LANGUAGE SELECTOR: force shrink ---- */
+html body .edx-mobile-topbar-actions {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+html body .edx-mobile-topbar-actions > div:first-child {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  flex: 0 0 auto !important;
+}
+
+html body .edx-mobile-topbar-actions > div:first-child button {
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 82px !important;
+  padding: 6px 8px !important;
+  font-size: 12px !important;
+  height: 36px !important;
+  gap: 2px !important;
+  border-radius: 12px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+}
+
+html body .edx-mobile-topbar-actions > div:first-child button span,
+html body .edx-mobile-topbar-actions > div:first-child button > *:not(svg) {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  min-width: 0 !important;
+}
+
+html body .edx-mobile-topbar-actions > div:first-child button svg {
+  width: 14px !important;
+  height: 14px !important;
+  flex-shrink: 0 !important;
+}
+
+html body .edx-mobile-topbar-actions > div:first-child button svg:last-child {
+  width: 10px !important;
+  height: 10px !important;
+}
+
+/* ---- PROFILE CHIP: compact ---- */
+html body .edx-mobile-profile-chip {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 3px 5px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+  height: 36px !important;
+  flex: 0 0 auto !important;
+}
+html body .edx-mobile-profile-chip img {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 8px !important;
+  object-fit: cover !important;
+}
+html body .edx-mobile-profile-chip button {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+  background: #F1F5F9 !important;
+  border: none !important;
+  color: #6366F1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+html body .edx-mobile-profile-chip button svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* ---- HAMBURGER: matching size ---- */
+html body .edx-mobile-hamburger {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  border-radius: 12px !important;
+  margin-right: 4px !important;
+  flex-shrink: 0 !important;
+}
+
+/* ---- TOPBAR WRAPPER ---- */
+html body .edx-mobile-topbar-inner {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px 12px !important;
+  min-height: 60px !important;
+}
+
+/* ---- BOTTOM NAV: bigger, orange active (like reference) ---- */
+html body .cs-bottom-nav {
+  padding: 12px 8px calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+  min-height: 88px !important;
+  background: #FFFFFF !important;
+  border-top: 1px solid #E2E8F0 !important;
+  box-shadow: 0 -10px 28px -10px rgba(15, 23, 42, 0.1) !important;
+}
+html body .cs-nav-item {
+  padding: 6px 4px !important;
+  gap: 4px !important;
+}
+html body .cs-nav-icon-wrap {
+  width: 74px !important;
+  height: 42px !important;
+}
+html body .cs-nav-icon {
+  width: 28px !important;
+  height: 28px !important;
+  stroke-width: 2.4 !important;
+}
+html body .cs-nav-label {
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+html body .cs-nav-item-active .cs-nav-label {
+  font-size: 13.5px !important;
+  font-weight: 900 !important;
+  background-image: none !important;
+  -webkit-text-fill-color: #FF8A00 !important;
+  color: #FF8A00 !important;
+}
+html body .cs-nav-item-active .cs-nav-icon-wrap {
+  background-image: linear-gradient(135deg, #FF8A00 0%, #FFC837 100%) !important;
+  box-shadow: 0 8px 22px -8px rgba(255, 138, 0, 0.55) !important;
+}
+html body .cs-nav-item:not(.cs-nav-item-active) .cs-nav-icon {
+  color: #94A3B8 !important;
+}
+html body .cs-nav-item:not(.cs-nav-item-active) .cs-nav-label {
+  color: #64748B !important;
+  -webkit-text-fill-color: #64748B !important;
+  background-image: none !important;
+}
