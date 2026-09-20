@@ -66,8 +66,23 @@ export default function TopBar({
           >
             <Menu className="h-5 w-5" />
           </button>
+          <div className="edx-mobile-brand-lockup">
+            <p className="edx-mobile-brand-eyebrow">Classtago</p>
+            <h1>{schoolName || t.schoolName}</h1>
+          </div>
           <div className="edx-mobile-topbar-actions">
             <LanguageSelector value={lang} options={languages} onChange={onLangChange} loading={languagesLoading} compact label="Interface language" purpose="interface" />
+            {user && (
+              <button
+                type="button"
+                className="edx-mobile-logout"
+                onClick={onLogout}
+                aria-label={t.logout}
+                title={t.logout}
+              >
+                <LogOut className="h-5 w-5" />
+              </button>
+            )}
           </div>
         </div>
       </header>

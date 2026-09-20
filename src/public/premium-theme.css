@@ -2506,3 +2506,79 @@ html body .edx-mobile-topbar-actions [class*="FontSelector"],
 html body .edx-mobile-topbar-actions [class*="font-selector"] {
   display: none !important;
 }
+
+/* ============================================================
+   TOPBAR — brand + logout button styling
+   ============================================================ */
+
+html body .edx-mobile-topbar-inner .edx-mobile-brand-lockup {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 1px !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  overflow: hidden !important;
+  margin: 0 8px !important;
+}
+html body .edx-mobile-topbar-inner .edx-mobile-brand-lockup .edx-mobile-brand-eyebrow {
+  display: block !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  color: #6366F1 !important;
+  line-height: 1.1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  letter-spacing: -0.02em !important;
+  text-transform: none !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+html body .edx-mobile-topbar-inner .edx-mobile-brand-lockup h1 {
+  display: block !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #64748B !important;
+  line-height: 1.1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+html body .edx-mobile-logout {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  max-width: 42px !important;
+  padding: 0 !important;
+  border-radius: 12px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+  color: #E91E63 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  margin-left: 6px !important;
+}
+html body .edx-mobile-logout svg {
+  width: 20px !important;
+  height: 20px !important;
+  color: #E91E63 !important;
+  stroke: #E91E63 !important;
+  stroke-width: 2.2 !important;
+}
+html body .edx-mobile-topbar-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex: 0 0 auto !important;
+  margin-left: auto !important;
+}
