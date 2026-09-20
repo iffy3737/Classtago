@@ -1062,3 +1062,106 @@ html body [class*="border-pink"],
 html body [class*="ring-pink"] {
   border-color: #6366F1 !important;
 }
+
+/* ============================================================
+   PHASE 10 — Darker body + remove ALL pink pastels
+   ============================================================ */
+
+:root {
+  --cs-bg: #E8EBF2 !important;
+  --cs-bg-soft: #DDE2EC !important;
+  --cs-border: #CBD5E1 !important;
+}
+
+/* Darker slate background */
+html, body, #root, .edunixo-theme-root, .edunixo-interface-root {
+  background: #E8EBF2 !important;
+  background-color: #E8EBF2 !important;
+}
+.edunixo-mobile-runtime .edx-mobile-main,
+.edunixo-app-runtime .edx-mobile-main {
+  background: #E8EBF2 !important;
+}
+.edx-mobile-topbar {
+  background: #E8EBF2 !important;
+}
+
+/* Remove EVERY pink pastel — convert to slate/indigo tints */
+html body [class*="bg-pink-"]:not([class*="bg-pink-5"]):not([class*="bg-pink-6"]):not([class*="bg-pink-7"]),
+html body [class*="bg-rose-"]:not([class*="bg-rose-5"]):not([class*="bg-rose-6"]):not([class*="bg-rose-7"]),
+html body [class*="bg-red-50"],
+html body [class*="bg-red-100"] {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.06), rgba(139, 92, 246, 0.05)) !important;
+  background-color: #EEF2FF !important;
+}
+
+/* Catch pink-tinted card patterns — inline style/class variants */
+html body [class*="bg-fce7f3"],
+html body [class*="bg-fbe5ef"],
+html body [class*="bg-fdf3f8"],
+html body [class*="bg-fdf5f8"],
+html body [class*="bgFCE7F3"],
+html body [class*="bgFBE5EF"] {
+  background: #EEF2FF !important;
+  background-color: #EEF2FF !important;
+}
+
+/* Any element with pink-tint via style attribute */
+html body [style*="fce7f3" i],
+html body [style*="fbe5ef" i],
+html body [style*="fdf3f8" i],
+html body [style*="fff5fa" i],
+html body [style*="fff1f2" i] {
+  background: #EEF2FF !important;
+  background-color: #EEF2FF !important;
+}
+
+/* The many light boxes inside class cards — make them cool slate */
+html body [class*="rounded"][class*="bg-"] {
+  /* default fallback */
+}
+
+/* "Class Teacher Class" / "Teaching Class" badges */
+html body [class*="bg-pink-100"],
+html body [class*="bg-rose-100"] {
+  background: #E0E7FF !important;
+  color: #4338CA !important;
+}
+
+/* All text that was pink → indigo */
+html body [class*="text-pink-"]:not([class*="text-pink-5"]):not([class*="text-pink-6"]):not([class*="text-pink-7"]),
+html body [class*="text-rose-"]:not([class*="text-rose-5"]):not([class*="text-rose-6"]):not([class*="text-rose-7"]),
+html body [class*="text-pink-700"],
+html body [class*="text-pink-800"],
+html body [class*="text-rose-700"],
+html body [class*="text-rose-800"] {
+  color: #4338CA !important;
+}
+
+/* Border pink → slate/indigo */
+html body [class*="border-pink-"]:not([class*="border-pink-5"]):not([class*="border-pink-6"]):not([class*="border-pink-7"]),
+html body [class*="border-rose-"]:not([class*="border-rose-5"]):not([class*="border-rose-6"]):not([class*="border-rose-7"]) {
+  border-color: #CBD5E1 !important;
+}
+
+/* Section header "My Classes" / "My Subjects" — keep clean */
+html body h2, html body h3 {
+  color: #0F172A !important;
+}
+
+/* Card inner soft boxes — light slate instead of pink */
+html body [class*="bg-white/"] {
+  background: #F1F5F9 !important;
+}
+
+/* Bottom nav — pure white */
+.cs-bottom-nav {
+  background: #FFFFFF !important;
+  border-top-color: #E2E8F0 !important;
+  box-shadow: 0 -8px 24px -8px rgba(99, 102, 241, 0.12) !important;
+}
+
+/* Any remaining "pink-ish" small boxes — force cool */
+html body [class*="rounded-xl"][style*="background"][style*="f" i] {
+  /* ignore default */
+}
