@@ -68,6 +68,15 @@ void installNativeAppRuntime();
   observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['autofocus'] });
 })();
 
+// Cache-bust premium theme: forces fresh CSS after every deploy
+if (typeof document !== 'undefined' && !document.querySelector('link[data-premium-theme]')) {
+  const themeLink = document.createElement('link');
+  themeLink.rel = 'stylesheet';
+  themeLink.href = '/premium-theme.css?v=' + Date.now();
+  themeLink.setAttribute('data-premium-theme', '1');
+  document.head.appendChild(themeLink);
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AppErrorBoundary>
