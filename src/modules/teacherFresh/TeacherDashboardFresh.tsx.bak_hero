@@ -169,36 +169,18 @@ export default function TeacherDashboardFresh({ context, loading, error, onNavig
 
   return (
     <div className="space-y-6" data-testid="teacher-dashboard-complete" data-teacher-ux="assignment-r9">
-      <section className="cs-teacher-hero">
-        <div className="cs-hero-top-row">
-          <span className="cs-hero-badge">● TEACHER WORKSPACE</span>
-          <span className="cs-hero-sparkle">✨</span>
-        </div>
-        <h1 className="cs-hero-title">
-          Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 17 ? 'afternoon' : 'evening'},<br/>
-          {String(context.teacherName || 'Teacher').split(' ')[0]}
-        </h1>
-        <p className="cs-hero-subtitle">
-          {subjectAssignments.length} subject{subjectAssignments.length === 1 ? '' : 's'} across {new Set(subjectAssignments.map(classScopeKey)).size} class{new Set(subjectAssignments.map(classScopeKey)).size === 1 ? '' : 'es'}<br/>
-          are assigned to you today.
-        </p>
-        <div className="cs-hero-stats">
-          <div className="cs-hero-stat">
-            <span className="cs-hero-stat-num">{subjectAssignments.length}</span>
-            <span className="cs-hero-stat-lbl">Subjects</span>
+      <section className="overflow-hidden rounded-[1.75rem] border border-slate-800 bg-slate-950 p-6 text-white shadow-xl">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[.22em] text-cyan-300">Classtago Teacher Dashboard</p>
+            <h1 className="mt-2 text-2xl font-black">Welcome, {context.teacherName}</h1>
+            <p className="mt-1 text-sm text-slate-300">{context.schoolName} · {context.academicYear}</p>
           </div>
-          <div className="cs-hero-stat">
-            <span className="cs-hero-stat-num">{new Set(subjectAssignments.map(classScopeKey)).size}</span>
-            <span className="cs-hero-stat-lbl">Classes</span>
-          </div>
-          <div className="cs-hero-stat">
-            <span className="cs-hero-stat-num">{String(context.academicYear || '').replace(/\D/g, '').slice(0, 2)}-{String(context.academicYear || '').replace(/\D/g, '').slice(-2)}</span>
-            <span className="cs-hero-stat-lbl">Year</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="w-fit rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-slate-200">{context.designation || 'Teacher'} · Headmaster-assigned scope</span>
+            <button onClick={() => onNavigate?.('tr-my-assignments')} className="rounded-xl bg-cyan-300 px-3 py-2 text-xs font-black text-slate-950">View My Academic Assignment</button>
           </div>
         </div>
-        <button onClick={() => onNavigate?.('tr-my-assignments')} className="cs-hero-cta">
-          View My Academic Assignment
-        </button>
       </section>
 
       <section className="rounded-2xl border border-cyan-200 bg-cyan-50/50 p-5 shadow-sm">
