@@ -16,6 +16,7 @@
         <uses-feature android:name="android.hardware.microphone" android:required="false" />
 
     <application
+        android:fitsSystemWindows="true"
         android:hardwareAccelerated="true"
         android:allowBackup="false"
         android:fullBackupContent="false"
@@ -28,6 +29,7 @@
 
         <activity
             android:name=".MainActivity"
+            android:windowDrawsSystemBarBackgrounds="false"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
             android:exported="true"
