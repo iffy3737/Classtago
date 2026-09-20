@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import RoleHeroCard from '../../components/RoleHeroCard';
 import { schoolRelativeDateKey, schoolTodayKey } from '../../lib/schoolDate';
 import {
   AlertCircle, ArrowRight, Bell, BookOpen, CalendarClock, CheckCircle2,
@@ -170,19 +169,37 @@ export default function TeacherDashboardFresh({ context, loading, error, onNavig
 
   return (
     <div className="space-y-6" data-testid="teacher-dashboard-complete" data-teacher-ux="assignment-r9">
-      <RoleHeroCard
-        name={context.teacherName}
-        role="teacher"
-        workspaceLabel="Teacher Workspace"
-        subtitle={`${subjectAssignments.length} subject${subjectAssignments.length === 1 ? '' : 's'} across ${new Set(subjectAssignments.map(classScopeKey)).size} class${new Set(subjectAssignments.map(classScopeKey)).size === 1 ? '' : 'es'} are assigned to you today.`}
-        stats={[
-          { value: subjectAssignments.length, label: 'Subjects' },
-          { value: new Set(subjectAssignments.map(classScopeKey)).size, label: 'Classes' },
-          { value: String(context.academicYear || '').replace(/\D/g, '').slice(0, 2) + '-' + String(context.academicYear || '').replace(/\D/g, '').slice(-2), label: 'Year' },
-        ]}
-        ctaLabel="View My Academic Assignment"
-        onCtaClick={() => onNavigate?.('tr-my-assignments')}
-      />
+      <section className="cs-teacher-hero">
+        <div className="cs-hero-top-row">
+          <span className="cs-hero-badge">● TEACHER WORKSPACE</span>
+          <span className="cs-hero-sparkle">✨</span>
+        </div>
+        <h1 className="cs-hero-title">
+          Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 17 ? 'afternoon' : 'evening'},<br/>
+          {String(context.teacherName || 'Teacher').split(' ')[0]}
+        </h1>
+        <p className="cs-hero-subtitle">
+          {subjectAssignments.length} subject{subjectAssignments.length === 1 ? '' : 's'} across {new Set(subjectAssignments.map(classScopeKey)).size} class{new Set(subjectAssignments.map(classScopeKey)).size === 1 ? '' : 'es'}<br/>
+          are assigned to you today.
+        </p>
+        <div className="cs-hero-stats">
+          <div className="cs-hero-stat">
+            <span className="cs-hero-stat-num">{subjectAssignments.length}</span>
+            <span className="cs-hero-stat-lbl">Subjects</span>
+          </div>
+          <div className="cs-hero-stat">
+            <span className="cs-hero-stat-num">{new Set(subjectAssignments.map(classScopeKey)).size}</span>
+            <span className="cs-hero-stat-lbl">Classes</span>
+          </div>
+          <div className="cs-hero-stat">
+            <span className="cs-hero-stat-num">{String(context.academicYear || '').replace(/\D/g, '').slice(0, 2)}-{String(context.academicYear || '').replace(/\D/g, '').slice(-2)}</span>
+            <span className="cs-hero-stat-lbl">Year</span>
+          </div>
+        </div>
+        <button onClick={() => onNavigate?.('tr-my-assignments')} className="cs-hero-cta">
+          View My Academic Assignment
+        </button>
+      </section>
 
       <section className="rounded-2xl border border-cyan-200 bg-cyan-50/50 p-5 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
