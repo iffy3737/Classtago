@@ -52,7 +52,6 @@ export default function TeacherDashboardFresh({ context, loading, error, onNavig
 
   const [expandedClassKey, setExpandedClassKey] = useState<string | null>(null);
   const [expandedSubjectId, setExpandedSubjectId] = useState<string | null>(null);
-  const [expandedSubjectClassKey, setExpandedSubjectClassKey] = useState<string | null>(null);
   const [attendancePending, setAttendancePending] = useState<number | null>(null);
   const [attendanceCheckError, setAttendanceCheckError] = useState('');
   const [cloudFeed, setCloudFeed] = useState<TeacherDashboardCloudFeed | null>(null);
@@ -363,74 +362,72 @@ export default function TeacherDashboardFresh({ context, loading, error, onNavig
           </div>
           <div className="min-w-0 flex-1">
             <h2 className="cs-acc-title">My Subjects</h2>
-            <p className="cs-acc-sub">Subjects grouped by class. Tap a class to see its subjects and actions.</p>
+            <p className="cs-acc-sub">Subject-wise teaching workspace. Attendance remains a Class Teacher action.</p>
           </div>
         </div>
 
-        {!teachingClassGroups.length ? (
+        {!groupedSubjectIds.length ? (
           <div className="cs-acc-empty">
             <b>No Subject Teacher allocation found.</b>
           </div>
         ) : (
           <div className="cs-acc-list">
-            {teachingClassGroups.map(group => {
-              const a = group.representative;
-              const isOpen = expandedSubjectClassKey === group.key;
-              const classSubjects = group.subjects || [];
-              const uniqueSubjects = Array.from(new Map(classSubjects.map(s => [s.subjectId, s])).values());
+            {groupedSubjectIds.map(subjectId => {
+              const rows = subjectAssignments.filter(a => a.subjectId === subjectId);
+              const subject = rows[0];
+              const totalStudents = rows.reduce((sum, row) => sum + Number(rosterCounts[classScopeKey(row)] ?? row.studentCount ?? 0), 0);
+              const media = [...new Set(rows.map(x => x.medium).filter(Boolean))];
+              const isOpen = expandedSubjectId === subjectId;
               return (
-                <div key={group.key} className={`cs-acc-item ${isOpen ? 'cs-acc-item-open' : ''}`}>
+                <div key={subjectId} className={`cs-acc-item ${isOpen ? 'cs-acc-item-open' : ''}`}>
                   <button
                     type="button"
                     className="cs-acc-summary"
-                    onClick={() => setExpandedSubjectClassKey(isOpen ? null : group.key)}
+                    onClick={() => setExpandedSubjectId(isOpen ? null : subjectId)}
                     aria-expanded={isOpen}
                   >
                     <div className="cs-acc-summary-left">
                       <span className="cs-acc-summary-title">
-                        {a.className} · {a.division}
+                        {subject.subjectName}
+                        {subject.subjectCode ? <small className="cs-acc-code">{subject.subjectCode}</small> : null}
                       </span>
                       <span className="cs-acc-summary-meta">
-                        {uniqueSubjects.length} subject{uniqueSubjects.length === 1 ? '' : 's'}
+                        {rows.length} class scope{rows.length === 1 ? '' : 's'} · {totalStudents || 0} student{totalStudents === 1 ? '' : 's'}
                       </span>
                     </div>
-                    <span className={`cs-acc-badge ${group.isClassTeacher ? 'cs-acc-badge-ct' : 'cs-acc-badge-tc'}`}>
-                      {group.isClassTeacher ? 'Class Teacher' : 'Teaching Class'}
-                    </span>
                     <span className="cs-acc-arrow">{isOpen ? '▲' : '▼'}</span>
                   </button>
 
                   {isOpen && (
                     <div className="cs-acc-body">
-                      {uniqueSubjects.length === 0 ? (
-                        <p className="cs-subject-empty">No subject assigned in this class.</p>
-                      ) : (
-                        uniqueSubjects.map(subject => {
-                          const totalStudents = Number(rosterCounts[classScopeKey(subject)] ?? subject.studentCount ?? 0);
-                          const media = subject.medium || '';
-                          return (
-                            <div key={subject.subjectId} className="cs-subject-block">
-                              <div className="cs-subject-head">
-                                <div className="cs-subject-title">
-                                  {subject.subjectName}
-                                  {subject.subjectCode ? <small className="cs-acc-code">{subject.subjectCode}</small> : null}
-                                </div>
-                                <div className="cs-subject-meta">
-                                  {totalStudents > 0 ? `${totalStudents} student${totalStudents === 1 ? '' : 's'}` : 'No students mapped'}
-                                  {media ? ` · ${media}` : ''}
-                                </div>
-                              </div>
-                              <div className="cs-acc-actions">
-                                <button type="button" onClick={() => onNavigate?.('tr-study-material')} className="cs-acc-btn cs-acc-btn-primary">Study Material</button>
-                                <button type="button" onClick={() => onNavigate?.('tr-ai-lesson-plan')} className="cs-acc-btn">Lesson Plan</button>
-                                <button type="button" onClick={() => onNavigate?.('tr-ai-homework')} className="cs-acc-btn">Homework</button>
-                                <button type="button" onClick={() => onNavigate?.('tr-question-paper-first-term')} className="cs-acc-btn">Question Paper</button>
-                                <button type="button" onClick={() => onNavigate?.('tr-result-subject-marks')} className="cs-acc-btn">Subject Marks</button>
-                              </div>
-                            </div>
-                          );
-                        })
-                      )}
+                      <div className="cs-acc-chips">
+                        {rows.map(x => (
+                          <span key={x.id} className="cs-acc-chip cs-acc-chip-violet">{x.className} · {x.division}</span>
+                        ))}
+                      </div>
+
+                      <div className="cs-acc-stats">
+                        <span className="cs-acc-stat">
+                          <b>{rows.length}</b>
+                          <small>Classes</small>
+                        </span>
+                        <span className="cs-acc-stat">
+                          <b>{totalStudents || '—'}</b>
+                          <small>Students</small>
+                        </span>
+                        <span className="cs-acc-stat">
+                          <b>{media.join(', ') || 'School'}</b>
+                          <small>Medium</small>
+                        </span>
+                      </div>
+
+                      <div className="cs-acc-actions">
+                        <button type="button" onClick={() => onNavigate?.('tr-study-material')} className="cs-acc-btn cs-acc-btn-primary">Study Material</button>
+                        <button type="button" onClick={() => onNavigate?.('tr-ai-lesson-plan')} className="cs-acc-btn">Lesson Plan</button>
+                        <button type="button" onClick={() => onNavigate?.('tr-ai-homework')} className="cs-acc-btn">Homework</button>
+                        <button type="button" onClick={() => onNavigate?.('tr-question-paper-first-term')} className="cs-acc-btn">Question Paper</button>
+                        <button type="button" onClick={() => onNavigate?.('tr-result-subject-marks')} className="cs-acc-btn">Subject Marks</button>
+                      </div>
                     </div>
                   )}
                 </div>
