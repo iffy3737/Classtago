@@ -2109,3 +2109,203 @@ html body .cs-nav-item:not(.cs-nav-item-active) .cs-nav-label {
 
 /* Separator between rows */
 /* Each row is now a separate card — no shared divider needed */
+
+/* ============================================================
+   FINAL FIX — Clean TopBar layout
+   [🍔] Brand (2 lines)          [🌐] [👤🔑→]
+   ============================================================ */
+
+/* Outer wrapper */
+.edx-mobile-topbar {
+  background: var(--cs-bg) !important;
+  padding: 8px 12px !important;
+  padding-top: max(10px, env(safe-area-inset-top)) !important;
+  border-bottom: 1px solid var(--cs-border) !important;
+}
+
+.edx-mobile-topbar-inner {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  min-height: 52px !important;
+}
+
+/* === HAMBURGER — compact square === */
+.edx-mobile-hamburger {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  max-width: 42px !important;
+  padding: 0 !important;
+  border-radius: 12px !important;
+  border: none !important;
+  background: linear-gradient(135deg, var(--cs-primary), var(--cs-primary-2)) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 12px -4px rgba(99, 102, 241, 0.5) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+}
+.edx-mobile-hamburger svg {
+  width: 22px !important;
+  height: 22px !important;
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+  stroke-width: 2.5 !important;
+}
+
+/* === BRAND — 2 lines, flexible === */
+.edx-mobile-brand-lockup {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+  overflow: hidden !important;
+}
+.edx-mobile-brand-lockup .edx-mobile-brand-mark {
+  display: none !important;   /* hide redundant logo */
+}
+.edx-mobile-brand-lockup .edx-mobile-brand-eyebrow {
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  color: var(--cs-primary) !important;
+  line-height: 1.2 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+.edx-mobile-brand-lockup h1 {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: var(--cs-muted) !important;
+  line-height: 1.2 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  letter-spacing: 0.02em !important;
+  text-transform: uppercase !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* === TOPBAR ACTIONS — compact === */
+.edx-mobile-topbar-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-shrink: 0 !important;
+  flex: 0 0 auto !important;
+}
+
+/* Inner div containing language + font selectors */
+.edx-mobile-topbar-actions > div:first-child {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex: 0 0 auto !important;
+}
+
+/* === LANGUAGE SELECTOR — make it compact, hide text === */
+.edx-mobile-topbar-actions [class*="LanguageSelector"],
+.edx-mobile-topbar-actions [class*="language-selector"] {
+  max-width: none !important;
+  width: auto !important;
+  min-width: 0 !important;
+}
+
+.edx-mobile-topbar-actions [class*="LanguageSelector"] button,
+.edx-mobile-topbar-actions button[aria-label*="language" i],
+.edx-mobile-topbar-actions [class*="LanguageSelector"] > button {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  max-width: 42px !important;
+  padding: 0 !important;
+  border-radius: 12px !important;
+  background: #FFFFFF !important;
+  border: 1px solid var(--cs-border) !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0 !important;
+  overflow: hidden !important;
+  position: relative !important;
+  font-size: 0 !important;
+  color: transparent !important;
+}
+
+.edx-mobile-topbar-actions [class*="LanguageSelector"] button svg,
+.edx-mobile-topbar-actions button[aria-label*="language" i] svg {
+  width: 20px !important;
+  height: 20px !important;
+  color: var(--cs-primary) !important;
+  stroke: var(--cs-primary) !important;
+  flex-shrink: 0 !important;
+}
+
+/* Hide the chevron arrow & any text inside the language button */
+.edx-mobile-topbar-actions [class*="LanguageSelector"] button svg:last-child,
+.edx-mobile-topbar-actions [class*="LanguageSelector"] button span:not(:first-child),
+.edx-mobile-topbar-actions [class*="LanguageSelector"] button > span {
+  display: none !important;
+}
+
+/* === FONT SELECTOR — hide on mobile === */
+.edx-mobile-topbar-actions [class*="FontSelector"],
+.edx-mobile-topbar-actions [class*="font-selector"] {
+  display: none !important;
+}
+
+/* === PROFILE CHIP — compact pill === */
+.edx-mobile-profile-chip {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 3px 6px !important;
+  background: #FFFFFF !important;
+  border: 1px solid var(--cs-border) !important;
+  border-radius: 12px !important;
+  height: 42px !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+}
+.edx-mobile-profile-chip img {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 9px !important;
+  object-fit: cover !important;
+}
+.edx-mobile-profile-chip svg {
+  width: 20px !important;
+  height: 20px !important;
+  color: var(--cs-primary) !important;
+}
+.edx-mobile-profile-chip > div {
+  display: none !important; /* hide "name / role" text on mobile */
+}
+.edx-mobile-profile-chip button {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  padding: 0 !important;
+  border-radius: 9px !important;
+  background: var(--cs-bg) !important;
+  border: none !important;
+  color: var(--cs-primary) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.edx-mobile-profile-chip button svg {
+  width: 16px !important;
+  height: 16px !important;
+  color: var(--cs-primary) !important;
+  stroke: var(--cs-primary) !important;
+}
