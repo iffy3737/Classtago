@@ -881,10 +881,10 @@ export default function SmartTimetableV2({
 
     return subjectRows
       .map((row: any, index: number) => {
-        const className = String(row?.className || '').trim();
-        const division = String(row?.divisionName || 'No Division').trim() || 'No Division';
-        const teacherName = String(row?.teacherName || '').trim();
-        const subjectName = String(row?.subjectName || '').trim();
+        const className = String(row?.className || row?.class_name || row?.standard || row?.class || '').trim();
+        const division = String(row?.divisionName || row?.division_name || row?.division || row?.section || 'No Division').trim() || 'No Division';
+        const teacherName = String(row?.teacherName || row?.teacher_name || row?.teacherProfileName || row?.teacher || '').trim();
+        const subjectName = String(row?.subjectName || row?.subject_name || row?.subject || '').trim();
         const scope = `${assignmentNorm(className)}|${assignmentNorm(division)}`;
         const rowId = String(row?.cloudId || row?.id || `assignment_${index}`);
         const teacherMatchesClassTeacher =
