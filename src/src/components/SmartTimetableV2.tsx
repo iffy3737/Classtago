@@ -1904,9 +1904,9 @@ export default function SmartTimetableV2({
       table: "w-full border-collapse text-left text-xs font-mono",
       dayHeader: "py-3 px-4 border-r border-slate-800 text-center font-bold text-slate-400 bg-slate-900",
       teacherRowHeader: "py-3 px-4 border-r border-slate-800 bg-slate-900/40 text-center font-bold text-slate-300",
-      cell: "py-3 px-4 border-r border-slate-800 text-center align-middle",
-      cellSub: "font-extrabold text-white text-[11px] leading-tight",
-      cellTea: "text-[10px] text-emerald-400 font-medium",
+      cell: "py-3 px-4 border-r border-slate-800 bg-white text-slate-900 text-center align-middle",
+      cellSub: "font-extrabold text-slate-900 text-[11px] leading-tight",
+      cellTea: "text-[10px] text-emerald-700 font-medium",
     };
   };
 
@@ -3325,8 +3325,6 @@ export default function SmartTimetableV2({
         {activeTab === "workload" && (
           <div className="space-y-5">
             <div className="relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-950/80 p-5 md:p-6 shadow-xl">
-              <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-cyan-400/10 blur-3xl" />
-              <div className="pointer-events-none absolute -left-16 bottom-0 h-40 w-40 rounded-full bg-violet-500/10 blur-3xl" />
               <div className="relative flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div className="max-w-2xl">
                   <div className="mb-2 flex flex-wrap items-center gap-2">
