@@ -3335,3 +3335,8 @@ html body [class*="border-dashed"] {
   color: #FFFFFF;
   flex-shrink: 0;
 }
+
+/* Fix: subject cell in Timetable Generator — keep its color */
+html body tbody td[style*="196, 181, 253"] {
+  color: rgb(196, 181, 253) !important;
+}
