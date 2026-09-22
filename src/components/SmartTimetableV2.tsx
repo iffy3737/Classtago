@@ -1251,7 +1251,7 @@ export default function SmartTimetableV2({
         clearInterval(interval);
 
         // Finalize Generation - Map workload requirements into days and periods using high-quality constraint-satisfaction heuristics
-        const generatedGrid: V2TimetableCell[] = [];
+        let generatedGrid: V2TimetableCell[] = [];
         const days = setup.workingDays;
         const totalPeriods = setup.periodsPerDay;
 
@@ -1334,7 +1334,7 @@ export default function SmartTimetableV2({
           }
         });
 
-        const skippedTasks: any[] = [];
+        let skippedTasks: any[] = [];
         // Helper check functions
         const isClassBusy = (classKey: string, day: string, period: number): boolean => {
           return generatedGrid.some(cell => formatClassDiv(cell.className, cell.division) === classKey && cell.day === day && cell.period === period);
@@ -1401,7 +1401,24 @@ export default function SmartTimetableV2({
         };
 
         // Run assignment
-        flatTasks.forEach((task) => {
+        const MAX_ATTEMPTS = 20;
+        let bestGrid: V2TimetableCell[] = [];
+        let bestSkipped: any[] = [];
+        let bestAttempt = 0;
+
+        for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+          generatedGrid = [];
+          skippedTasks = [];
+
+          const attemptTasks = flatTasks.slice();
+          for (let i = attemptTasks.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const tmpSwap = attemptTasks[i];
+            attemptTasks[i] = attemptTasks[j];
+            attemptTasks[j] = tmpSwap;
+          }
+
+        attemptTasks.forEach((task) => {
           let bestDay = "";
           let bestPeriod = -1;
           let bestScore = -Infinity;
@@ -1672,6 +1689,24 @@ export default function SmartTimetableV2({
         }
         skippedTasks.length = 0;
         skippedTasks.push(...stillSkipped);
+
+
+          if (skippedTasks.length === 0) {
+            bestGrid = generatedGrid.slice();
+            bestSkipped = [];
+            bestAttempt = attempt + 1;
+            break;
+          }
+          if (bestGrid.length === 0 || skippedTasks.length < bestSkipped.length) {
+            bestGrid = generatedGrid.slice();
+            bestSkipped = skippedTasks.slice();
+            bestAttempt = attempt + 1;
+          }
+        }
+
+        generatedGrid = bestGrid.slice();
+        skippedTasks = bestSkipped.slice();
+        console.log('[TIMETABLE] Best attempt:', bestAttempt, '| Placed:', bestGrid.length, '| Skipped:', bestSkipped.length);
 
         if (skippedTasks.length > 0) {
           const grouped: Record<string, { className: string; subjectName: string; teacherName: string; count: number }> = {};
