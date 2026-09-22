@@ -1299,7 +1299,11 @@ export default function SmartTimetableV2({
           const loadA = teacherTotalLoad[(a.teacherName || 'Unassigned').toLowerCase()] || 0;
           const loadB = teacherTotalLoad[(b.teacherName || 'Unassigned').toLowerCase()] || 0;
           if (loadB !== loadA) return loadB - loadA;
-          return b.periodsPerWeek - a.periodsPerWeek;
+          if (b.periodsPerWeek !== a.periodsPerWeek) return b.periodsPerWeek - a.periodsPerWeek;
+          // Small randomization within equal-priority tasks: different generate
+          // attempts explore different search paths, increasing the chance of
+          // finding a complete schedule with zero skipped periods.
+          return (Math.random() - 0.5);
         });
 
         // Flatten tasks to individual periods
