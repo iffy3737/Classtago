@@ -1573,9 +1573,10 @@ export default function SmartTimetableV2({
           }
         });
 
-        // --- Option B: Backtracking repair pass ---
+        // --- Option B: Backtracking repair pass (safe snapshot rollback) ---
         const repairDeadline = Date.now() + 8000;
-        const tryPlaceWithRelocation = (task: any, excludeDay: string, excludePeriod: number, depth: number): boolean => {
+
+        const tryPlaceInGrid = (task: any, depth: number): boolean => {
           if (Date.now() > repairDeadline) return false;
           if (depth > 3) return false;
           const isDoubleAllowed = isDoublePeriodAllowedSubject(task.subjectName, task.remarks);
@@ -1584,7 +1585,6 @@ export default function SmartTimetableV2({
               ? setup.weeklyPeriodSettings[day]
               : totalPeriods;
             for (let p = 1; p <= maxPeriodsForDay; p++) {
-              if (day === excludeDay && p === excludePeriod) continue;
               const currentDayCount = getSubjectCountForDay(task.classKey, task.subjectName, day);
               let allowedMaxPerDay = 1;
               if (task.totalPeriodsForSubject > days.length) {
@@ -1596,7 +1596,9 @@ export default function SmartTimetableV2({
               const hasAdjacent = isConsecutiveSlot(task.classKey, task.subjectName, day, p);
               if (currentDayCount > 0 && hasAdjacent && !isDoubleAllowed) continue;
               if (isTeacherBusy(task.teacherName, day, p)) continue;
+
               const occupantIdx = generatedGrid.findIndex(c => formatClassDiv(c.className, c.division) === task.classKey && c.day === day && c.period === p);
+
               if (occupantIdx === -1) {
                 let room = "";
                 for (const r of roomsList) { if (!isRoomBusy(r, day, p)) { room = r; break; } }
@@ -1613,7 +1615,12 @@ export default function SmartTimetableV2({
                 });
                 return true;
               }
+
               const occupant = generatedGrid[occupantIdx];
+              if (occupant.isLocked) continue;
+
+              const fullSnapshot = generatedGrid.slice();
+              generatedGrid.splice(occupantIdx, 1);
               const occupantTask = {
                 classKey: task.classKey,
                 className: occupant.className,
@@ -1624,24 +1631,26 @@ export default function SmartTimetableV2({
                 remarks: "",
                 totalPeriodsForSubject: 1,
               };
-              generatedGrid.splice(occupantIdx, 1);
-              if (tryPlaceWithRelocation(occupantTask, day, p, depth + 1)) {
-                let room = "";
-                for (const r of roomsList) { if (!isRoomBusy(r, day, p)) { room = r; break; } }
-                generatedGrid.push({
-                  id: "cell_" + task.classKey + "_" + day + "_" + p,
-                  className: task.className,
-                  division: task.divisionName,
-                  day,
-                  period: p,
-                  subjectName: task.subjectName,
-                  teacherName: task.teacherName,
-                  roomNumber: room,
-                  isLocked: false,
-                });
-                return true;
+              if (tryPlaceInGrid(occupantTask, depth + 1)) {
+                if (!isTeacherBusy(task.teacherName, day, p)) {
+                  let room = "";
+                  for (const r of roomsList) { if (!isRoomBusy(r, day, p)) { room = r; break; } }
+                  generatedGrid.push({
+                    id: "cell_" + task.classKey + "_" + day + "_" + p,
+                    className: task.className,
+                    division: task.divisionName,
+                    day,
+                    period: p,
+                    subjectName: task.subjectName,
+                    teacherName: task.teacherName,
+                    roomNumber: room,
+                    isLocked: false,
+                  });
+                  return true;
+                }
               }
-              generatedGrid.splice(occupantIdx, 0, occupant);
+              generatedGrid.length = 0;
+              for (const c of fullSnapshot) generatedGrid.push(c);
             }
           }
           return false;
@@ -1650,7 +1659,7 @@ export default function SmartTimetableV2({
         const stillSkipped: any[] = [];
         for (const task of skippedTasks) {
           if (Date.now() > repairDeadline) { stillSkipped.push(task); continue; }
-          if (!tryPlaceWithRelocation(task, "", -1, 0)) {
+          if (!tryPlaceInGrid(task, 0)) {
             stillSkipped.push(task);
           }
         }
