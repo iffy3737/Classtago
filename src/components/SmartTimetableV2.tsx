@@ -1632,7 +1632,10 @@ export default function SmartTimetableV2({
                 totalPeriodsForSubject: 1,
               };
               if (tryPlaceInGrid(occupantTask, depth + 1)) {
-                if (!isTeacherBusy(task.teacherName, day, p)) {
+                // CRITICAL: verify slot is STILL free after relocation.
+                // The occupant may have returned to this exact slot, creating a duplicate.
+                const stillOccupied = generatedGrid.some(c => formatClassDiv(c.className, c.division) === task.classKey && c.day === day && c.period === p);
+                if (!stillOccupied && !isTeacherBusy(task.teacherName, day, p)) {
                   let room = "";
                   for (const r of roomsList) { if (!isRoomBusy(r, day, p)) { room = r; break; } }
                   generatedGrid.push({
