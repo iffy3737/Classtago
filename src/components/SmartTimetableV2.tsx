@@ -1569,26 +1569,105 @@ export default function SmartTimetableV2({
               isLocked: false,
             });
           } else {
-            skippedTasks.push({
-              className: task.className,
-              subjectName: task.subjectName,
-              teacherName: task.teacherName,
-              count: 1,
-            });
+            skippedTasks.push(task);
           }
         });
+
+        // --- Option B: Backtracking repair pass ---
+        const repairDeadline = Date.now() + 8000;
+        const tryPlaceWithRelocation = (task: any, excludeDay: string, excludePeriod: number, depth: number): boolean => {
+          if (Date.now() > repairDeadline) return false;
+          if (depth > 3) return false;
+          const isDoubleAllowed = isDoublePeriodAllowedSubject(task.subjectName, task.remarks);
+          for (const day of days) {
+            const maxPeriodsForDay = setup.weeklyPeriodSettings?.[day] !== undefined
+              ? setup.weeklyPeriodSettings[day]
+              : totalPeriods;
+            for (let p = 1; p <= maxPeriodsForDay; p++) {
+              if (day === excludeDay && p === excludePeriod) continue;
+              const currentDayCount = getSubjectCountForDay(task.classKey, task.subjectName, day);
+              let allowedMaxPerDay = 1;
+              if (task.totalPeriodsForSubject > days.length) {
+                allowedMaxPerDay = Math.ceil(task.totalPeriodsForSubject / days.length);
+              } else if (isDoubleAllowed) {
+                allowedMaxPerDay = 2;
+              }
+              if (currentDayCount >= allowedMaxPerDay) continue;
+              const hasAdjacent = isConsecutiveSlot(task.classKey, task.subjectName, day, p);
+              if (currentDayCount > 0 && hasAdjacent && !isDoubleAllowed) continue;
+              if (isTeacherBusy(task.teacherName, day, p)) continue;
+              const occupantIdx = generatedGrid.findIndex(c => formatClassDiv(c.className, c.division) === task.classKey && c.day === day && c.period === p);
+              if (occupantIdx === -1) {
+                let room = "";
+                for (const r of roomsList) { if (!isRoomBusy(r, day, p)) { room = r; break; } }
+                generatedGrid.push({
+                  id: "cell_" + task.classKey + "_" + day + "_" + p,
+                  className: task.className,
+                  division: task.divisionName,
+                  day,
+                  period: p,
+                  subjectName: task.subjectName,
+                  teacherName: task.teacherName,
+                  roomNumber: room,
+                  isLocked: false,
+                });
+                return true;
+              }
+              const occupant = generatedGrid[occupantIdx];
+              const occupantTask = {
+                classKey: task.classKey,
+                className: occupant.className,
+                divisionName: occupant.division,
+                subjectName: occupant.subjectName,
+                teacherName: occupant.teacherName,
+                isClassTeacher: false,
+                remarks: "",
+                totalPeriodsForSubject: 1,
+              };
+              generatedGrid.splice(occupantIdx, 1);
+              if (tryPlaceWithRelocation(occupantTask, day, p, depth + 1)) {
+                let room = "";
+                for (const r of roomsList) { if (!isRoomBusy(r, day, p)) { room = r; break; } }
+                generatedGrid.push({
+                  id: "cell_" + task.classKey + "_" + day + "_" + p,
+                  className: task.className,
+                  division: task.divisionName,
+                  day,
+                  period: p,
+                  subjectName: task.subjectName,
+                  teacherName: task.teacherName,
+                  roomNumber: room,
+                  isLocked: false,
+                });
+                return true;
+              }
+              generatedGrid.splice(occupantIdx, 0, occupant);
+            }
+          }
+          return false;
+        };
+
+        const stillSkipped: any[] = [];
+        for (const task of skippedTasks) {
+          if (Date.now() > repairDeadline) { stillSkipped.push(task); continue; }
+          if (!tryPlaceWithRelocation(task, "", -1, 0)) {
+            stillSkipped.push(task);
+          }
+        }
+        skippedTasks.length = 0;
+        skippedTasks.push(...stillSkipped);
 
         if (skippedTasks.length > 0) {
           const grouped: Record<string, { className: string; subjectName: string; teacherName: string; count: number }> = {};
           skippedTasks.forEach((s) => {
             const key = s.teacherName + '||' + s.subjectName + '||' + s.className;
-            if (!grouped[key]) grouped[key] = { ...s };
+            if (!grouped[key]) grouped[key] = { className: s.className, subjectName: s.subjectName, teacherName: s.teacherName, count: 1 };
             else grouped[key].count += 1;
           });
           const warnings = Object.values(grouped).map((g) => g.teacherName + ' - ' + g.subjectName + ' (' + g.className + '): ' + g.count + ' period(s) skipped (no available slot)');
           setValidationErrors(warnings);
           setShowValidation(true);
-          console.warn('[TIMETABLE] Skipped periods:', warnings);
+          console.warn('[TIMETABLE] Skipped periods after repair:', warnings);
         }
 
         // R33.28 single-entry rule: leave unallocated capacity empty.
