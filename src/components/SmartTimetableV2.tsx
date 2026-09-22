@@ -3466,7 +3466,7 @@ export default function SmartTimetableV2({
                             {formatClassDiv(row.className, row.division)}
                           </span>
                         </td>
-                        <td className="px-4 py-3.5 font-bold text-violet-300">{row.subjectName}</td>
+                        <td className="px-4 py-3.5 font-bold" style={{color: "#c4b5fd"}}>{row.subjectName}</td>
                         <td className="px-4 py-3.5 text-center">
                           <span className={`inline-flex min-w-12 justify-center rounded-lg border px-2.5 py-1 font-black ${row.periodsPerWeek > 0 ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-300" : "border-rose-400/20 bg-rose-400/10 text-rose-300"}`}>
                             {row.periodsPerWeek}
