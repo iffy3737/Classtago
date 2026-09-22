@@ -1574,11 +1574,11 @@ export default function SmartTimetableV2({
         });
 
         // --- Option B: Backtracking repair pass (safe snapshot rollback) ---
-        const repairDeadline = Date.now() + 15000;
+        const repairDeadline = Date.now() + 120000;
 
         const tryPlaceInGrid = (task: any, depth: number): boolean => {
           if (Date.now() > repairDeadline) return false;
-          if (depth > 6) return false;
+          if (depth > 15) return false;
           const isDoubleAllowed = isDoublePeriodAllowedSubject(task.subjectName, task.remarks);
           for (const day of days) {
             const maxPeriodsForDay = setup.weeklyPeriodSettings?.[day] !== undefined
