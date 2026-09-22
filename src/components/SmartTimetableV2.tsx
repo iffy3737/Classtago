@@ -1318,6 +1318,7 @@ export default function SmartTimetableV2({
           }
         });
 
+        const skippedTasks: any[] = [];
         // Helper check functions
         const isClassBusy = (classKey: string, day: string, period: number): boolean => {
           return generatedGrid.some(cell => formatClassDiv(cell.className, cell.division) === classKey && cell.day === day && cell.period === period);
@@ -1555,8 +1556,28 @@ export default function SmartTimetableV2({
               roomNumber: bestRoom,
               isLocked: false,
             });
+          } else {
+            skippedTasks.push({
+              className: task.className,
+              subjectName: task.subjectName,
+              teacherName: task.teacherName,
+              count: 1,
+            });
           }
         });
+
+        if (skippedTasks.length > 0) {
+          const grouped: Record<string, { className: string; subjectName: string; teacherName: string; count: number }> = {};
+          skippedTasks.forEach((s) => {
+            const key = s.teacherName + '||' + s.subjectName + '||' + s.className;
+            if (!grouped[key]) grouped[key] = { ...s };
+            else grouped[key].count += 1;
+          });
+          const warnings = Object.values(grouped).map((g) => g.teacherName + ' - ' + g.subjectName + ' (' + g.className + '): ' + g.count + ' period(s) skipped (no available slot)');
+          setValidationErrors(warnings);
+          setShowValidation(true);
+          console.warn('[TIMETABLE] Skipped periods:', warnings);
+        }
 
         // R33.28 single-entry rule: leave unallocated capacity empty.
         // Never invent Library/Sports/Lab/Remedial subjects that are absent from Teaching Assignments.
