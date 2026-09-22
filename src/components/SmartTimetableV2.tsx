@@ -1284,9 +1284,21 @@ export default function SmartTimetableV2({
         });
 
         // Priority sorting of the workload rules
+        // Compute each teacher's TOTAL weekly workload across all classes/subjects.
+        // Teachers with heavier total load get scheduled first so their slots
+        // are reserved before lighter teachers fill the grid.
+        const teacherTotalLoad: Record<string, number> = {};
+        tasksToSchedule.forEach((t) => {
+          const key = (t.teacherName || 'Unassigned').toLowerCase();
+          teacherTotalLoad[key] = (teacherTotalLoad[key] || 0) + t.periodsPerWeek;
+        });
+
         tasksToSchedule.sort((a, b) => {
           if (a.isClassTeacher && !b.isClassTeacher) return -1;
           if (!a.isClassTeacher && b.isClassTeacher) return 1;
+          const loadA = teacherTotalLoad[(a.teacherName || 'Unassigned').toLowerCase()] || 0;
+          const loadB = teacherTotalLoad[(b.teacherName || 'Unassigned').toLowerCase()] || 0;
+          if (loadB !== loadA) return loadB - loadA;
           return b.periodsPerWeek - a.periodsPerWeek;
         });
 
