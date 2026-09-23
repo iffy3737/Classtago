@@ -103,16 +103,16 @@ html body [class*="uppercase"][class*="tracking"] {
 }
 
 /* Inputs — pink focus */
-html body input:not([type="checkbox"]):not([type="radio"]),
-html body textarea,
-html body select {
+:where(html body) input:not([type="checkbox"]):not([type="radio"]),
+:where(html body) textarea,
+:where(html body) select {
   background-color: #FFFFFF !important;
   border-color: #F5ECF7 !important;
   border-radius: 12px !important;
 }
-html body input:not([type="checkbox"]):not([type="radio"]):focus,
-html body textarea:focus,
-html body select:focus {
+:where(html body) input:not([type="checkbox"]):not([type="radio"]):focus,
+:where(html body) textarea:focus,
+:where(html body) select:focus {
   border-color: #FF3473 !important;
   box-shadow: 0 0 0 3px rgba(255, 52, 115, 0.15) !important;
   outline: none !important;
@@ -1050,9 +1050,9 @@ html body [class*="bg-rose-50"] {
 }
 
 /* Input focus */
-html body input:not([type="checkbox"]):not([type="radio"]):focus,
-html body textarea:focus,
-html body select:focus {
+:where(html body) input:not([type="checkbox"]):not([type="radio"]):focus,
+:where(html body) textarea:focus,
+:where(html body) select:focus {
   border-color: #6366F1 !important;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
 }
@@ -3160,9 +3160,9 @@ html body button[class*="bg-slate-900"]:not(.cs-module-row):not(.cs-acc-btn) {
 }
 
 /* ---- INPUTS / SELECT / TEXTAREA ---- */
-html body input:not([type="checkbox"]):not([type="radio"]),
-html body textarea,
-html body select {
+:where(html body) input:not([type="checkbox"]):not([type="radio"]),
+:where(html body) textarea,
+:where(html body) select {
   background: #FFFFFF !important;
   border: 1px solid #CBD5E1 !important;
   border-radius: 12px !important;
@@ -3170,9 +3170,9 @@ html body select {
   font-weight: 600 !important;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-html body input:not([type="checkbox"]):not([type="radio"]):focus,
-html body textarea:focus,
-html body select:focus {
+:where(html body) input:not([type="checkbox"]):not([type="radio"]):focus,
+:where(html body) textarea:focus,
+:where(html body) select:focus {
   border-color: #6366F1 !important;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
   outline: none !important;

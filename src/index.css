@@ -13964,7 +13964,7 @@ html, body, #root { max-width: 100%; }
    everywhere while keeping text selection functional. */
 input, textarea, select, [contenteditable="true"] {
   -webkit-tap-highlight-color: transparent;
-  caret-color: transparent;
+  caret-color: auto;
 }
 input:focus, textarea:focus, select:focus, [contenteditable="true"]:focus {
   outline: none;
