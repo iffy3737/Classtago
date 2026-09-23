@@ -112,6 +112,7 @@ function oklchToRgb(oklchStr: string): string | null {
   }
 }
 
+
 function oklabToRgb(oklabStr: string): string | null {
   const match = oklabStr.match(/oklab\(([^)]+)\)/);
   if (!match) return null;
@@ -166,6 +167,7 @@ function oklabToRgb(oklabStr: string): string | null {
   }
 }
 
+
 function replaceOklchWithRgb(str: string): string {
   if (!str || typeof str !== 'string') return str;
   let temp = str.replace(/oklch\([^)]+\)/g, (match) => {
@@ -186,6 +188,7 @@ function replaceOklchWithRgb(str: string): string {
   });
 }
 
+
 export type TimetableWorkspaceTab =
   | "setup"
   | "workload"
@@ -199,6 +202,7 @@ interface SmartTimetableV2Props {
   user: User;
   initialTab?: TimetableWorkspaceTab;
 }
+
 
 // Searchable custom dropdown component for Teacher Name
 const SearchableTeacherSelect = ({
@@ -487,6 +491,7 @@ interface V2SchoolSetup {
   };
 }
 
+
 interface V2WorkloadRow {
   id: string;
   teacherName: string;
@@ -497,6 +502,7 @@ interface V2WorkloadRow {
   isClassTeacher: boolean;
   remarks: string;
 }
+
 
 interface V2TimetableCell {
   id: string;
@@ -510,27 +516,42 @@ interface V2TimetableCell {
   isLocked: boolean;
 }
 
-// Smart download helper: uses Android native bridge in APK, falls back to saveAs in browser.
+
+// Universal download helper:
+// 1) Web Share API (Android WebView + modern browsers) - opens native share sheet
+// 2) Android native bridge (if registered) - saves directly to Downloads
+// 3) saveAs fallback - works on desktop browsers
 async function smartDownload(blob: Blob, filename: string): Promise<void> {
+  try {
+    const navAny = navigator as any;
+    if (navAny.share && navAny.canShare) {
+      const file = new File([blob], filename, { type: blob.type || "application/octet-stream" });
+      if (navAny.canShare({ files: [file] })) {
+        await navAny.share({ files: [file], title: filename });
+        return;
+      }
+    }
+  } catch (err) {
+    console.warn("Web Share failed, falling back:", err);
+  }
   const androidBridge = (window as any).AndroidDownloader;
-  if (androidBridge && typeof androidBridge.saveBase64 === 'function') {
+  if (androidBridge && typeof androidBridge.saveBase64 === "function") {
     return new Promise<void>((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         try {
-          const result = String(reader.result || '');
-          const base64 = result.split(',')[1] || '';
-          androidBridge.saveBase64(base64, filename, blob.type || 'application/octet-stream');
+          const result = String(reader.result || "");
+          const base64 = result.split(",")[1] || "";
+          androidBridge.saveBase64(base64, filename, blob.type || "application/octet-stream");
           resolve();
         } catch (e) {
           reject(e);
         }
       };
-      reader.onerror = () => reject(new Error('Failed to read blob'));
+      reader.onerror = () => reject(new Error("Failed to read blob"));
       reader.readAsDataURL(blob);
     });
   }
-  // Browser fallback
   saveAs(blob, filename);
 }
 
@@ -4422,3 +4443,4 @@ export default function SmartTimetableV2({
     </div>
   );
 }
+
