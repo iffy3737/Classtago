@@ -13974,3 +13974,52 @@ input::selection, textarea::selection {
   background: rgba(99, 102, 241, 0.25);
   color: inherit;
 }
+
+
+/* ============================================================
+   GLOBAL INPUT FIX (beats premium-theme.css generic rule)
+   premium-theme.css applies: html body input:not(...):not(...) { bg:white; border:1px; radius:12px }
+   That rule creates an unwanted inner white capsule INSIDE existing input wrappers.
+   The wrapper already provides the visual box — the input itself must be flat.
+   We use #root + !important to beat that rule's specificity everywhere.
+   ============================================================ */
+
+/* 1) Inputs INSIDE a wrapper (search fields, auth fields, gateway fields)
+      — wrapper draws the box, input must be transparent */
+html body #root .edx-gateway-search-field input,
+html body #root .edx-auth-premium-input-wrap input,
+html body #root .edx-app-school-search input,
+html body #root [class*="input-wrap"] input,
+html body #root [class*="search-field"] input,
+html body #root [class*="search-bar"] input {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 0 !important;
+}
+
+/* 2) Inputs NOT inside a wrapper — restore normal dark-mode-friendly look
+      (these are top-level form inputs on tables, forms, filters) */
+html body #root input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="submit"]):not([type="button"]):not([type="color"]):not([type="range"]) {
+  caret-color: auto !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* 3) Restore caret everywhere — the previous global rule hid it app-wide */
+html body #root input,
+html body #root textarea,
+html body #root [contenteditable="true"] {
+  caret-color: auto !important;
+}
+
+/* 4) Kill the visual focus ring everywhere (kept clean) */
+html body #root input:focus,
+html body #root textarea:focus,
+html body #root select:focus {
+  outline: none !important;
+}
