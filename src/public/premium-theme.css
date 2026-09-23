@@ -3362,3 +3362,23 @@ html body .edx-auth-premium-input-wrap {
   border: 1px solid #e1e5ef !important;
   border-radius: 17px !important;
 }
+
+
+/* Fix v2: ID-based specificity to beat premium-theme.css generic input rule.
+   The generic rule uses :not() with 2 attributes = specificity 0,2,3.
+   Adding #root gives us 1,1,3 which wins. */
+html body #root .edx-auth-premium-input-wrap input,
+html body #root .edx-auth-premium-input-wrap input:focus,
+html body #root .edx-auth-premium-input-wrap input:hover {
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 0 !important;
+  color: #182238 !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
