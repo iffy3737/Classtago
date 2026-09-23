@@ -1,29 +1,24 @@
 package com.classtago.app;
 
-import android.Manifest;
-import android.app.DownloadManager;
+import android.content.ContentValues;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.Toast;
 
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-
 import com.getcapacitor.BridgeActivity;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 public class MainActivity extends BridgeActivity {
-    private static final int STORAGE_PERMISSION_CODE = 1001;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,61 +36,6 @@ public class MainActivity extends BridgeActivity {
     private void setupDownloadHandler() {
         WebView webView = getBridge().getWebView();
         webView.addJavascriptInterface(new DownloadBridge(), "AndroidDownloader");
-        webView.setDownloadListener((url, userAgent, contentDisposition, mimeType, contentLength) -> {
-            if (url != null && url.startsWith("blob:")) {
-                handleBlobDownload(url, mimeType);
-            } else {
-                handleUrlDownload(url, contentDisposition, mimeType);
-            }
-        });
-    }
-
-    private void handleBlobDownload(String blobUrl, String mimeType) {
-        String ext = ".bin";
-        if (mimeType != null) {
-            if (mimeType.contains("pdf")) ext = ".pdf";
-            else if (mimeType.contains("sheet") || mimeType.contains("excel")) ext = ".xlsx";
-            else if (mimeType.contains("csv")) ext = ".csv";
-        }
-        String filename = "classtago_" + System.currentTimeMillis() + ext;
-        String mime = mimeType != null ? mimeType : "application/octet-stream";
-
-        String js = "(function(){var xhr=new XMLHttpRequest();xhr.open('GET','" + blobUrl + "',true);" +
-                "xhr.responseType='blob';xhr.onload=function(){" +
-                "if(xhr.status===200||xhr.status===0){" +
-                "var r=new FileReader();r.onloadend=function(){" +
-                "var b64=r.result.split(',')[1];" +
-                "AndroidDownloader.saveBase64(b64,'" + filename + "','" + mime + "');};" +
-                "r.readAsDataURL(xhr.response);}else{" +
-                "AndroidDownloader.onError('blob read failed');}};" +
-                "xhr.onerror=function(){AndroidDownloader.onError('network');};" +
-                "xhr.send();})();";
-
-        getBridge().getWebView().evaluateJavascript(js, null);
-    }
-
-    private void handleUrlDownload(String url, String contentDisposition, String mimeType) {
-        try {
-            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-            request.setMimeType(mimeType);
-            request.addRequestHeader("User-Agent", "Android");
-            String filename = "classtago_" + System.currentTimeMillis();
-            if (contentDisposition != null && contentDisposition.contains("filename=")) {
-                filename = contentDisposition.substring(contentDisposition.indexOf("filename=") + 9).replace("\"", "").trim();
-            }
-            if (mimeType != null && mimeType.contains("pdf") && !filename.endsWith(".pdf")) filename += ".pdf";
-            if (mimeType != null && (mimeType.contains("sheet") || mimeType.contains("excel")) && !filename.endsWith(".xlsx")) filename += ".xlsx";
-
-            request.setTitle(filename);
-            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
-
-            DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-            if (dm != null) dm.enqueue(request);
-            Toast.makeText(this, "Downloading " + filename, Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            Toast.makeText(this, "Download failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
-        }
     }
 
     public class DownloadBridge {
@@ -103,19 +43,48 @@ public class MainActivity extends BridgeActivity {
         public void saveBase64(String base64Data, String filename, String mimeType) {
             try {
                 byte[] bytes = Base64.decode(base64Data, Base64.DEFAULT);
-                File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                if (!downloadsDir.exists()) downloadsDir.mkdirs();
-                File outFile = new File(downloadsDir, filename);
-                FileOutputStream fos = new FileOutputStream(outFile);
-                fos.write(bytes);
-                fos.close();
+                String mime = mimeType != null && !mimeType.isEmpty() ? mimeType : "application/octet-stream";
 
-                final String msg = "Saved to Downloads/" + filename;
-                runOnUiThread(() -> Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    saveViaMediaStore(bytes, filename, mime);
+                } else {
+                    saveViaFile(bytes, filename);
+                }
             } catch (Exception e) {
                 final String msg = "Save failed: " + e.getMessage();
                 runOnUiThread(() -> Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show());
             }
+        }
+
+        private void saveViaMediaStore(byte[] bytes, String filename, String mimeType) throws Exception {
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.MediaColumns.DISPLAY_NAME, filename);
+            values.put(MediaStore.MediaColumns.MIME_TYPE, mimeType);
+            values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+
+            Uri uri = getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
+            if (uri == null) throw new Exception("MediaStore insert failed");
+
+            OutputStream os = getContentResolver().openOutputStream(uri);
+            if (os == null) throw new Exception("Cannot open output stream");
+            os.write(bytes);
+            os.flush();
+            os.close();
+
+            final String msg = "Saved to Downloads/" + filename;
+            runOnUiThread(() -> Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show());
+        }
+
+        private void saveViaFile(byte[] bytes, String filename) throws Exception {
+            File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            if (!downloadsDir.exists()) downloadsDir.mkdirs();
+            File outFile = new File(downloadsDir, filename);
+            FileOutputStream fos = new FileOutputStream(outFile);
+            fos.write(bytes);
+            fos.close();
+
+            final String msg = "Saved to Downloads/" + filename;
+            runOnUiThread(() -> Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show());
         }
 
         @JavascriptInterface
