@@ -2534,6 +2534,8 @@ export default function SmartTimetableV2({
   };
 
   const handleExportInteractiveExcel = async () => {
+    try {
+    console.log('[EXCEL] starting interactive export');
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet("Interactive Timetable");
 
@@ -2617,7 +2619,13 @@ export default function SmartTimetableV2({
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
     const filename = `interactive_timetable_${viewType}_${(viewType === "class" ? selectedClass : selectedTeacher).replace(/ /g, "_")}.xlsx`;
+    console.log('[EXCEL] blob ready, size:', blob.size, 'type:', blob.type);
     await smartDownload(blob, filename);
+    console.log('[EXCEL] done');
+    } catch (err: any) {
+      console.error('[EXCEL] failed:', err);
+      alert('Excel export failed: ' + (err?.message || err));
+    }
   };
 
   const handleExportInteractivePDF = async () => {
