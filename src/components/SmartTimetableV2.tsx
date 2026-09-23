@@ -2377,7 +2377,14 @@ export default function SmartTimetableV2({
         }
       };
       
-      html2pdf().set(opt).from(element).save().then(() => {
+      // Use outputPdf('blob') instead of .save() so we can route the blob
+      // through our smartDownload bridge on Android (WebView blocks direct downloads).
+      html2pdf().set(opt).from(element).outputPdf('blob').then(async (pdfBlob: Blob) => {
+        try {
+          await smartDownload(pdfBlob, filename);
+        } catch (e: any) {
+          console.error("PDF save bridge error:", e);
+        }
         setIsExportingPdf(false);
         window.getComputedStyle = originalWinGetComputedStyle;
       }).catch((err: any) => {
