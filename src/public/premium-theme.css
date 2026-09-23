@@ -3340,3 +3340,25 @@ html body [class*="border-dashed"] {
 html body tbody td[style*="196, 181, 253"] {
   color: rgb(196, 181, 253) !important;
 }
+
+
+/* Fix: remove inner white capsule from login/auth inputs.
+   premium-theme.css was forcing background + border-radius on all inputs,
+   creating a visible inner box inside the auth input wrapper. */
+html body .edx-auth-premium-input-wrap input,
+html body .edx-auth-premium-input-wrap input:focus {
+  background-color: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 0 !important;
+  color: #182238 !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
+html body .edx-auth-premium-input-wrap {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid #e1e5ef !important;
+  border-radius: 17px !important;
+}
