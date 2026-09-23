@@ -12796,7 +12796,10 @@ html.edunixo-app-runtime .edunixo-premium-erp :focus-visible { outline: 3px soli
 .edx-auth-premium-eyebrow{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(99,102,241,.13);background:rgba(255,255,255,.76);border-radius:999px;padding:7px 10px;font-size:9px;font-weight:900;letter-spacing:.14em;color:#6366f1}
 .edx-auth-premium-head h2{margin:13px 0 4px;font-size:29px;line-height:1.05;font-weight:950;letter-spacing:-.035em;color:#172033}.edx-auth-premium-head p{margin:0;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#778197}.edx-auth-premium-school-code{display:inline-block;margin-top:8px;border-radius:999px;background:#f3f4ff;padding:5px 9px;font-size:9px;font-weight:900;letter-spacing:.08em;color:#6d63df}
 .edx-auth-premium-form{display:grid;gap:16px;margin-top:24px}.edx-auth-premium-field>span:not(.edx-auth-premium-field-row){display:block;font-size:11px;font-weight:900;color:#536078}.edx-auth-premium-field>small{display:block;margin:3px 0 8px;font-size:9px;font-weight:700;color:#9aa3b2}.edx-auth-premium-field-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}.edx-auth-premium-field-row b{font-size:11px;color:#536078}.edx-auth-premium-field-row button{border:0;background:transparent;color:#6d5ce7;font-size:10px;font-weight:900;padding:0;cursor:pointer}
-.edx-auth-premium-input-wrap{position:relative;display:flex;align-items:center;gap:10px;min-height:54px;border:1px solid #e1e5ef;background:rgba(255,255,255,.9);border-radius:17px;padding:0 15px;color:#818ba0;box-shadow:inset 0 1px 0 rgba(255,255,255,.8);transition:.2s ease}.edx-auth-premium-input-wrap:focus-within{border-color:#8b7cf6;box-shadow:0 0 0 4px rgba(99,102,241,.08),0 8px 20px rgba(99,102,241,.06);color:#695ee8}.edx-auth-premium-input-wrap input{min-width:0;flex:1;border:0;outline:0;background:transparent;font-size:12px;font-weight:800;color:#182238}.edx-auth-premium-input-wrap input::placeholder{color:#a5adba;font-weight:650}.edx-auth-premium-eye{border:0;background:transparent;color:#929aaa;padding:5px;cursor:pointer}
+.edx-auth-premium-input-wrap{position:relative;display:flex;align-items:center;gap:10px;min-height:54px;border:1px solid #e1e5ef;background:rgba(255,255,255,.9);border-radius:17px;padding:0 15px;color:#818ba0;box-shadow:inset 0 1px 0 rgba(255,255,255,.8);transition:.2s ease}.edx-auth-premium-input-wrap:focus-within{border-color:#8b7cf6;color:#695ee8}
+.edx-auth-premium-input-wrap input{-webkit-tap-highlight-color:transparent;caret-color:transparent}
+.edx-auth-premium-input-wrap input:focus{outline:none;box-shadow:none}
+.edx-auth-premium-input-wrap input::selection{background:transparent}.edx-auth-premium-input-wrap input{min-width:0;flex:1;border:0;outline:0;background:transparent;font-size:12px;font-weight:800;color:#182238}.edx-auth-premium-input-wrap input::placeholder{color:#a5adba;font-weight:650}.edx-auth-premium-eye{border:0;background:transparent;color:#929aaa;padding:5px;cursor:pointer}
 .edx-auth-premium-submit{width:100%;min-height:54px;margin-top:2px;border:0;border-radius:17px;display:flex;align-items:center;justify-content:center;gap:9px;background:linear-gradient(100deg,#4f63ed 0%,#6d4eea 48%,#a442d0 100%);color:#fff;font-size:12px;font-weight:950;letter-spacing:.02em;box-shadow:0 16px 30px rgba(102,75,225,.24);cursor:pointer}.edx-auth-premium-submit:disabled{opacity:.58;cursor:not-allowed}
 .edx-auth-premium-notice{margin-top:16px;border-radius:14px;padding:11px 12px;font-size:10px;font-weight:800;line-height:1.55;text-align:center}.edx-auth-premium-notice-error{border:1px solid #fecaca;background:#fff1f2;color:#be123c}.edx-auth-premium-notice-success{border:1px solid #bbf7d0;background:#f0fdf4;color:#047857;text-align:left}.edx-auth-premium-request{margin-top:8px;border-radius:9px;background:#fff;padding:6px 8px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 .edx-auth-premium-signup{margin-top:22px}.edx-auth-premium-divider{display:flex;align-items:center;gap:10px;color:#9aa3b2;font-size:9px;font-weight:850;text-align:center}.edx-auth-premium-divider:before,.edx-auth-premium-divider:after{content:"";height:1px;flex:1;background:#e8eaf1}.edx-auth-premium-signup>p{margin:9px auto 12px;max-width:390px;text-align:center;font-size:9px;font-weight:650;line-height:1.55;color:#8b95a6}.edx-auth-premium-signup-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.edx-auth-premium-signup-grid>button{min-height:62px;border:1px solid #e8e8f4;background:rgba(255,255,255,.76);border-radius:16px;padding:10px;display:flex;align-items:center;gap:9px;text-align:left;color:#2d374a;cursor:pointer}.edx-auth-premium-signup-grid>button>span:nth-child(2){flex:1;min-width:0}.edx-auth-premium-signup-grid b{display:block;font-size:10px}.edx-auth-premium-signup-grid small{display:block;margin-top:2px;font-size:8px;font-weight:650;color:#929bad}.edx-auth-premium-mini-icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}.edx-auth-premium-mini-violet{background:#f1edff;color:#7657e6}.edx-auth-premium-mini-cyan{background:#e9fbfd;color:#0891b2}
@@ -13953,4 +13956,21 @@ html, body, #root { max-width: 100%; }
   .edx-platform-growth-actions button { min-width: 0; flex: 1 1 140px; }
   .edx-platform-campaign-head,
   .edx-platform-plan-head { min-width: 0; }
+}
+
+
+/* Global input caret + focus fix: Android WebView shows a green circle handle
+   over focused inputs which was not part of the original design. Hide it
+   everywhere while keeping text selection functional. */
+input, textarea, select, [contenteditable="true"] {
+  -webkit-tap-highlight-color: transparent;
+  caret-color: transparent;
+}
+input:focus, textarea:focus, select:focus, [contenteditable="true"]:focus {
+  outline: none;
+  box-shadow: none;
+}
+input::selection, textarea::selection {
+  background: rgba(99, 102, 241, 0.25);
+  color: inherit;
 }
