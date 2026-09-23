@@ -1434,13 +1434,17 @@ export default function SmartTimetableV2({
           generatedGrid = [];
           skippedTasks = [];
 
-          const attemptTasks = flatTasks.slice();
-          for (let i = attemptTasks.length - 1; i > 0; i--) {
+          // Preserve Class Teacher tasks at the front (they need 1st period priority).
+          // Shuffle only the non-Class-Teacher tasks for search diversity.
+          const ctTasks = flatTasks.filter(t => t.isClassTeacher);
+          const normalTasks = flatTasks.filter(t => !t.isClassTeacher);
+          for (let i = normalTasks.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            const tmpSwap = attemptTasks[i];
-            attemptTasks[i] = attemptTasks[j];
-            attemptTasks[j] = tmpSwap;
+            const tmpSwap = normalTasks[i];
+            normalTasks[i] = normalTasks[j];
+            normalTasks[j] = tmpSwap;
           }
+          const attemptTasks = ctTasks.concat(normalTasks);
 
         attemptTasks.forEach((task) => {
           let bestDay = "";
