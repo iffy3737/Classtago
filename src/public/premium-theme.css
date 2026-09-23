@@ -3382,3 +3382,28 @@ html body #root .edx-auth-premium-input-wrap input:hover {
   font-size: 12px !important;
   font-weight: 800 !important;
 }
+
+
+/* Fix: exclude School Finder "Recently used school" card from the generic
+   pink-orange gradient button rule. The card uses bg-cyan-300/10 and needs
+   its own light-cyan background with dark text for readability. */
+html body button.edunixo-recent-school-card,
+html body button[class*="bg-cyan-300/1"]:not([class*="bg-cyan-300/2"]):not([class*="bg-cyan-300/3"]):not([class*="bg-cyan-300/4"]):not([class*="bg-cyan-300/5"]) {
+  background-image: none !important;
+  background-color: rgba(103, 232, 249, 0.1) !important;
+  color: #0f172a !important;
+  border-color: rgba(103, 232, 249, 0.25) !important;
+}
+html body button[class*="bg-cyan-300/10"] * {
+  color: inherit;
+}
+html body button[class*="bg-cyan-300/10"] .text-slate-900,
+html body button[class*="bg-cyan-300/10"] [class*="text-slate-900"] {
+  color: #0f172a !important;
+}
+html body button[class*="bg-cyan-300/10"] [class*="text-slate-600"] {
+  color: #475569 !important;
+}
+html body button[class*="bg-cyan-300/10"] [class*="text-cyan-700"] {
+  color: #0e7490 !important;
+}
