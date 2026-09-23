@@ -510,6 +510,30 @@ interface V2TimetableCell {
   isLocked: boolean;
 }
 
+// Smart download helper: uses Android native bridge in APK, falls back to saveAs in browser.
+async function smartDownload(blob: Blob, filename: string): Promise<void> {
+  const androidBridge = (window as any).AndroidDownloader;
+  if (androidBridge && typeof androidBridge.saveBase64 === 'function') {
+    return new Promise<void>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        try {
+          const result = String(reader.result || '');
+          const base64 = result.split(',')[1] || '';
+          androidBridge.saveBase64(base64, filename, blob.type || 'application/octet-stream');
+          resolve();
+        } catch (e) {
+          reject(e);
+        }
+      };
+      reader.onerror = () => reject(new Error('Failed to read blob'));
+      reader.readAsDataURL(blob);
+    });
+  }
+  // Browser fallback
+  saveAs(blob, filename);
+}
+
 export default function SmartTimetableV2({
   lang,
   user,
@@ -2245,7 +2269,7 @@ export default function SmartTimetableV2({
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
     const filename = `${selectedReportType}_timetable_${(reportClass || reportTeacher || reportDay).replace(" ", "_")}.xlsx`;
-    saveAs(blob, filename);
+    await smartDownload(blob, filename);
   };
 
   const handleExportPDF = async () => {
@@ -2495,7 +2519,7 @@ export default function SmartTimetableV2({
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
     const filename = `weekly_whole_school_timetable_${setup.academicYear.replace(/ /g, "_")}.xlsx`;
-    saveAs(blob, filename);
+    await smartDownload(blob, filename);
   };
 
   const handleExportInteractiveExcel = async () => {
@@ -2582,7 +2606,7 @@ export default function SmartTimetableV2({
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
     const filename = `interactive_timetable_${viewType}_${(viewType === "class" ? selectedClass : selectedTeacher).replace(/ /g, "_")}.xlsx`;
-    saveAs(blob, filename);
+    await smartDownload(blob, filename);
   };
 
   const handleExportInteractivePDF = async () => {
