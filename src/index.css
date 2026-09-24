@@ -14030,10 +14030,11 @@ html body #root select:focus {
    modals, inputs and layout across the entire app.
    ============================================================ */
 
-/* 1) Prevent horizontal page overflow on any screen */
+/* 1) Prevent horizontal page overflow on any screen
+   NOTE: we do NOT set overflow-x on html/body — it breaks vertical
+   scrolling inside Android WebView. Instead we cap content containers. */
 html, body, #root {
-  max-width: 100vw;
-  overflow-x: hidden;
+  max-width: 100%;
 }
 
 /* 2) Tables — smooth horizontal scroll on small screens */
@@ -14121,16 +14122,15 @@ html, body, #root {
   }
 }
 
-/* 7) Text overflow — long words / URLs break gracefully */
-body, td, th, p, h1, h2, h3, h4, h5, h6, span, div, li {
-  overflow-wrap: break-word;
-  word-break: break-word;
+/* 7) Text overflow — long words break gracefully (avoid aggressive word-break) */
+body, td, th, p, h1, h2, h3, h4, h5, h6, li {
+  overflow-wrap: anywhere;
 }
 
 /* 8) Sticky headers shouldn't overflow on mobile */
 @media (max-width: 640px) {
   [class*="sticky"] {
-    max-width: 100vw;
+    max-width: 100%;
   }
 }
 
