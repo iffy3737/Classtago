@@ -14050,28 +14050,34 @@ html, body, #root {
     overflow-x: auto !important;
     max-width: 100%;
   }
-  /* Keep tables readable inside scroll wrappers without forcing them huge */
+  /* Tables: keep readable columns, scroll sideways instead of squeezing.
+     Text wraps only when a cell has enough width; otherwise cell stays on one line. */
   th, td {
-    padding: 6px 8px !important;
-    font-size: 11px !important;
-    white-space: normal !important;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-  }
-  /* Only keep short/numeric cells on one line */
-  td[class*="font-mono"],
-  th[class*="font-mono"],
-  td[class*="text-center"],
-  th[class*="text-center"],
-  td[class*="tabular-nums"] {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
     white-space: nowrap !important;
+    line-height: 1.35;
   }
-  /* Scroll wrapper gets proper touch scrolling */
+  /* Wide text columns can wrap if needed (names, subjects, long headings) */
+  td[class*="min-w-"],
+  th[class*="min-w-"],
+  td[class*="text-left"]:not([class*="font-mono"]),
+  th[class*="text-left"]:not([class*="font-mono"]) {
+    white-space: normal !important;
+    overflow-wrap: break-word;
+    word-break: normal;
+    min-width: 140px;
+  }
+  /* Scroll wrapper gets smooth touch scrolling */
   .overflow-x-auto,
   [class*="overflow-x-auto"] {
     -webkit-overflow-scrolling: touch;
     overflow-x: auto !important;
     overscroll-behavior-x: contain;
+  }
+  /* Table itself sizes to its content — scroll wrapper handles overflow */
+  table {
+    min-width: fit-content;
   }
 }
 
