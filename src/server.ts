@@ -446,7 +446,7 @@ async function startServer() {
       catch(error:any){
         lastError=error;
         if(!transientAiError(error) || attempt>=maxAttempts) throw error;
-        const retryDelays=[250,650,1400,2600];
+        const retryDelays=[3000, 8000, 15000, 25000, 40000];
         const delay=(retryDelays[Math.min(attempt-1,retryDelays.length-1)]||2600) + Math.floor(Math.random()*180);
         console.warn(`R33.3 ${label} transient failure; retry ${attempt}/${maxAttempts} in ${delay}ms:`, String(error?.message||error||''));
         await wait(delay);
@@ -12217,9 +12217,9 @@ const R33_9_QUESTION_PAPER_SCHEMA:any={type:'object',properties:{title:{type:'st
           metas.push(meta);
         }
         const buildPaper=async(model:string)=>{const parsed=await generateStructuredFromCachedTextbooks(metas,{model,prompt:fastPrompt,systemInstruction,responseSchema:dynamicPaperSchema,maxOutputTokens:18000});return normalizePaper(parsed);};
-        try{paper=await withTransientAiRetry('R33.40 Question Paper cached primary',()=>buildPaper(geminiGenerationModel),2);generationMethod=`files_cache:${geminiGenerationModel}:fallback`;}catch(error:any){primaryError=error;console.warn('R33.40 Question Paper cached primary unavailable:',String(error?.message||error||''));}
+        try{paper=await withTransientAiRetry('R33.40 Question Paper cached primary',()=>buildPaper(geminiGenerationModel),4);generationMethod=`files_cache:${geminiGenerationModel}:fallback`;}catch(error:any){primaryError=error;console.warn('R33.40 Question Paper cached primary unavailable:',String(error?.message||error||''));}
         if(!paper&&primaryError&&providerFileMissingError(primaryError)){for(const material of materials){await removeHomeworkFileMeta(String(material.id));void scheduleHomeworkFileCache(material);}return res.status(425).json({engineBuild:'R33.10',speedBuild:'R33.40',sourcePreparing:true,error:'The temporary AI copy of this Textbook expired. Classtago is refreshing it automatically.'});}
-        if(!paper){paper=await withTransientAiRetry('R33.40 Question Paper cached secondary',()=>buildPaper(geminiSecondaryModel),2);generationMethod=`files_cache:${geminiSecondaryModel}:fallback`;}
+        if(!paper){paper=await withTransientAiRetry('R33.40 Question Paper cached secondary',()=>buildPaper(geminiSecondaryModel),4);generationMethod=`files_cache:${geminiSecondaryModel}:fallback`;}
       }
       let jobId=randomUUID();try{const job=await supabaseAdmin.from('edunixo_ai_generation_jobs').insert({teacher_id:req.activeUser.userId,assignment_id:String(scope.assignmentId||assignmentId),task_type:'question-paper',selected_material_ids:materialIds,chapter_scope:chapterScope,teacher_prompt:String(req.body?.prompt||''),status:'completed',scope_validated:true,warnings:[],completed_at:new Date().toISOString()}).select('id').single();if(!job.error&&job.data?.id)jobId=String(job.data.id);}catch{}
       return res.json({engineBuild:'R33.10',speedBuild:'R33.40',jobId,paper,generationMethod,patternTitle,scopeValidated:true});
@@ -12273,7 +12273,7 @@ const R33_9_QUESTION_PAPER_SCHEMA:any={type:'object',properties:{title:{type:'st
           }
           metas.push(meta);
         }
-        try{parsed=await withTransientAiRetry('R33.40 replacement cached primary',()=>generateStructuredFromCachedTextbooks(metas,{model:geminiGenerationModel,prompt:fastPrompt,systemInstruction,responseSchema:replacementSchema,maxOutputTokens:4500}),2);generationMethod=`files_cache:${geminiGenerationModel}:fallback`;}catch(error:any){primaryError=error;}
+        try{parsed=await withTransientAiRetry('R33.40 replacement cached primary',()=>generateStructuredFromCachedTextbooks(metas,{model:geminiGenerationModel,prompt:fastPrompt,systemInstruction,responseSchema:replacementSchema,maxOutputTokens:4500}),4);generationMethod=`files_cache:${geminiGenerationModel}:fallback`;}catch(error:any){primaryError=error;}
         if(!parsed&&primaryError&&providerFileMissingError(primaryError)){for(const material of materials){await removeHomeworkFileMeta(String(material.id));void scheduleHomeworkFileCache(material);}return res.status(425).json({engineBuild:'R33.10',speedBuild:'R33.40',sourcePreparing:true,error:'The temporary AI Textbook copy expired and is being refreshed.'});}
         if(!parsed){parsed=await withTransientAiRetry('R33.40 replacement cached secondary',()=>generateStructuredFromCachedTextbooks(metas,{model:geminiSecondaryModel,prompt:fastPrompt,systemInstruction,responseSchema:replacementSchema,maxOutputTokens:4500}),2);generationMethod=`files_cache:${geminiSecondaryModel}:fallback`;}
       }
