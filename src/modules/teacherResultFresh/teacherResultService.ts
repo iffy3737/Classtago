@@ -267,17 +267,27 @@ export async function loadClassSubjectStatuses(context:TeacherCloudContext, clas
     const tmpl=fallbackTemplateKey(classScope.className,name);
     if (tmpl === 'class_1_8_hindi_marathi' || tmpl === 'class_9_10_dual_language') {
       const key='lang'; if (groupedLang.has(key)) continue; groupedLang.add(key);
-      const langIds=assignments.filter(x=>{const n=asText(subjectMap.get(x.subject_id),asText(x.subject_name));return isHindi(n)||isMarathi(n)}).map(x=>x.subject_id);
-      const combined=listRows.find(l=>l.sectionKey==='hindi_marathi') || undefined;
-      if (combined) statuses.push({subjectId:langIds.join('|'),subjectName:'Hindi / Marathi',teacherName:'Combined language assignment',list:combined});
-      else {
-        const hindiA=assignments.find(x=>isHindi(asText(subjectMap.get(x.subject_id),asText(x.subject_name))));
-        const marathiA=assignments.find(x=>isMarathi(asText(subjectMap.get(x.subject_id),asText(x.subject_name))));
-        for (const x of [hindiA,marathiA].filter(Boolean) as any[]) {
-          const n=asText(subjectMap.get(x.subject_id),asText(x.subject_name));
-          statuses.push({subjectId:x.subject_id,subjectName:n,teacherName:asText(teacherMap.get(x.teacher_id)),list:listRows.find(l=>l.subjectId===x.subject_id)});
-        }
+      const hindiA=assignments.find(x=>isHindi(asText(subjectMap.get(x.subject_id),asText(x.subject_name))));
+      const marathiA=assignments.find(x=>isMarathi(asText(subjectMap.get(x.subject_id),asText(x.subject_name))));
+      const langIds=[hindiA?.subject_id,marathiA?.subject_id].filter(Boolean);
+      // Always show ONE "Hindi / Marathi" row in Class Mark List.
+      // If the same teacher handles both languages, show single name.
+      // If different teachers, show both names with their language label.
+      const sameTeacher = hindiA && marathiA && hindiA.teacher_id === marathiA.teacher_id;
+      let displayTeacher = 'Combined language assignment';
+      if (sameTeacher) {
+        displayTeacher = asText(teacherMap.get(hindiA.teacher_id)) || 'Combined language assignment';
+      } else {
+        const names: string[] = [];
+        if (hindiA) { const t = asText(teacherMap.get(hindiA.teacher_id)); if (t) names.push(t + ' · Hindi'); }
+        if (marathiA) { const t = asText(teacherMap.get(marathiA.teacher_id)); if (t) names.push(t + ' · Marathi'); }
+        if (names.length) displayTeacher = names.join(' | ');
       }
+      // Combined list preferred; else either individual submission as placeholder.
+      const combined = listRows.find(l=>l.sectionKey==='hindi_marathi')
+        || listRows.find(l=>l.subjectId===hindiA?.subject_id)
+        || listRows.find(l=>l.subjectId===marathiA?.subject_id);
+      statuses.push({subjectId:langIds.join('|')||'hindi_marathi',subjectName:'Hindi / Marathi',teacherName:displayTeacher,list:combined});
       continue;
     }
     statuses.push({subjectId:a.subject_id,subjectName:name,teacherName:asText(teacherMap.get(a.teacher_id)),list:listRows.find(l=>l.subjectId===a.subject_id)});
