@@ -572,7 +572,16 @@ export function QuestionPaperPage({ assignments, materials, initialTerm, initial
         void listCombinedSubjectGroups({ assignmentId: paper.assignmentId, exam }).then((groups) => setCombinedGroups(groups)).catch(() => undefined);
       }
       setSaveMessage(paper.combinedMeta?.workflow === 'collaborative_component' ? 'Your Subject section was submitted successfully to the Clerk Combined Paper desk.' : 'Question Paper saved successfully as a reviewed school document.');
-    } catch (e) { setError(e instanceof Error ? e.message : 'Save failed.'); }
+    } catch (e: any) {
+      console.error('[SAVE ERROR]', e);
+      console.error('[SAVE ERROR message]', e?.message);
+      console.error('[SAVE ERROR code]', e?.code);
+      console.error('[SAVE ERROR details]', e?.details);
+      console.error('[SAVE ERROR hint]', e?.hint);
+      console.error('[SAVE ERROR paper]', { id: paper?.id, assignmentId: paper?.assignmentId, combinedMeta: paper?.combinedMeta, reviewStatus: paper?.reviewStatus });
+      const msg = e?.message || e?.error_description || e?.details || e?.hint || JSON.stringify(e) || 'Save failed.';
+      setError('Save failed: ' + msg);
+    }
     finally { setBusy(false); }
   };
 
