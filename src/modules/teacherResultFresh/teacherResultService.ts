@@ -220,7 +220,7 @@ export async function loadClassSubjectStatuses(context:TeacherCloudContext, clas
   const readAssignments = async () => {
     // Production source-of-truth: canonical Academic Assignment table. An empty
     // canonical result is intentional and must not be filled from legacy rows.
-    let canonical:any=supabase.from('school_subject_teacher_assignments').select('*').eq('school_id',context.schoolId).eq('academic_year_id',classScope.academicYearId).eq('class_id',classScope.classId).eq('is_active', true);
+    let canonical:any=supabase.from('school_subject_teacher_assignments').select('*, teacher_ref:teachers!teacher_id(id, full_name)').eq('school_id',context.schoolId).eq('academic_year_id',classScope.academicYearId).eq('class_id',classScope.classId).eq('is_active', true);
     if (classScope.divisionId) canonical=canonical.eq('division_id',classScope.divisionId); else canonical=canonical.is('division_id',null);
     const current=await canonical;
     if (!current.error) return current.data||[];
@@ -245,6 +245,16 @@ export async function loadClassSubjectStatuses(context:TeacherCloudContext, clas
   ]);
   const subjectMap=new Map((subjects.data||[]).map((x:any)=>[x.id,x.subject_name]));
   const teacherMap=new Map((teachers.data||[]).map((x:any)=>[x.id,x.full_name]));
+  // Also merge teacher names from embedded join (bypasses teachers-table RLS).
+  for (const a of assignments) {
+    const ref = a?.teacher_ref;
+    if (ref && ref.id && ref.full_name && !teacherMap.has(ref.id)) {
+      teacherMap.set(ref.id, ref.full_name);
+    }
+    if (ref && ref.id && ref.full_name && a.teacher_id && !teacherMap.has(a.teacher_id)) {
+      teacherMap.set(a.teacher_id, ref.full_name);
+    }
+  }
   let listsQuery:any=supabase.from('edunixo_result_subject_lists').select('*').eq('school_id',context.schoolId).eq('academic_year_id',classScope.academicYearId).eq('class_id',classScope.classId).eq('term',term);
   if (classScope.divisionId) listsQuery=listsQuery.eq('division_id',classScope.divisionId); else listsQuery=listsQuery.is('division_id',null);
   const lists=await listsQuery;
