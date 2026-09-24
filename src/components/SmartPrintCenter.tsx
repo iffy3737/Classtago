@@ -10,7 +10,8 @@ import {
   SMART_PRINT_EVENT,
   SmartPaperSize,
   SmartPrintPreferences,
-  SmartPrintRequest
+  SmartPrintRequest,
+  saveNativePdf
 } from '../lib/smartPrint';
 
 const PAPER_OPTIONS: SmartPaperSize[] = ['A3', 'A4', 'A5', 'Letter', 'Legal', 'Folio', 'Custom'];
@@ -329,7 +330,22 @@ export default function SmartPrintCenter() {
         html2canvas: { scale: 2.2, useCORS: true, logging: false, backgroundColor: '#ffffff', windowWidth: Math.max(794, printable.scrollWidth) },
         jsPDF: { unit: 'mm', format: [dimensions.width, dimensions.height], orientation: preferences.orientation },
         pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', '.avoid-print-break', '.homework-print-meta', '.homework-print-line', '.question-row', '.qp-answer-area', '.qp-match-table', '.qp-section-head', '.qp-subquestion-row', '.qp-section-match-wrap'] }
-      }).from(printable).save();
+      }).from(printable).outputPdf('blob').then(async (pdfBlob: Blob) => {
+        const filename = `${(request.title || 'School_Document').replace(/[^a-z0-9_-]+/gi, '_')}_${preferences.paperSize}_${preferences.orientation}.pdf`;
+        const reader = new FileReader();
+        const base64 = await new Promise<string>((resolve, reject) => {
+          reader.onloadend = () => {
+            const result = String(reader.result || '');
+            const comma = result.indexOf(',');
+            if (comma < 0) { reject(new Error('encode failed')); return; }
+            resolve(result.slice(comma + 1));
+          };
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(pdfBlob);
+        });
+        const saved = await saveNativePdf(base64, filename);
+        window.alert(`PDF saved to ${saved.savedTo}`);
+      });
     } catch (error) {
       console.error(error);
       window.alert('PDF could not be generated. Please use Print and choose Save as PDF in the printer dialog.');

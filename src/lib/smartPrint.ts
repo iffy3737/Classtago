@@ -92,3 +92,32 @@ export function runNativeBrowserPrint(): void {
   if (nativePrint) nativePrint();
   else window.print();
 }
+
+
+/**
+ * Save a base64-encoded PDF to the device's Downloads folder using the
+ * Android native bridge (AndroidDownloader). Falls back to browser download
+ * when the bridge is not available.
+ */
+export async function saveNativePdf(base64Data: string, filename: string): Promise<{ savedTo: string }> {
+  const bridge = (window as any).AndroidDownloader;
+  if (bridge && typeof bridge.saveBase64 === 'function') {
+    bridge.saveBase64(base64Data, filename, 'application/pdf');
+    return { savedTo: 'Downloads/' + filename };
+  }
+
+  // Browser fallback: convert base64 to blob and trigger download
+  const byteChars = atob(base64Data);
+  const byteArray = new Uint8Array(byteChars.length);
+  for (let i = 0; i < byteChars.length; i++) byteArray[i] = byteChars.charCodeAt(i);
+  const blob = new Blob([byteArray], { type: 'application/pdf' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  return { savedTo: 'Downloads/' + filename };
+}
