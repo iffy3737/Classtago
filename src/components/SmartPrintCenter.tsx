@@ -14,6 +14,27 @@ import {
   saveNativePdf
 } from '../lib/smartPrint';
 
+// oklch/oklab -> rgb converter for html2canvas (Android WebView doesn't support these).
+function replaceOklchWithRgb(input: string): string {
+  if (!input || typeof input !== 'string') return input;
+  if (!input.includes('oklch') && !input.includes('oklab')) return input;
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1; canvas.height = 1;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return input;
+    return input.replace(/okl(?:ch|ab)\([^)]+\)/g, (match) => {
+      try {
+        ctx.fillStyle = '#000';
+        ctx.fillStyle = match;
+        const result = ctx.fillStyle;
+        if (result && result !== '#000000' && result !== '#000') return result;
+        return match;
+      } catch { return match; }
+    });
+  } catch { return input; }
+}
+
 const PAPER_OPTIONS: SmartPaperSize[] = ['A3', 'A4', 'A5', 'Letter', 'Legal', 'Folio', 'Custom'];
 
 function escapeHtml(value: string): string {
@@ -327,7 +348,23 @@ export default function SmartPrintCenter() {
         margin: 0,
         filename: `${(request.title || 'School_Document').replace(/[^a-z0-9_-]+/gi, '_')}_${preferences.paperSize}_${preferences.orientation}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2.2, useCORS: true, logging: false, backgroundColor: '#ffffff', windowWidth: Math.max(794, printable.scrollWidth) },
+        html2canvas: {
+          scale: 2.2, useCORS: true, logging: false, backgroundColor: '#ffffff',
+          windowWidth: Math.max(794, printable.scrollWidth),
+          onclone: (clonedDoc: Document) => {
+            clonedDoc.querySelectorAll('style').forEach((styleEl) => {
+              if (styleEl.textContent) {
+                styleEl.textContent = replaceOklchWithRgb(styleEl.textContent);
+              }
+            });
+            clonedDoc.querySelectorAll('[style]').forEach((el: any) => {
+              const styleAttr = el.getAttribute('style');
+              if (styleAttr && (styleAttr.includes('oklch') || styleAttr.includes('oklab'))) {
+                el.setAttribute('style', replaceOklchWithRgb(styleAttr));
+              }
+            });
+          },
+        },
         jsPDF: { unit: 'mm', format: [dimensions.width, dimensions.height], orientation: preferences.orientation },
         pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', '.avoid-print-break', '.homework-print-meta', '.homework-print-line', '.question-row', '.qp-answer-area', '.qp-match-table', '.qp-section-head', '.qp-subquestion-row', '.qp-section-match-wrap'] }
       }).from(printable).outputPdf('blob').then(async (pdfBlob: Blob) => {
