@@ -454,6 +454,18 @@ export async function getQuestionPaperPatternPreview(input: { assignmentId: stri
   };
 }
 
+
+async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    return response;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 export async function generateQuestionPaperDraft(request: GenerationRequest & { taskType: 'question-paper' }): Promise<QuestionPaperDraft> {
   if (!request.assignmentId) throw new Error('Select an assigned Class / Division / Subject.');
   const aiStatus = await getTeacherAcademicAiStatus();
@@ -462,15 +474,15 @@ export async function generateQuestionPaperDraft(request: GenerationRequest & { 
   const token = await academicAuthToken();
   let response:Response|null=null, payload:any={};
   for(let attempt=1;attempt<=3;attempt+=1){
-    response=await fetch('/api/teacher/academic/generate-question-paper-r33-10',{
+    response=await fetchWithTimeout('/api/teacher/academic/generate-question-paper-r33-10',{
       method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify(request),cache:'no-store'
-    });
+    }, 180000);
     let contentType=String(response.headers.get('content-type')||'').toLowerCase();
     if(!contentType.includes('application/json')){
       await response.text().catch(()=> '');
-      response=await fetch(`/api/teacher/academic/generate-question-paper-r33-10?edunixo_preview_retry=${Date.now()}`,{
+      response=await fetchWithTimeout(`/api/teacher/academic/generate-question-paper-r33-10?edunixo_preview_retry=${Date.now()}`,{
         method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`,'X-EDUNIXO-Preview-Retry':'R33.22.1'},body:JSON.stringify(request),cache:'no-store'
-      });
+      }, 180000);
       contentType=String(response.headers.get('content-type')||'').toLowerCase();
     }
     const build=String(response.headers.get('x-edunixo-question-paper-build')||'').trim();
