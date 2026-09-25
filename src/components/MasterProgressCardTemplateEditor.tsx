@@ -796,7 +796,6 @@ const MasterProgressCardTemplateEditor: React.FC<MasterProgressCardTemplateEdito
           </div>
         </div>
       )}
-    </div>
 
       {/* ===== Full Gallery Modal (50 designs) ===== */}
       {galleryOpen && (
