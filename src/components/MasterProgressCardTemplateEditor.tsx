@@ -99,6 +99,21 @@ type TemplateConfig = {
   pageSize: 'A4';
   orientation: 'Landscape';
   pageMode: 'one_side' | 'two_side';
+  design: {
+    templateName: string;
+    primaryColor: string;
+    accentColor: string;
+    secondaryColor: string;
+    backgroundColor: string;
+    headerStyle: 'gradient' | 'solid' | 'minimal';
+    borderStyle: 'gold' | 'navy' | 'thin' | 'none';
+    layout: 'classic' | 'modern' | 'compact';
+    logoPosition: 'left' | 'center' | 'right';
+    showHealth: boolean;
+    showAttendance: boolean;
+    showGuidance: boolean;
+    showSignatures: boolean;
+  };
   documentLanguageProfile: DocumentLanguageProfile;
   languages: {
     primaryCode: string;
@@ -154,6 +169,21 @@ const DEFAULT_CONFIG: TemplateConfig = {
   pageSize: 'A4',
   orientation: 'Landscape',
   pageMode: 'two_side',
+  design: {
+    templateName: 'Classic Navy',
+    primaryColor: '#06163f',
+    accentColor: '#fbbf24',
+    secondaryColor: '#0b3d86',
+    backgroundColor: '#f8fbff',
+    headerStyle: 'gradient',
+    borderStyle: 'gold',
+    layout: 'classic',
+    logoPosition: 'left',
+    showHealth: true,
+    showAttendance: true,
+    showGuidance: true,
+    showSignatures: true,
+  },
   documentLanguageProfile: createDefaultProgressCardLanguageProfile(),
   languages: {
     primaryCode: 'en',
@@ -237,6 +267,16 @@ const DEFAULT_CONFIG: TemplateConfig = {
   },
 };
 
+
+const DESIGN_PALETTES = [
+  { id: 'classic_navy',    name: 'Classic Navy',     primaryColor: '#06163f', accentColor: '#fbbf24', secondaryColor: '#0b3d86', backgroundColor: '#f8fbff', borderStyle: 'gold' as const,   headerStyle: 'gradient' as const },
+  { id: 'royal_gold',      name: 'Royal Gold',       primaryColor: '#4c1d0e', accentColor: '#fbbf24', secondaryColor: '#7c2d12', backgroundColor: '#fffbeb', borderStyle: 'gold' as const,   headerStyle: 'gradient' as const },
+  { id: 'modern_blue',     name: 'Modern Blue',      primaryColor: '#0c4a6e', accentColor: '#22d3ee', secondaryColor: '#0284c7', backgroundColor: '#f0f9ff', borderStyle: 'navy' as const,   headerStyle: 'gradient' as const },
+  { id: 'emerald_premium', name: 'Emerald Premium',  primaryColor: '#064e3b', accentColor: '#fbbf24', secondaryColor: '#047857', backgroundColor: '#ecfdf5', borderStyle: 'gold' as const,   headerStyle: 'gradient' as const },
+  { id: 'maroon_elegance', name: 'Maroon Elegance',  primaryColor: '#7f1d1d', accentColor: '#fcd34d', secondaryColor: '#991b1b', backgroundColor: '#fef2f2', borderStyle: 'gold' as const,   headerStyle: 'gradient' as const },
+  { id: 'slate_minimal',   name: 'Slate Minimal',    primaryColor: '#1e293b', accentColor: '#64748b', secondaryColor: '#334155', backgroundColor: '#f8fafc', borderStyle: 'thin' as const,   headerStyle: 'solid'    as const },
+];
+
 const localKey = 'edunixo_master_progress_card_classes_1_8';
 const cloudTemplateKey = 'master_progress_card_classes_1_8';
 
@@ -255,6 +295,7 @@ const mergeConfig = (raw: any): TemplateConfig => {
     ...raw,
     structureVersion: base.structureVersion,
     pageMode: raw?.pageMode === 'one_side' || raw?.pageMode === 'two_side' ? raw.pageMode : base.pageMode,
+    design: { ...base.design, ...(raw?.design || {}) },
     documentLanguageProfile: raw.documentLanguageProfile ? normalizeDocumentLanguageProfile(raw.documentLanguageProfile, 'progress-card', [...PROGRESS_CARD_LANGUAGE_SECTIONS], 'en') : createDefaultProgressCardLanguageProfile(),
     languages: { ...base.languages, ...rawLanguages },
     front: {
@@ -465,6 +506,7 @@ const MasterProgressCardTemplateEditor: React.FC<MasterProgressCardTemplateEdito
   const [selectedType, setSelectedType] = useState<CardTypeId>('type1');
   const [side, setSide] = useState<PreviewSide>('front');
   const [previewMode, setPreviewMode] = useState<PreviewMode>('live');
+  const [designModalOpen, setDesignModalOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [cardEditing, setCardEditing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -611,7 +653,7 @@ const MasterProgressCardTemplateEditor: React.FC<MasterProgressCardTemplateEdito
       <div className="edx-dark-contrast-surface rounded-3xl border border-cyan-400/20 bg-[radial-gradient(circle_at_10%_0%,rgba(34,211,238,.18),transparent_32%),linear-gradient(135deg,#020617,#0f172a_58%,#083344)] p-6 text-white shadow-xl">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div><div className="flex flex-wrap items-center gap-2"><TemplateBadge tone="cyan">Clerk Master</TemplateBadge><TemplateBadge tone="emerald">Classes 1–8</TemplateBadge><TemplateBadge tone="slate">A4 Landscape</TemplateBadge><TemplateBadge tone="cyan">{languageDisplayName(primaryLanguage)}</TemplateBadge>{config.languages.secondaryEnabled&&<TemplateBadge tone="slate">+ {languageDisplayName(secondaryLanguage)}</TemplateBadge>}</div><h2 className="mt-3 flex items-center gap-2 text-2xl font-black"><LayoutTemplate className="h-6 w-6 text-cyan-300"/>Master Progress Card Templates</h2><p className="mt-2 max-w-3xl text-xs leading-6 text-slate-300">One common Front Page with two official back structures. This is the master definition that the Class Teacher Progress Card workflow will consume later; marks are not entered here.</p></div>
-          <div className="flex flex-wrap items-center gap-2"><div className={`rounded-xl border px-3 py-2 text-[10px] font-black uppercase ${status==='saved'?'border-emerald-400/30 bg-emerald-400/10 text-emerald-200':status==='unsaved'?'border-amber-400/30 bg-amber-400/10 text-amber-200':'border-slate-400/30 bg-white/5 text-slate-300'}`}>{status==='saved'?'Cloud Saved':status==='unsaved'?'Unsaved Changes':'Local / Preview Cache'}</div><button type="button" onClick={()=>{setEditing(v=>!v);setCardEditing(false);}} className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-black"><Pencil className="h-4 w-4"/>{editing?'Close Master':'Edit Master'}</button><button type="button" onClick={()=>{setCardEditing(v=>!v);setEditing(false);setPreviewMode('live');}} className="inline-flex items-center gap-2 rounded-xl border border-amber-300/30 bg-amber-300/10 px-4 py-2.5 text-xs font-black text-amber-100"><Pencil className="h-4 w-4"/>{cardEditing?'Close Card Editor':'Edit Card'}</button><button type="button" onClick={()=>void saveTemplate()} disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-4 py-2.5 text-xs font-black text-slate-950 disabled:opacity-50">{saving?<Loader2 className="h-4 w-4 animate-spin"/>:<Save className="h-4 w-4"/>}Save Master Template</button></div>
+          <div className="flex flex-wrap items-center gap-2"><div className={`rounded-xl border px-3 py-2 text-[10px] font-black uppercase ${status==='saved'?'border-emerald-400/30 bg-emerald-400/10 text-emerald-200':status==='unsaved'?'border-amber-400/30 bg-amber-400/10 text-amber-200':'border-slate-400/30 bg-white/5 text-slate-300'}`}>{status==='saved'?'Cloud Saved':status==='unsaved'?'Unsaved Changes':'Local / Preview Cache'}</div><button type="button" onClick={()=>{setEditing(v=>!v);setCardEditing(false);}} className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-black"><Pencil className="h-4 w-4"/>{editing?'Close Master':'Edit Master'}</button><button type="button" onClick={()=>{setCardEditing(v=>!v);setEditing(false);setPreviewMode('live');}} className="inline-flex items-center gap-2 rounded-xl border border-amber-300/30 bg-amber-300/10 px-4 py-2.5 text-xs font-black text-amber-100"><Pencil className="h-4 w-4"/>{cardEditing?'Close Card Editor':'Edit Card'}</button><button type="button" onClick={()=>setDesignModalOpen(true)} className="inline-flex items-center gap-2 rounded-xl border border-fuchsia-300/30 bg-fuchsia-300/10 px-4 py-2.5 text-xs font-black text-fuchsia-100"><Sparkles className="h-4 w-4"/>Design</button><button type="button" onClick={()=>void saveTemplate()} disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-4 py-2.5 text-xs font-black text-slate-950 disabled:opacity-50">{saving?<Loader2 className="h-4 w-4 animate-spin"/>:<Save className="h-4 w-4"/>}Save Master Template</button></div>
         </div>
       </div>
 
@@ -654,6 +696,102 @@ const MasterProgressCardTemplateEditor: React.FC<MasterProgressCardTemplateEdito
       <div className="rounded-3xl border border-slate-200 bg-slate-100 p-3 shadow-inner"><div className="mb-3 flex items-center justify-between gap-3 px-2"><div><h3 className="text-sm font-black text-slate-950">{selectedType==='type1'?'Card Type 1':'Card Type 2'} · {side==='front'?'Common Front':'Back Side'}</h3><p className="text-[10px] text-slate-500">{previewMode==='live'?'Structured data-bound master preview':'Original/reference visual supplied during design discussion'}</p></div><div className="flex items-center gap-2">{selectedType==='type2'&&side==='back'&&<TemplateBadge tone="emerald">Official Format</TemplateBadge>}</div></div><div className="overflow-x-auto rounded-2xl bg-white p-2">{previewMode==='reference'?<div className="flex min-h-[460px] items-center justify-center bg-slate-50"><img src={referenceSrc} alt="Progress card reference" className="max-h-[820px] max-w-full object-contain shadow-sm"/></div>:side==='front'?<FrontPreview config={config}/>:selectedType==='type1'?<Type1BackPreview config={config}/>:<Type2BackPreview config={config}/>}</div></div>
 
       <div className="grid gap-3 md:grid-cols-3"><div className="rounded-2xl border border-slate-200 bg-white p-4"><div className="flex items-center gap-2 text-xs font-black text-slate-950"><Cloud className="h-4 w-4 text-cyan-600"/>Data Binding</div><p className="mt-2 text-[11px] leading-5 text-slate-500">Student identity from Student Master; marks/grades from accepted Result Book; attendance from Attendance Catalogue; document language comes from this school template.</p></div><div className="rounded-2xl border border-slate-200 bg-white p-4"><div className="flex items-center gap-2 text-xs font-black text-slate-950"><BookOpenCheck className="h-4 w-4 text-emerald-600"/>Teacher Workflow</div><p className="mt-2 text-[11px] leading-5 text-slate-500">Class Teacher will review generated cards. Imported Result Book marks stay read-only; correction goes back to Subject Mark List.</p></div><div className="rounded-2xl border border-slate-200 bg-white p-4"><div className="flex items-center gap-2 text-xs font-black text-slate-950"><Sparkles className="h-4 w-4 text-amber-500"/>Type 2 Rule</div><p className="mt-2 text-[11px] leading-5 text-slate-500">Classes 5 and 8 use Grade-based First Term and Marks-based Second Term, based on the supplied official format reference.</p></div></div>
+    </div>
+
+      {/* ===== Design Modal ===== */}
+      {designModalOpen && (
+        <div
+          className="fixed inset-0 z-[300] flex items-start justify-center overflow-auto bg-slate-950/80 p-3 backdrop-blur-sm"
+          onClick={() => setDesignModalOpen(false)}
+        >
+          <div className="my-4 w-full max-w-3xl rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between rounded-t-2xl bg-gradient-to-r from-fuchsia-600 to-indigo-600 px-5 py-4 text-white">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5" />
+                <div>
+                  <div className="text-sm font-black">Design Template</div>
+                  <div className="text-[10px] opacity-80">Choose a color palette for this progress card</div>
+                </div>
+              </div>
+              <button type="button" onClick={() => setDesignModalOpen(false)} className="rounded-lg bg-white/20 px-3 py-1.5 text-xs font-black">
+                Close
+              </button>
+            </div>
+
+            <div className="p-5">
+              <div className="mb-4">
+                <label className="block text-[10px] font-black uppercase text-slate-500">Template Name</label>
+                <input
+                  type="text"
+                  value={config.design.templateName}
+                  onChange={(e) => { setConfig(prev => ({ ...prev, design: { ...prev.design, templateName: e.target.value } })); setStatus('unsaved'); }}
+                  className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm font-bold"
+                  placeholder="e.g. Classic Navy"
+                />
+              </div>
+
+              <div className="mb-3 text-[10px] font-black uppercase text-slate-500">Palette</div>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {DESIGN_PALETTES.map((palette) => {
+                  const selected = config.design.primaryColor === palette.primaryColor && config.design.accentColor === palette.accentColor;
+                  return (
+                    <button
+                      key={palette.id}
+                      type="button"
+                      onClick={() => {
+                        setConfig(prev => ({
+                          ...prev,
+                          design: {
+                            ...prev.design,
+                            templateName: prev.design.templateName === 'Classic Navy' || !prev.design.templateName ? palette.name : prev.design.templateName,
+                            primaryColor: palette.primaryColor,
+                            accentColor: palette.accentColor,
+                            secondaryColor: palette.secondaryColor,
+                            backgroundColor: palette.backgroundColor,
+                            borderStyle: palette.borderStyle,
+                            headerStyle: palette.headerStyle,
+                          }
+                        }));
+                        setStatus('unsaved');
+                      }}
+                      className={`rounded-xl border-2 p-3 text-left transition ${selected ? 'border-fuchsia-500 ring-2 ring-fuchsia-500/20' : 'border-slate-200 hover:border-slate-300'}`}
+                    >
+                      <div className="mb-2 flex h-12 overflow-hidden rounded-lg">
+                        <div className="flex-1" style={{ backgroundColor: palette.primaryColor }} />
+                        <div className="flex-1" style={{ backgroundColor: palette.secondaryColor }} />
+                        <div className="w-8" style={{ backgroundColor: palette.accentColor }} />
+                      </div>
+                      <div className="text-xs font-black text-slate-900">{palette.name}</div>
+                      <div className="mt-0.5 text-[10px] text-slate-500">{palette.headerStyle} · {palette.borderStyle}</div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                <label className="block">
+                  <span className="text-[10px] font-black uppercase text-slate-500">Primary</span>
+                  <input type="color" value={config.design.primaryColor} onChange={(e)=>{setConfig(prev=>({...prev,design:{...prev.design,primaryColor:e.target.value}}));setStatus('unsaved');}} className="mt-1 h-10 w-full rounded-lg border border-slate-300" />
+                </label>
+                <label className="block">
+                  <span className="text-[10px] font-black uppercase text-slate-500">Secondary</span>
+                  <input type="color" value={config.design.secondaryColor} onChange={(e)=>{setConfig(prev=>({...prev,design:{...prev.design,secondaryColor:e.target.value}}));setStatus('unsaved');}} className="mt-1 h-10 w-full rounded-lg border border-slate-300" />
+                </label>
+                <label className="block">
+                  <span className="text-[10px] font-black uppercase text-slate-500">Accent</span>
+                  <input type="color" value={config.design.accentColor} onChange={(e)=>{setConfig(prev=>({...prev,design:{...prev.design,accentColor:e.target.value}}));setStatus('unsaved');}} className="mt-1 h-10 w-full rounded-lg border border-slate-300" />
+                </label>
+              </div>
+
+              <div className="mt-5 flex justify-end">
+                <button type="button" onClick={() => setDesignModalOpen(false)} className="rounded-xl bg-slate-900 px-5 py-2.5 text-xs font-black text-white">
+                  Done
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
