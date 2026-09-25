@@ -46,6 +46,7 @@ const TIER_CONFIG = {
 
 interface ProgressCardGalleryProps {
   pageMode: 'one_side' | 'two_side';
+  orientation?: 'portrait' | 'landscape';
   appliedDesignId?: string;
   onApply: (design: ProgressCardDesign) => void;
   schoolName?: string;
@@ -55,6 +56,7 @@ interface ProgressCardGalleryProps {
 
 export default function ProgressCardGallery({
   pageMode,
+  orientation = 'landscape',
   appliedDesignId,
   onApply,
   schoolName = 'NATIONAL HIGH SCHOOL, TALODA',
@@ -200,6 +202,7 @@ export default function ProgressCardGallery({
                   schoolTrust={schoolTrust}
                   academicYear={academicYear}
                   pageMode={pageMode}
+                  orientation={orientation}
                   student={SAMPLE_STUDENT}
                   attendance={SAMPLE_ATTENDANCE}
                   subjects={SAMPLE_SUBJECTS}
