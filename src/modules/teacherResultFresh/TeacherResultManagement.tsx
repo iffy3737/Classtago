@@ -17,6 +17,7 @@ import {
   sendResultBookToProgressAndClerk,
   submitSubjectList,
 } from './teacherResultService';
+import ProgressCardRenderer from './ProgressCardRenderer';
 import type { ClassSubjectStatus, ResultBookRecord, ResultMarkRow, ResultScope, ResultStudent, ResultSubjectList, ResultTemplateDefinition, ResultTerm } from './types';
 import { calculateComputed } from './resultTemplateConfig';
 import ClerkMasterMarkListSheet, { type MariaMarkCellAnchor } from './ClerkMasterMarkListSheet';
@@ -313,6 +314,7 @@ function ProgressCardPage({context,onNavigate}:{context:TeacherCloudContext;onNa
   const[err,setErr]=useState('');
   const[msg,setMsg]=useState('');
   const online=useOnlineStatus();
+  const [previewStudent, setPreviewStudent] = useState<any>(null);
   const localScope={schoolId:context.schoolId,userId:context.userId};
   const loadBatch=async()=>{if(!scope)return;try{const next=await loadProgressBatch(context,scope,term);setBatch(next);setErr('');await putPhase1Cache(localScope,'progress_card',`${scope.id}:${term}`,{batch:next,cachedAt:new Date().toISOString()})}catch(e:any){const cached=await getPhase1Cache<any>(localScope,'progress_card',`${scope.id}:${term}`);if(cached){setBatch(cached.batch||null);setErr('');setMsg('Offline cached Progress Card data loaded.')}else setErr(e?.message||'Progress Card batch unavailable offline until opened once online.')}};
   useEffect(()=>{void loadBatch()},[scope?.id,term]);
@@ -324,7 +326,88 @@ function ProgressCardPage({context,onNavigate}:{context:TeacherCloudContext;onNa
   const summaryColumns=columns.filter((c:any)=>c.kind==='grade'||/(^|\s)(grand\s+)?total$/i.test(String(c.label||''))||/language total|hindi total|marathi total/i.test(String(c.label||''))).filter((c:any,i:number,a:any[])=>a.findIndex(x=>x.subjectName===c.subjectName&&x.key===c.key)===i);
   const fallbackColumns=summaryColumns.length?summaryColumns:columns;
   const rows=Object.entries(resultRows||{}).filter(([id])=>id!=='columns'&&id!=='rows');
-  return <div className="space-y-5"><div className="grid gap-3 rounded-2xl border bg-white p-4 md:grid-cols-2"><label className="text-xs font-bold">Class / Division<select value={scope.id} onChange={e=>setScopeId(e.target.value)} className="mt-1 w-full rounded-xl border px-3 py-2.5">{scopes.map(x=><option key={x.id} value={x.id}>{x.className} · {x.division}</option>)}</select></label><label className="text-xs font-bold">Term<select value={term} onChange={e=>setTerm(e.target.value as ResultTerm)} className="mt-1 w-full rounded-xl border px-3 py-2.5"><option value="first_term">First Term</option><option value="second_term">Second Term</option></select></label></div>{!online&&<Banner tone="amber"><b>Offline Progress Card.</b> Latest encrypted cached batch is viewable; official generation/publish actions remain online.</Banner>}{msg&&<Banner tone="blue">{msg}</Banner>}{!batch?<Banner tone="amber">No Progress Card batch is ready. Complete the Result Book and use “Send to Progress Card & Clerk” first.</Banner>:<><Banner tone="emerald"><b>Progress Card batch prepared.</b> Status: {batch.status}. The completed Result Book is also available in the Clerk print queue.</Banner><div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{rows.map(([id,row]:any)=><article key={id} className="rounded-2xl border bg-white p-4"><div className="flex items-start justify-between"><div><b>{row.studentName||id}</b><p className="text-[10px] text-slate-500">Roll {row.rollNumber||'—'} · GR {row.grNumber||'—'}</p></div><ClipboardCheck className="h-4 w-4 text-emerald-600"/></div><div className="mt-3 space-y-1">{fallbackColumns.map((c:any)=><div key={c.key} className="flex justify-between gap-3 border-t pt-1 text-xs"><span>{c.subjectName} · {c.label}</span><b>{row[c.key]!==''&&row[c.key]!=null?String(row[c.key]):'—'}</b></div>)}</div></article>)}</div></>}{err&&<Banner tone="rose">{err}</Banner>}</div>
+  return <div className="space-y-5"><div className="grid gap-3 rounded-2xl border bg-white p-4 md:grid-cols-2"><label className="text-xs font-bold">Class / Division<select value={scope.id} onChange={e=>setScopeId(e.target.value)} className="mt-1 w-full rounded-xl border px-3 py-2.5">{scopes.map(x=><option key={x.id} value={x.id}>{x.className} · {x.division}</option>)}</select></label><label className="text-xs font-bold">Term<select value={term} onChange={e=>setTerm(e.target.value as ResultTerm)} className="mt-1 w-full rounded-xl border px-3 py-2.5"><option value="first_term">First Term</option><option value="second_term">Second Term</option></select></label></div>{!online&&<Banner tone="amber"><b>Offline Progress Card.</b> Latest encrypted cached batch is viewable; official generation/publish actions remain online.</Banner>}{msg&&<Banner tone="blue">{msg}</Banner>}{!batch?<Banner tone="amber">No Progress Card batch is ready. Complete the Result Book and use “Send to Progress Card & Clerk” first.</Banner>:<><Banner tone="emerald"><b>Progress Card batch prepared.</b> Status: {batch.status}. The completed Result Book is also available in the Clerk print queue.</Banner><div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{rows.map(([id,row]:any)=><article key={id} className="rounded-2xl border bg-white p-4"><div className="flex items-start justify-between"><div><b>{row.studentName||id}</b><p className="text-[10px] text-slate-500">Roll {row.rollNumber||'—'} · GR {row.grNumber||'—'}</p></div><ClipboardCheck className="h-4 w-4 text-emerald-600"/></div><div className="mt-3 space-y-1">{fallbackColumns.map((c:any)=><div key={c.key} className="flex justify-between gap-3 border-t pt-1 text-xs"><span>{c.subjectName} · {c.label}</span><b>{row[c.key]!==''&&row[c.key]!=null?String(row[c.key]):'—'}</b></div>)}</div></article>)}</div></>}{err&&<Banner tone="rose">{err}</Banner>}
+    {/* Preview sample card to test the new design */}
+    <div className="rounded-2xl border border-dashed border-indigo-300 bg-indigo-50/40 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <b className="text-sm text-indigo-900">New Design Preview (Beta)</b>
+          <p className="mt-0.5 text-[11px] text-indigo-700">Test the new Progress Card renderer with sample data before going live.</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            const firstRow:any = rows[0];
+            setPreviewStudent({
+              student: {
+                studentId: String(firstRow?.[0] || 'demo'),
+                fullName: String(firstRow?.[1]?.studentName || 'Demo Student'),
+                grNumber: String(firstRow?.[1]?.grNumber || '—'),
+                rollNumber: String(firstRow?.[1]?.rollNumber || '—'),
+                className: scope?.className || '—',
+                division: scope?.division || '',
+                dateOfBirth: '—',
+                fatherName: '—',
+                motherName: '—',
+                address: '—',
+                mobileNumber: '—',
+                photoUrl: null,
+              },
+              attendance: { workingDays: 210, presentDays: 196, absentDays: 6, leaveDays: 6, percentage: 92.3 },
+              subjects: (fallbackColumns || []).map((c:any) => ({
+                subjectName: c.subjectName || c.label || 'Subject',
+                term1Grade: String(firstRow?.[1]?.[c.key] ?? '—'),
+                term1Observation: 'Good progress',
+                term2Grade: '—',
+                term2Observation: '—',
+              })),
+              stars: { academicPerformance: 4, improvement: 4, consistency: 4, participation: 4, homework: 4 },
+              summary: { grandTotal: '—', percentage: '—', grade: '—', rank: '—' },
+              classTeacherRemarks: '',
+              urduObservation: '',
+            });
+          }}
+          className="rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-black text-white shadow"
+        >
+          Preview New Card
+        </button>
+      </div>
+    </div>
+
+    {previewStudent && (
+      <div
+        className="fixed inset-0 z-[200] flex items-start justify-center overflow-auto bg-slate-950/70 p-3 backdrop-blur-sm"
+        onClick={() => setPreviewStudent(null)}
+      >
+        <div className="my-4 w-full max-w-[1200px]" onClick={(e) => e.stopPropagation()}>
+          <div className="mb-2 flex items-center justify-between rounded-xl bg-white px-4 py-2 shadow">
+            <b className="text-sm">New Card Preview · Beta</b>
+            <button
+              type="button"
+              onClick={() => setPreviewStudent(null)}
+              className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-black text-white"
+            >
+              Close
+            </button>
+          </div>
+          <ProgressCardRenderer
+            schoolName="NATIONAL HIGH SCHOOL, TALODA"
+            schoolTrust="Bharat Vividh Vidhayak Karya Samiti, Nandurbar"
+            schoolLogoUrl={null}
+            academicYear="2025-26"
+            pageMode="two_side"
+            student={previewStudent.student}
+            attendance={previewStudent.attendance}
+            subjects={previewStudent.subjects}
+            stars={previewStudent.stars}
+            summary={previewStudent.summary}
+            classTeacherRemarks={previewStudent.classTeacherRemarks}
+            urduObservation={previewStudent.urduObservation}
+          />
+        </div>
+      </div>
+    )}
+  </div>
 }
 
 export default function TeacherResultManagement({context,loading,error,view,onNavigate}:Props){
