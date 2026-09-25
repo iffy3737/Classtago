@@ -700,10 +700,11 @@ const MasterProgressCardTemplateEditor: React.FC<MasterProgressCardTemplateEdito
       {/* ===== Design Modal ===== */}
       {designModalOpen && (
         <div
-          className="fixed inset-0 z-[300] flex items-start justify-center overflow-auto bg-slate-950/80 p-3 backdrop-blur-sm"
+          className="fixed inset-0 z-[9999] flex items-start justify-center overflow-auto bg-slate-950/85 p-3 backdrop-blur-md"
+          style={{ isolation: 'isolate' }}
           onClick={() => setDesignModalOpen(false)}
         >
-          <div className="my-4 w-full max-w-3xl rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="relative z-[10000] my-4 w-full max-w-3xl rounded-2xl bg-white shadow-2xl ring-4 ring-white/20" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between rounded-t-2xl bg-gradient-to-r from-fuchsia-600 to-indigo-600 px-5 py-4 text-white">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5" />
