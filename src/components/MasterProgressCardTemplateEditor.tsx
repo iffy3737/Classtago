@@ -26,6 +26,8 @@ import {
 } from 'lucide-react';
 import { Language, User } from '../types';
 import { supabase } from '../lib/supabase';
+import ProgressCardGallery from '../modules/teacherResultFresh/progressCardTemplates/ProgressCardGallery';
+import { DESIGNS } from '../modules/teacherResultFresh/progressCardTemplates/designs';
 import { FALLBACK_LANGUAGE_CATALOGUE, LanguageOption, getLanguageOption, languageDisplayName, resolvedDirection } from '../lib/languageCatalog';
 import DocumentLanguageStudio from './DocumentLanguageStudio';
 import {
@@ -507,6 +509,8 @@ const MasterProgressCardTemplateEditor: React.FC<MasterProgressCardTemplateEdito
   const [side, setSide] = useState<PreviewSide>('front');
   const [previewMode, setPreviewMode] = useState<PreviewMode>('live');
   const [designModalOpen, setDesignModalOpen] = useState(false);
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [appliedDesignId, setAppliedDesignId] = useState<string>('d01');
   const [editing, setEditing] = useState(false);
   const [cardEditing, setCardEditing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -653,7 +657,7 @@ const MasterProgressCardTemplateEditor: React.FC<MasterProgressCardTemplateEdito
       <div className="edx-dark-contrast-surface rounded-3xl border border-cyan-400/20 bg-[radial-gradient(circle_at_10%_0%,rgba(34,211,238,.18),transparent_32%),linear-gradient(135deg,#020617,#0f172a_58%,#083344)] p-6 text-white shadow-xl">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div><div className="flex flex-wrap items-center gap-2"><TemplateBadge tone="cyan">Clerk Master</TemplateBadge><TemplateBadge tone="emerald">Classes 1–8</TemplateBadge><TemplateBadge tone="slate">A4 Landscape</TemplateBadge><TemplateBadge tone="cyan">{languageDisplayName(primaryLanguage)}</TemplateBadge>{config.languages.secondaryEnabled&&<TemplateBadge tone="slate">+ {languageDisplayName(secondaryLanguage)}</TemplateBadge>}</div><h2 className="mt-3 flex items-center gap-2 text-2xl font-black"><LayoutTemplate className="h-6 w-6 text-cyan-300"/>Master Progress Card Templates</h2><p className="mt-2 max-w-3xl text-xs leading-6 text-slate-300">One common Front Page with two official back structures. This is the master definition that the Class Teacher Progress Card workflow will consume later; marks are not entered here.</p></div>
-          <div className="flex flex-wrap items-center gap-2"><div className={`rounded-xl border px-3 py-2 text-[10px] font-black uppercase ${status==='saved'?'border-emerald-400/30 bg-emerald-400/10 text-emerald-200':status==='unsaved'?'border-amber-400/30 bg-amber-400/10 text-amber-200':'border-slate-400/30 bg-white/5 text-slate-300'}`}>{status==='saved'?'Cloud Saved':status==='unsaved'?'Unsaved Changes':'Local / Preview Cache'}</div><button type="button" onClick={()=>{setEditing(v=>!v);setCardEditing(false);}} className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-black"><Pencil className="h-4 w-4"/>{editing?'Close Master':'Edit Master'}</button><button type="button" onClick={()=>{setCardEditing(v=>!v);setEditing(false);setPreviewMode('live');}} className="inline-flex items-center gap-2 rounded-xl border border-amber-300/30 bg-amber-300/10 px-4 py-2.5 text-xs font-black text-amber-100"><Pencil className="h-4 w-4"/>{cardEditing?'Close Card Editor':'Edit Card'}</button><button type="button" onClick={()=>setDesignModalOpen(true)} className="inline-flex items-center gap-2 rounded-xl border border-fuchsia-300/30 bg-fuchsia-300/10 px-4 py-2.5 text-xs font-black text-fuchsia-100"><Sparkles className="h-4 w-4"/>Design</button><button type="button" onClick={()=>void saveTemplate()} disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-4 py-2.5 text-xs font-black text-slate-950 disabled:opacity-50">{saving?<Loader2 className="h-4 w-4 animate-spin"/>:<Save className="h-4 w-4"/>}Save Master Template</button></div>
+          <div className="flex flex-wrap items-center gap-2"><div className={`rounded-xl border px-3 py-2 text-[10px] font-black uppercase ${status==='saved'?'border-emerald-400/30 bg-emerald-400/10 text-emerald-200':status==='unsaved'?'border-amber-400/30 bg-amber-400/10 text-amber-200':'border-slate-400/30 bg-white/5 text-slate-300'}`}>{status==='saved'?'Cloud Saved':status==='unsaved'?'Unsaved Changes':'Local / Preview Cache'}</div><button type="button" onClick={()=>{setEditing(v=>!v);setCardEditing(false);}} className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-black"><Pencil className="h-4 w-4"/>{editing?'Close Master':'Edit Master'}</button><button type="button" onClick={()=>{setCardEditing(v=>!v);setEditing(false);setPreviewMode('live');}} className="inline-flex items-center gap-2 rounded-xl border border-amber-300/30 bg-amber-300/10 px-4 py-2.5 text-xs font-black text-amber-100"><Pencil className="h-4 w-4"/>{cardEditing?'Close Card Editor':'Edit Card'}</button><button type="button" onClick={()=>setDesignModalOpen(true)} className="inline-flex items-center gap-2 rounded-xl border border-fuchsia-300/30 bg-fuchsia-300/10 px-4 py-2.5 text-xs font-black text-fuchsia-100"><Sparkles className="h-4 w-4"/>Design</button><button type="button" onClick={()=>setGalleryOpen(true)} className="inline-flex items-center gap-2 rounded-xl border border-emerald-300/30 bg-emerald-300/10 px-4 py-2.5 text-xs font-black text-emerald-100"><Sparkles className="h-4 w-4"/>Browse {DESIGNS.length} Designs</button><button type="button" onClick={()=>void saveTemplate()} disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-4 py-2.5 text-xs font-black text-slate-950 disabled:opacity-50">{saving?<Loader2 className="h-4 w-4 animate-spin"/>:<Save className="h-4 w-4"/>}Save Master Template</button></div>
         </div>
       </div>
 
@@ -789,6 +793,57 @@ const MasterProgressCardTemplateEditor: React.FC<MasterProgressCardTemplateEdito
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+    </div>
+
+      {/* ===== Full Gallery Modal (50 designs) ===== */}
+      {galleryOpen && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-start justify-center overflow-auto bg-slate-950/90 p-3 backdrop-blur-md"
+          style={{ isolation: 'isolate' }}
+          onClick={() => setGalleryOpen(false)}
+        >
+          <div
+            className="relative z-[10000] my-4 w-full max-w-[1400px] rounded-2xl bg-white p-4 shadow-2xl ring-4 ring-white/20"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-3 flex items-center justify-between">
+              <div>
+                <div className="text-lg font-black text-slate-900">Choose Your Design</div>
+                <div className="text-[11px] text-slate-500">Preview and apply · {DESIGNS.length} premium templates</div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setGalleryOpen(false)}
+                className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-black text-white"
+              >
+                Close
+              </button>
+            </div>
+            <ProgressCardGallery
+              pageMode={config.pageMode}
+              appliedDesignId={appliedDesignId}
+              onApply={(design) => {
+                setAppliedDesignId(design.id);
+                setConfig((prev: any) => ({
+                  ...prev,
+                  design: {
+                    ...(prev.design || {}),
+                    templateName: design.name,
+                    primaryColor: design.primaryColor,
+                    accentColor: design.accentColor,
+                    secondaryColor: design.secondaryColor,
+                    backgroundColor: design.backgroundColor,
+                  },
+                }));
+                setStatus('unsaved');
+              }}
+              schoolName={config.front.schoolName}
+              schoolTrust={config.front.trustName}
+              academicYear={config.front.academicYear}
+            />
           </div>
         </div>
       )}
