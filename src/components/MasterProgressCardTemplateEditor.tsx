@@ -98,6 +98,7 @@ type TemplateConfig = {
   structureVersion: string;
   pageSize: 'A4';
   orientation: 'Landscape';
+  pageMode: 'one_side' | 'two_side';
   documentLanguageProfile: DocumentLanguageProfile;
   languages: {
     primaryCode: string;
@@ -152,6 +153,7 @@ const DEFAULT_CONFIG: TemplateConfig = {
   structureVersion: 'r13-progress-card-multilingual-resultbook-v4',
   pageSize: 'A4',
   orientation: 'Landscape',
+  pageMode: 'two_side',
   documentLanguageProfile: createDefaultProgressCardLanguageProfile(),
   languages: {
     primaryCode: 'en',
@@ -252,6 +254,7 @@ const mergeConfig = (raw: any): TemplateConfig => {
     ...base,
     ...raw,
     structureVersion: base.structureVersion,
+    pageMode: raw?.pageMode === 'one_side' || raw?.pageMode === 'two_side' ? raw.pageMode : base.pageMode,
     documentLanguageProfile: raw.documentLanguageProfile ? normalizeDocumentLanguageProfile(raw.documentLanguageProfile, 'progress-card', [...PROGRESS_CARD_LANGUAGE_SECTIONS], 'en') : createDefaultProgressCardLanguageProfile(),
     languages: { ...base.languages, ...rawLanguages },
     front: {
@@ -617,7 +620,7 @@ const MasterProgressCardTemplateEditor: React.FC<MasterProgressCardTemplateEdito
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between"><div className="flex flex-wrap items-center gap-2"><button type="button" onClick={()=>setSide('front')} className={`rounded-xl px-4 py-2 text-xs font-black ${side==='front'?'bg-slate-950 text-white':'bg-slate-100 text-slate-600'}`}>Common Front</button><button type="button" onClick={()=>setSide('back')} className={`rounded-xl px-4 py-2 text-xs font-black ${side==='back'?'bg-slate-950 text-white':'bg-slate-100 text-slate-600'}`}>{selectedType==='type1'?'Type 1 Back':'Type 2 Back'}</button><div className="mx-1 h-6 w-px bg-slate-200"/><button type="button" onClick={()=>setPreviewMode('live')} className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-black ${previewMode==='live'?'bg-cyan-600 text-white':'bg-slate-100 text-slate-600'}`}><Eye className="h-4 w-4"/>Live Template</button><button type="button" onClick={()=>setPreviewMode('reference')} className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-black ${previewMode==='reference'?'bg-cyan-600 text-white':'bg-slate-100 text-slate-600'}`}><FileImage className="h-4 w-4"/>Reference Image</button></div><div className="flex items-center gap-2 text-[10px] font-bold text-slate-500"><ShieldCheck className="h-4 w-4 text-emerald-600"/>Mapping locked to approved classes</div></div>
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between"><div className="flex flex-wrap items-center gap-2"><button type="button" onClick={()=>setSide('front')} className={`rounded-xl px-4 py-2 text-xs font-black ${side==='front'?'bg-slate-950 text-white':'bg-slate-100 text-slate-600'}`}>Common Front</button><button type="button" onClick={()=>setSide('back')} className={`rounded-xl px-4 py-2 text-xs font-black ${side==='back'?'bg-slate-950 text-white':'bg-slate-100 text-slate-600'}`}>{selectedType==='type1'?'Type 1 Back':'Type 2 Back'}</button><div className="mx-1 h-6 w-px bg-slate-200"/><div className="flex items-center gap-1 rounded-xl bg-indigo-50 p-1"><button type="button" onClick={()=>{setConfig(prev=>({...prev,pageMode:'one_side'}));setStatus('unsaved');}} className={`rounded-lg px-3 py-1.5 text-xs font-black ${config.pageMode==='one_side'?'bg-indigo-600 text-white':'bg-white text-slate-600'}`}>One Side</button><button type="button" onClick={()=>{setConfig(prev=>({...prev,pageMode:'two_side'}));setStatus('unsaved');}} className={`rounded-lg px-3 py-1.5 text-xs font-black ${config.pageMode==='two_side'?'bg-indigo-600 text-white':'bg-white text-slate-600'}`}>Two Side</button></div><div className="mx-1 h-6 w-px bg-slate-200"/><button type="button" onClick={()=>setPreviewMode('live')} className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-black ${previewMode==='live'?'bg-cyan-600 text-white':'bg-slate-100 text-slate-600'}`}><Eye className="h-4 w-4"/>Live Template</button><button type="button" onClick={()=>setPreviewMode('reference')} className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-black ${previewMode==='reference'?'bg-cyan-600 text-white':'bg-slate-100 text-slate-600'}`}><FileImage className="h-4 w-4"/>Reference Image</button></div><div className="flex items-center gap-2 text-[10px] font-bold text-slate-500"><ShieldCheck className="h-4 w-4 text-emerald-600"/>Mapping locked to approved classes</div></div>
       </div>
 
       <DocumentLanguageStudio
