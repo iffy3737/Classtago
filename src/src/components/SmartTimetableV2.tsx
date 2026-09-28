@@ -1383,180 +1383,213 @@ export default function SmartTimetableV2({
           return name.includes("practical") || name.includes("lab") || name.includes("laboratory") || name.includes("sports") || name.includes("pe") || name.includes("physical") || rem.includes("double") || rem.includes("practical");
         };
 
-        // Run assignment
-        flatTasks.forEach((task) => {
-          let bestDay = "";
-          let bestPeriod = -1;
-          let bestScore = -Infinity;
-          let bestRoom = "";
+        // Run assignment with multi-attempt retry loop
+        let bestGridSnapshot: V2TimetableCell[] = [];
+        let bestFilledCount = -1;
+        const MAX_ATTEMPTS = 15;
 
-          days.forEach((day) => {
-            const maxPeriodsForDay = setup.weeklyPeriodSettings?.[day] !== undefined
-              ? setup.weeklyPeriodSettings[day]
-              : totalPeriods;
+        for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+          generatedGrid.length = 0;
 
-            const currentDayCount = getSubjectCountForDay(task.classKey, task.subjectName, day);
+          let taskOrder = flatTasks.slice();
+          if (attempt > 0) {
+            const ctTasks = taskOrder.filter((t) => t.isClassTeacher);
+            const otherTasks = taskOrder.filter((t) => !t.isClassTeacher);
+            for (let i = otherTasks.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              const tmp = otherTasks[i];
+              otherTasks[i] = otherTasks[j];
+              otherTasks[j] = tmp;
+            }
+            taskOrder = ctTasks.concat(otherTasks);
+          }
 
-            for (let p = 1; p <= maxPeriodsForDay; p++) {
-              // Hard constraints
-              if (isClassBusy(task.classKey, day, p)) continue;
-              if (isTeacherBusy(task.teacherName, day, p)) continue;
+          taskOrder.forEach((task) => {
+            let bestDay = "";
+            let bestPeriod = -1;
+            let bestScore = -Infinity;
+            let bestRoom = "";
 
-              // Calculate allowed max periods per day dynamically
-              const isDoubleAllowed = isDoublePeriodAllowedSubject(task.subjectName, task.remarks);
-              let allowedMaxPerDay = 1;
-              if (task.totalPeriodsForSubject > days.length) {
-                allowedMaxPerDay = Math.ceil(task.totalPeriodsForSubject / days.length);
-              } else if (isDoubleAllowed) {
-                allowedMaxPerDay = 2;
-              }
+            days.forEach((day) => {
+              const maxPeriodsForDay = setup.weeklyPeriodSettings?.[day] !== undefined
+                ? setup.weeklyPeriodSettings[day]
+                : totalPeriods;
 
-              if (currentDayCount >= allowedMaxPerDay) continue;
+              const currentDayCount = getSubjectCountForDay(task.classKey, task.subjectName, day);
 
-              const hasAdjacent = isConsecutiveSlot(task.classKey, task.subjectName, day, p);
-              if (currentDayCount > 0 && hasAdjacent && !isDoubleAllowed) {
-                continue; // Consecutive repeat not allowed
-              }
+              for (let p = 1; p <= maxPeriodsForDay; p++) {
+                // Hard constraints
+                if (isClassBusy(task.classKey, day, p)) continue;
+                if (isTeacherBusy(task.teacherName, day, p)) continue;
 
-              // Find an available room
-              let availableRoom = "";
-              for (const r of roomsList) {
-                if (!isRoomBusy(r, day, p)) {
-                  availableRoom = r;
-                  break;
+                // Calculate allowed max periods per day dynamically
+                const isDoubleAllowed = isDoublePeriodAllowedSubject(task.subjectName, task.remarks);
+                let allowedMaxPerDay = 1;
+                if (task.totalPeriodsForSubject > days.length) {
+                  allowedMaxPerDay = Math.ceil(task.totalPeriodsForSubject / days.length);
+                } else if (isDoubleAllowed) {
+                  allowedMaxPerDay = 2;
                 }
-              }
-              if (!availableRoom) {
-                availableRoom = ""; // Fallback if all rooms busy
-              }
 
-              // Heuristics / Scoring
-              let score = 0;
+                if (currentDayCount >= allowedMaxPerDay) continue;
 
-              // Spreading subjects across the week
-              if (currentDayCount === 0) {
-                score += 300; // Big spreading bonus
-              } else {
-                const otherDaysFree = days.some(d => getSubjectCountForDay(task.classKey, task.subjectName, d) === 0);
-                if (otherDaysFree) {
-                  score -= 600; // Penalize stacking on same day
+                const hasAdjacent = isConsecutiveSlot(task.classKey, task.subjectName, day, p);
+                if (currentDayCount > 0 && hasAdjacent && !isDoubleAllowed) {
+                  continue; // Consecutive repeat not allowed
+                }
+
+                // Find an available room
+                let availableRoom = "";
+                for (const r of roomsList) {
+                  if (!isRoomBusy(r, day, p)) {
+                    availableRoom = r;
+                    break;
+                  }
+                }
+                if (!availableRoom) {
+                  availableRoom = ""; // Fallback if all rooms busy
+                }
+
+                // Heuristics / Scoring
+                let score = 0;
+
+                // Spreading subjects across the week
+                if (currentDayCount === 0) {
+                  score += 300; // Big spreading bonus
                 } else {
-                  if (isDoubleAllowed && hasAdjacent) {
-                    score += 100;
-                  } else if (!isDoubleAllowed) {
-                    score -= 200;
-                    if (hasAdjacent) score -= 300;
+                  const otherDaysFree = days.some(d => getSubjectCountForDay(task.classKey, task.subjectName, d) === 0);
+                  if (otherDaysFree) {
+                    score -= 600; // Penalize stacking on same day
+                  } else {
+                    if (isDoubleAllowed && hasAdjacent) {
+                      score += 100;
+                    } else if (!isDoubleAllowed) {
+                      score -= 200;
+                      if (hasAdjacent) score -= 300;
+                    }
                   }
                 }
-              }
 
-              // Selected Class Teacher subject: strong first-period priority on every
-              // working day, while all existing hard clash/capacity rules remain intact.
-              if (task.isClassTeacher) {
-                if (p === 1) score += 5000;
-                else score -= 650;
-              }
+                // Selected Class Teacher subject: strong first-period priority on every
+                // working day, while all existing hard clash/capacity rules remain intact.
+                if (task.isClassTeacher) {
+                  if (p === 1) score += 5000;
+                  else score -= 650;
+                }
 
-              // Heavy Subjects and Light Subjects placement rules
-              const isHeavy = isHeavySubject(task.subjectName);
-              const isLight = isLightSubject(task.subjectName);
+                // Heavy Subjects and Light Subjects placement rules
+                const isHeavy = isHeavySubject(task.subjectName);
+                const isLight = isLightSubject(task.subjectName);
 
-              if (isHeavy) {
-                if (p <= 4) score += 80; // Morning preference
-                if (p >= maxPeriodsForDay - 1) score -= 150; // Avoid last periods
+                if (isHeavy) {
+                  if (p <= 4) score += 80; // Morning preference
+                  if (p >= maxPeriodsForDay - 1) score -= 150; // Avoid last periods
 
-                // Avoid consecutive heavy subjects
-                const hasAdjacentHeavy = generatedGrid.some(cell => 
-                  formatClassDiv(cell.className, cell.division) === task.classKey && 
-                  cell.day === day && 
-                  (cell.period === p - 1 || cell.period === p + 1) && 
-                  isHeavySubject(cell.subjectName)
-                );
-                if (hasAdjacentHeavy) score -= 100;
+                  // Avoid consecutive heavy subjects
+                  const hasAdjacentHeavy = generatedGrid.some(cell => 
+                    formatClassDiv(cell.className, cell.division) === task.classKey && 
+                    cell.day === day && 
+                    (cell.period === p - 1 || cell.period === p + 1) && 
+                    isHeavySubject(cell.subjectName)
+                  );
+                  if (hasAdjacentHeavy) score -= 100;
 
-                const heavyOnDay = generatedGrid.filter(cell => 
-                  formatClassDiv(cell.className, cell.division) === task.classKey && 
-                  cell.day === day && 
-                  isHeavySubject(cell.subjectName)
-                ).length;
-                if (heavyOnDay >= 3) score -= 120 * (heavyOnDay - 2);
-              } else if (isLight) {
-                if (p >= 5) score += 80; // Afternoon preference
-                if (p <= 2) score -= 80; // Avoid morning
+                  const heavyOnDay = generatedGrid.filter(cell => 
+                    formatClassDiv(cell.className, cell.division) === task.classKey && 
+                    cell.day === day && 
+                    isHeavySubject(cell.subjectName)
+                  ).length;
+                  if (heavyOnDay >= 3) score -= 120 * (heavyOnDay - 2);
+                } else if (isLight) {
+                  if (p >= 5) score += 80; // Afternoon preference
+                  if (p <= 2) score -= 80; // Avoid morning
 
-                const lightOnDay = generatedGrid.filter(cell => 
-                  formatClassDiv(cell.className, cell.division) === task.classKey && 
-                  cell.day === day && 
-                  isLightSubject(cell.subjectName)
-                ).length;
-                if (lightOnDay >= 1) score -= 100 * lightOnDay;
-              }
+                  const lightOnDay = generatedGrid.filter(cell => 
+                    formatClassDiv(cell.className, cell.division) === task.classKey && 
+                    cell.day === day && 
+                    isLightSubject(cell.subjectName)
+                  ).length;
+                  if (lightOnDay >= 1) score -= 100 * lightOnDay;
+                }
 
-              // Teacher Workload distribution & consecutive period checks
-              if (task.teacherName && task.teacherName !== "Unassigned") {
-                const adjBefore1 = generatedGrid.some(c => c.teacherName === task.teacherName && c.day === day && c.period === p - 1);
-                const adjBefore2 = generatedGrid.some(c => c.teacherName === task.teacherName && c.day === day && c.period === p - 2);
-                const adjBefore3 = generatedGrid.some(c => c.teacherName === task.teacherName && c.day === day && c.period === p - 3);
+                // Teacher Workload distribution & consecutive period checks
+                if (task.teacherName && task.teacherName !== "Unassigned") {
+                  const adjBefore1 = generatedGrid.some(c => c.teacherName === task.teacherName && c.day === day && c.period === p - 1);
+                  const adjBefore2 = generatedGrid.some(c => c.teacherName === task.teacherName && c.day === day && c.period === p - 2);
+                  const adjBefore3 = generatedGrid.some(c => c.teacherName === task.teacherName && c.day === day && c.period === p - 3);
 
-                const adjAfter1 = generatedGrid.some(c => c.teacherName === task.teacherName && c.day === day && c.period === p + 1);
-                const adjAfter2 = generatedGrid.some(c => c.teacherName === task.teacherName && c.day === day && c.period === p + 2);
-                const adjAfter3 = generatedGrid.some(c => c.teacherName === task.teacherName && c.day === day && c.period === p + 3);
+                  const adjAfter1 = generatedGrid.some(c => c.teacherName === task.teacherName && c.day === day && c.period === p + 1);
+                  const adjAfter2 = generatedGrid.some(c => c.teacherName === task.teacherName && c.day === day && c.period === p + 2);
+                  const adjAfter3 = generatedGrid.some(c => c.teacherName === task.teacherName && c.day === day && c.period === p + 3);
 
-                let consec = 0;
-                if (adjBefore1) {
-                  consec++;
-                  if (adjBefore2) {
+                  let consec = 0;
+                  if (adjBefore1) {
                     consec++;
-                    if (adjBefore3) consec++;
+                    if (adjBefore2) {
+                      consec++;
+                      if (adjBefore3) consec++;
+                    }
                   }
-                }
-                if (adjAfter1) {
-                  consec++;
-                  if (adjAfter2) {
+                  if (adjAfter1) {
                     consec++;
-                    if (adjAfter3) consec++;
+                    if (adjAfter2) {
+                      consec++;
+                      if (adjAfter3) consec++;
+                    }
+                  }
+
+                  if (consec >= 3) {
+                    score -= 300;
+                  } else if (consec >= 2) {
+                    score -= 120;
+                  } else if (consec >= 1) {
+                    score -= 30;
+                  }
+
+                  const teachDaily = generatedGrid.filter(c => c.teacherName === task.teacherName && c.day === day).length;
+                  if (teachDaily >= 5) {
+                    score -= 250;
+                  } else if (teachDaily >= 4) {
+                    score -= 80;
                   }
                 }
 
-                if (consec >= 3) {
-                  score -= 300;
-                } else if (consec >= 2) {
-                  score -= 120;
-                } else if (consec >= 1) {
-                  score -= 30;
-                }
-
-                const teachDaily = generatedGrid.filter(c => c.teacherName === task.teacherName && c.day === day).length;
-                if (teachDaily >= 5) {
-                  score -= 250;
-                } else if (teachDaily >= 4) {
-                  score -= 80;
+                if (score > bestScore) {
+                  bestScore = score;
+                  bestDay = day;
+                  bestPeriod = p;
+                  bestRoom = availableRoom;
                 }
               }
+            });
 
-              if (score > bestScore) {
-                bestScore = score;
-                bestDay = day;
-                bestPeriod = p;
-                bestRoom = availableRoom;
-              }
+            if (bestDay && bestPeriod !== -1) {
+              generatedGrid.push({
+                id: `cell_${task.classKey}_${bestDay}_${bestPeriod}`,
+                className: task.className,
+                division: task.divisionName,
+                day: bestDay,
+                period: bestPeriod,
+                subjectName: task.subjectName,
+                teacherName: task.teacherName,
+                roomNumber: bestRoom,
+                isLocked: false,
+              });
             }
           });
 
-          if (bestDay && bestPeriod !== -1) {
-            generatedGrid.push({
-              id: `cell_${task.classKey}_${bestDay}_${bestPeriod}`,
-              className: task.className,
-              division: task.divisionName,
-              day: bestDay,
-              period: bestPeriod,
-              subjectName: task.subjectName,
-              teacherName: task.teacherName,
-              roomNumber: bestRoom,
-              isLocked: false,
-            });
+          const filledNow = generatedGrid.length;
+          if (filledNow > bestFilledCount) {
+            bestFilledCount = filledNow;
+            bestGridSnapshot = generatedGrid.slice();
           }
-        });
+          if (filledNow === flatTasks.length) break;
+        }
+
+        generatedGrid.length = 0;
+        for (const cell of bestGridSnapshot) {
+          generatedGrid.push(cell);
+        }
 
         // R33.28 single-entry rule: leave unallocated capacity empty.
         // Never invent Library/Sports/Lab/Remedial subjects that are absent from Teaching Assignments.
