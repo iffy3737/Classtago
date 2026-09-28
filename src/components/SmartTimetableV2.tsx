@@ -1764,6 +1764,17 @@ export default function SmartTimetableV2({
             if (!grouped[key]) grouped[key] = { className: s.className, subjectName: s.subjectName, teacherName: s.teacherName, count: 1 };
             else grouped[key].count += 1;
           });
+          const diagLines = [];
+          diagLines.push("Total Tasks: " + flatTasks.length);
+          diagLines.push("Placed: " + generatedGrid.length);
+          diagLines.push("Skipped: " + skippedTasks.length);
+          diagLines.push("Attempts: " + MAX_ATTEMPTS);
+          diagLines.push("");
+          diagLines.push("Skipped Details:");
+          Object.values(grouped).forEach((g) => {
+            diagLines.push(g.teacherName + " | " + g.subjectName + " | " + g.className);
+          });
+          alert(diagLines.join("\n"));
           const warnings = Object.values(grouped).map((g) => g.teacherName + ' - ' + g.subjectName + ' (' + g.className + '): ' + g.count + ' period(s) skipped (no available slot)');
           setValidationErrors(warnings);
           setShowValidation(true);
