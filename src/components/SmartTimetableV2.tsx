@@ -1446,7 +1446,7 @@ export default function SmartTimetableV2({
         };
 
         // Run assignment
-        const MAX_ATTEMPTS = 20;
+        const MAX_ATTEMPTS = 100;
         let bestGrid: V2TimetableCell[] = [];
         let bestSkipped: any[] = [];
         let bestAttempt = 0;
