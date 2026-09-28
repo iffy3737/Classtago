@@ -1386,7 +1386,7 @@ export default function SmartTimetableV2({
         // Run assignment with multi-attempt retry loop
         let bestGridSnapshot: V2TimetableCell[] = [];
         let bestFilledCount = -1;
-        const MAX_ATTEMPTS = 15;
+        const MAX_ATTEMPTS = 100;
 
         for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
           generatedGrid.length = 0;
