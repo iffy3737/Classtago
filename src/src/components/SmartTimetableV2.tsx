@@ -1591,6 +1591,19 @@ export default function SmartTimetableV2({
           generatedGrid.push(cell);
         }
 
+        // DIAGNOSTIC
+        const diagLines = [];
+        diagLines.push("Total Tasks: " + flatTasks.length);
+        diagLines.push("Placed: " + generatedGrid.length);
+        diagLines.push("Skipped: " + skippedTasks.length);
+        diagLines.push("Max Attempts: " + MAX_ATTEMPTS);
+        diagLines.push("");
+        diagLines.push("Skipped Details:");
+        skippedTasks.slice(0, 10).forEach((s) => {
+          diagLines.push(s.teacherName + " | " + s.subjectName + " | " + s.className);
+        });
+        alert(diagLines.join("\n"));
+
         // R33.28 single-entry rule: leave unallocated capacity empty.
         // Never invent Library/Sports/Lab/Remedial subjects that are absent from Teaching Assignments.
 
