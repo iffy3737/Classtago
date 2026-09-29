@@ -3976,7 +3976,7 @@ export default function SmartTimetableV2({
                 <button
                   onClick={handlePublishToTeacherAccounts}
                   disabled={publishingToTeachers || !timetable.length}
-                  className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 border border-emerald-500 text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 cursor-pointer shadow-sm"
+                  className="bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-900 disabled:border-emerald-700 disabled:text-emerald-300 disabled:cursor-not-allowed border border-emerald-500 text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 cursor-pointer shadow-sm"
                   title="Publish the current Headmaster timetable to Teacher accounts"
                 >
                   <Upload className="w-4 h-4" />
