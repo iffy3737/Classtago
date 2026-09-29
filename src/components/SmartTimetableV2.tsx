@@ -4082,7 +4082,7 @@ export default function SmartTimetableV2({
                 <button
                   onClick={handlePublishToTeacherAccounts}
                   disabled={publishingToTeachers || !timetable.length}
-                  className="bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-900 disabled:border-emerald-700 disabled:text-emerald-300 disabled:cursor-not-allowed border border-emerald-500 text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 cursor-pointer shadow-sm"
+                  className={`${publishingToTeachers || !timetable.length ? 'bg-emerald-900 border-emerald-700 text-emerald-300 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-500 border-emerald-500 text-white cursor-pointer'} border font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-sm`}
                   title="Publish the current Headmaster timetable to Teacher accounts"
                 >
                   <Upload className="w-4 h-4" />
@@ -4092,7 +4092,7 @@ export default function SmartTimetableV2({
                 <button
                   onClick={handleSaveDraft}
                   disabled={savingDraft || !timetable.length}
-                  className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-900 disabled:border-blue-700 disabled:text-blue-300 disabled:cursor-not-allowed border border-blue-500 text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 cursor-pointer shadow-sm"
+                  className={`${savingDraft || !timetable.length ? 'bg-blue-900 border-blue-700 text-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 border-blue-500 text-white cursor-pointer'} border font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-sm`}
                   title="Save current timetable as a draft"
                 >
                   <Save className="w-4 h-4" />
@@ -4171,7 +4171,7 @@ export default function SmartTimetableV2({
                               </div>
                               <div className="flex flex-wrap items-center gap-2">
                                 <button onClick={() => handleLoadDraft(d)} className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-blue-500">Load</button>
-                                <button onClick={() => handlePublishDraft(d)} disabled={publishingToTeachers} className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-500 disabled:opacity-40">Publish</button>
+                                <button onClick={() => handlePublishDraft(d)} disabled={publishingToTeachers} className={`rounded-lg px-3 py-1.5 text-xs font-bold ${publishingToTeachers ? 'bg-emerald-900 text-emerald-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer'}`}>Publish</button>
                                 <button onClick={() => handleDeleteDraft(d.id)} className="rounded-lg bg-red-700 px-3 py-1.5 text-xs font-bold text-white hover:bg-red-600">Delete</button>
                               </div>
                             </div>
