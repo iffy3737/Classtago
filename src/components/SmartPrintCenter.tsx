@@ -385,7 +385,8 @@ export default function SmartPrintCenter() {
       });
     } catch (error) {
       console.error(error);
-      window.alert('PDF could not be generated. Please use Print and choose Save as PDF in the printer dialog.');
+      const proceed = window.confirm('PDF auto-generation failed on this device.\n\nOpen print dialog and choose "Save as PDF"?');
+      if (proceed) { runNativePrint(); }
     } finally {
       frame?.remove();
       setBusy(false);
