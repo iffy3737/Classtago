@@ -1446,7 +1446,7 @@ export default function SmartTimetableV2({
         };
 
         // Run assignment
-        const MAX_ATTEMPTS = 100;
+        const MAX_ATTEMPTS = 200;
         let bestGrid: V2TimetableCell[] = [];
         let bestSkipped: any[] = [];
         let bestAttempt = 0;
@@ -1644,11 +1644,11 @@ export default function SmartTimetableV2({
         });
 
         // --- Option B: Backtracking repair pass (safe snapshot rollback) ---
-        const repairDeadline = Date.now() + 180000;
+        const repairDeadline = Date.now() + 300000;
 
         const tryPlaceInGrid = (task: any, depth: number): boolean => {
           if (Date.now() > repairDeadline) return false;
-          if (depth > 200) return false;
+          if (depth > 500) return false;
           const isDoubleAllowed = isDoublePeriodAllowedSubject(task.subjectName, task.remarks);
           for (const day of days) {
             const maxPeriodsForDay = setup.weeklyPeriodSettings?.[day] !== undefined
