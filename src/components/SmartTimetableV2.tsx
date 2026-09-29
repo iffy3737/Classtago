@@ -1053,6 +1053,10 @@ export default function SmartTimetableV2({
   // Auto-Save notification
   const [showAutoSaveAlert, setShowAutoSaveAlert] = useState(false);
   const [publishingToTeachers, setPublishingToTeachers] = useState(false);
+  const [savingDraft, setSavingDraft] = useState(false);
+  const [draftsList, setDraftsList] = useState<any[]>([]);
+  const [showDraftsModal, setShowDraftsModal] = useState(false);
+  const [selectedDrafts, setSelectedDrafts] = useState<string[]>([]);
 
   // Trigger Save on state change
   const triggerAutoSave = (updatedGrid: V2TimetableCell[]) => {
@@ -1915,6 +1919,108 @@ export default function SmartTimetableV2({
     } finally {
       setPublishingToTeachers(false);
     }
+  };
+
+  // ==================== TIMETABLE DRAFTS ====================
+  const handleLoadDrafts = async () => {
+    try {
+      const auth = await supabase.auth.getUser();
+      const uid = auth.data.user?.id;
+      const membership = await supabase.from('user_school_memberships').select('school_id').eq('user_id', uid).eq('is_active', true).maybeSingle();
+      const sid = String(membership.data?.school_id || '');
+      if (!sid) return;
+      const { data, error } = await supabase.from('edunixo_timetable_drafts').select('*').eq('school_id', sid).eq('academic_year', setup.academicYear).order('created_at', { ascending: false });
+      if (error) throw error;
+      setDraftsList(data || []);
+    } catch (e) { console.error(e); }
+  };
+
+  const handleSaveDraft = async () => {
+    if (!timetable.length) { alert("Generate the timetable first."); return; }
+    const versionName = window.prompt("Enter a name for this version:", "Version " + new Date().toLocaleString());
+    if (!versionName) return;
+    setSavingDraft(true);
+    try {
+      const auth = await supabase.auth.getUser();
+      const uid = auth.data.user?.id;
+      const membership = await supabase.from('user_school_memberships').select('school_id').eq('user_id', uid).eq('is_active', true).maybeSingle();
+      const sid = String(membership.data?.school_id || '');
+      if (!sid) throw new Error('School membership not found');
+      const { count } = await supabase.from('edunixo_timetable_drafts').select('*', { count: 'exact', head: true }).eq('school_id', sid).eq('academic_year', setup.academicYear);
+      const ins = await supabase.from('edunixo_timetable_drafts').insert({
+        school_id: sid,
+        academic_year: setup.academicYear,
+        version_name: versionName,
+        version_number: (count || 0) + 1,
+        timetable_data: timetable,
+        total_tasks: timetable.length,
+        placed_count: timetable.length,
+        skipped_count: 0,
+        skipped_details: [],
+        created_by: uid
+      });
+      if (ins.error) throw ins.error;
+      alert('Draft saved: ' + versionName);
+      await handleLoadDrafts();
+    } catch (e: any) {
+      alert('Save failed: ' + (e?.message || e));
+    } finally { setSavingDraft(false); }
+  };
+
+  const handleLoadDraft = (draft: any) => {
+    if (!draft?.timetable_data) return;
+    setTimetable(draft.timetable_data);
+    setHistory([draft.timetable_data]);
+    setHistoryIndex(0);
+    localStorage.setItem('nhs_v2_generated_grid', JSON.stringify(draft.timetable_data));
+    setShowDraftsModal(false);
+    alert('Loaded: ' + draft.version_name);
+  };
+
+  const handleDeleteDraft = async (draftId: string) => {
+    if (!window.confirm('Delete this draft?')) return;
+    try {
+      const { error } = await supabase.from('edunixo_timetable_drafts').delete().eq('id', draftId);
+      if (error) throw error;
+      await handleLoadDrafts();
+    } catch (e: any) { alert('Delete failed: ' + (e?.message || e)); }
+  };
+
+  const handlePublishDraft = async (draft: any) => {
+    if (!draft?.timetable_data) return;
+    if (!window.confirm('Publish "' + draft.version_name + '" to teachers?')) return;
+    setPublishingToTeachers(true);
+    try {
+      const cnt = await publishHeadmasterTimetable({ academicYear: setup.academicYear, timetable: draft.timetable_data });
+      await supabase.from('edunixo_timetable_drafts').update({ is_published: true, updated_at: new Date().toISOString() }).eq('id', draft.id);
+      alert('Published ' + cnt + ' periods from "' + draft.version_name + '"');
+    } catch (error: any) {
+      alert(error?.message || 'Publish failed');
+    } finally { setPublishingToTeachers(false); }
+  };
+
+  const handleCompareDrafts = () => {
+    if (selectedDrafts.length !== 2) { alert('Select exactly 2 versions to compare'); return; }
+    const a = draftsList.find(d => d.id === selectedDrafts[0]);
+    const b = draftsList.find(d => d.id === selectedDrafts[1]);
+    if (!a || !b) return;
+    const aData = a.timetable_data || [];
+    const bData = b.timetable_data || [];
+    const key = (c: any) => c.className + '|' + (c.division || '') + '|' + c.day + '|' + c.period;
+    const aMap = new Map(aData.map((c: any) => [key(c), c]));
+    const bMap = new Map(bData.map((c: any) => [key(c), c]));
+    let diffCount = 0;
+    const diffs: string[] = [];
+    aMap.forEach((ca: any, k: string) => {
+      const cb: any = bMap.get(k);
+      if (!cb) { diffs.push('Only in A: ' + k); diffCount++; }
+      else if (ca.subjectName !== cb.subjectName || ca.teacherName !== cb.teacherName) {
+        diffs.push(k + '\n  A: ' + ca.subjectName + ' (' + ca.teacherName + ')\n  B: ' + cb.subjectName + ' (' + cb.teacherName + ')');
+        diffCount++;
+      }
+    });
+    bMap.forEach((cb: any, k: string) => { if (!aMap.has(k)) { diffs.push('Only in B: ' + k); diffCount++; } });
+    alert('Compare: "' + a.version_name + '" vs "' + b.version_name + '"\n\nDifferences: ' + diffCount + '\n\n' + diffs.slice(0, 10).join('\n\n'));
   };
 
   // STEP 7 - MANUAL INTERACTIVE ADJUSTMENT (Drag & Drop, Swap, Lock/Unlock)
@@ -3984,6 +4090,25 @@ export default function SmartTimetableV2({
                 </button>
 
                 <button
+                  onClick={handleSaveDraft}
+                  disabled={savingDraft || !timetable.length}
+                  className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-900 disabled:border-blue-700 disabled:text-blue-300 disabled:cursor-not-allowed border border-blue-500 text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 cursor-pointer shadow-sm"
+                  title="Save current timetable as a draft"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>{savingDraft ? "Saving..." : "Save Draft"}</span>
+                </button>
+
+                <button
+                  onClick={() => { setShowDraftsModal(true); handleLoadDrafts(); }}
+                  className="bg-violet-600 hover:bg-violet-500 border border-violet-500 text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 cursor-pointer shadow-sm"
+                  title="View saved draft versions"
+                >
+                  <Eye className="w-4 h-4" />
+                  <span>My Drafts</span>
+                </button>
+
+                <button
                   onClick={handleRunValidationCheck}
                   className="bg-slate-900 hover:bg-slate-850 border border-slate-800 text-slate-300 font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 cursor-pointer shadow-sm"
                 >
@@ -3998,6 +4123,66 @@ export default function SmartTimetableV2({
                 </button>
               </div>
             </div>
+
+            {showDraftsModal && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={() => setShowDraftsModal(false)}>
+                <div className="max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-slate-700 bg-slate-950 p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+                  <div className="mb-4 flex items-center justify-between">
+                    <h3 className="text-lg font-black text-white">My Timetable Drafts</h3>
+                    <button onClick={() => setShowDraftsModal(false)} className="rounded-lg bg-slate-800 px-3 py-1 text-xs font-bold text-white hover:bg-slate-700">Close</button>
+                  </div>
+                  {draftsList.length === 0 ? (
+                    <div className="py-10 text-center text-sm text-slate-400">No drafts saved yet. Click "Save Draft" to save the current timetable.</div>
+                  ) : (
+                    <>
+                      <div className="mb-3 flex items-center gap-2">
+                        <button
+                          onClick={handleCompareDrafts}
+                          disabled={selectedDrafts.length !== 2}
+                          className="rounded-lg bg-cyan-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-cyan-500 disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                          Compare Selected ({selectedDrafts.length}/2)
+                        </button>
+                        <span className="text-xs text-slate-400">Select 2 versions to compare</span>
+                      </div>
+                      <div className="space-y-3">
+                        {draftsList.map((d: any) => (
+                          <div key={d.id} className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex items-start gap-3">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedDrafts.includes(d.id)}
+                                  onChange={(e) => {
+                                    setSelectedDrafts(prev => e.target.checked ? [...prev, d.id].slice(-2) : prev.filter(x => x !== d.id));
+                                  }}
+                                  className="mt-1 h-4 w-4 cursor-pointer"
+                                />
+                                <div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-black text-white">{d.version_name}</span>
+                                    <span className="rounded bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-300">v{d.version_number}</span>
+                                    {d.is_published && <span className="rounded bg-emerald-900 px-2 py-0.5 text-[10px] font-bold text-emerald-300">PUBLISHED</span>}
+                                  </div>
+                                  <div className="mt-1 text-xs text-slate-400">
+                                    {new Date(d.created_at).toLocaleString()} · {d.timetable_data?.length || 0} periods
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex flex-wrap items-center gap-2">
+                                <button onClick={() => handleLoadDraft(d)} className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-blue-500">Load</button>
+                                <button onClick={() => handlePublishDraft(d)} disabled={publishingToTeachers} className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-500 disabled:opacity-40">Publish</button>
+                                <button onClick={() => handleDeleteDraft(d.id)} className="rounded-lg bg-red-700 px-3 py-1.5 text-xs font-bold text-white hover:bg-red-600">Delete</button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Validation Errors Box */}
             {showValidation && (
