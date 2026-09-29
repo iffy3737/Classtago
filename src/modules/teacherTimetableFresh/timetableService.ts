@@ -74,7 +74,7 @@ export async function publishHeadmasterTimetable(input: { academicYear: string; 
   const [years, classesRead, divisionsRead] = await Promise.all([
     supabase.from('school_academic_years').select('id,year_code,is_active').eq('school_id', schoolId),
     supabase.from('school_classes').select('id,class_name').eq('school_id', schoolId),
-    supabase.from('school_divisions').select('id,division_name,name').eq('school_id', schoolId),
+    supabase.from('school_divisions').select('id,division_name').eq('school_id', schoolId),
   ]);
   if (years.error) throw years.error;
   if (classesRead.error) throw classesRead.error;
