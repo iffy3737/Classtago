@@ -4082,7 +4082,13 @@ export default function SmartTimetableV2({
                 <button
                   onClick={handlePublishToTeacherAccounts}
                   disabled={publishingToTeachers || !timetable.length}
-                  className={`${publishingToTeachers || !timetable.length ? 'bg-emerald-900 border-emerald-700 text-emerald-300 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-500 border-emerald-500 text-white cursor-pointer'} border font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-sm`}
+                  style={{
+                    backgroundColor: (publishingToTeachers || !timetable.length) ? '#064e3b' : '#059669',
+                    borderColor: (publishingToTeachers || !timetable.length) ? '#047857' : '#10b981',
+                    color: (publishingToTeachers || !timetable.length) ? '#6ee7b7' : '#ffffff',
+                    cursor: (publishingToTeachers || !timetable.length) ? 'not-allowed' : 'pointer',
+                  }}
+                  className="border font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-sm"
                   title="Publish the current Headmaster timetable to Teacher accounts"
                 >
                   <Upload className="w-4 h-4" />
@@ -4092,7 +4098,13 @@ export default function SmartTimetableV2({
                 <button
                   onClick={handleSaveDraft}
                   disabled={savingDraft || !timetable.length}
-                  className={`${savingDraft || !timetable.length ? 'bg-blue-900 border-blue-700 text-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 border-blue-500 text-white cursor-pointer'} border font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-sm`}
+                  style={{
+                    backgroundColor: (savingDraft || !timetable.length) ? '#1e3a8a' : '#2563eb',
+                    borderColor: (savingDraft || !timetable.length) ? '#1d4ed8' : '#3b82f6',
+                    color: (savingDraft || !timetable.length) ? '#93c5fd' : '#ffffff',
+                    cursor: (savingDraft || !timetable.length) ? 'not-allowed' : 'pointer',
+                  }}
+                  className="border font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-sm"
                   title="Save current timetable as a draft"
                 >
                   <Save className="w-4 h-4" />
@@ -4171,7 +4183,7 @@ export default function SmartTimetableV2({
                               </div>
                               <div className="flex flex-wrap items-center gap-2">
                                 <button onClick={() => handleLoadDraft(d)} className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-blue-500">Load</button>
-                                <button onClick={() => handlePublishDraft(d)} disabled={publishingToTeachers} className={`rounded-lg px-3 py-1.5 text-xs font-bold ${publishingToTeachers ? 'bg-emerald-900 text-emerald-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer'}`}>Publish</button>
+                                <button onClick={() => handlePublishDraft(d)} disabled={publishingToTeachers} style={{ backgroundColor: publishingToTeachers ? '#064e3b' : '#059669', color: publishingToTeachers ? '#6ee7b7' : '#ffffff', cursor: publishingToTeachers ? 'not-allowed' : 'pointer' }} className="rounded-lg px-3 py-1.5 text-xs font-bold">Publish</button>
                                 <button onClick={() => handleDeleteDraft(d.id)} className="rounded-lg bg-red-700 px-3 py-1.5 text-xs font-bold text-white hover:bg-red-600">Delete</button>
                               </div>
                             </div>
