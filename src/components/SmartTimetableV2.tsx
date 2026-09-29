@@ -1644,11 +1644,11 @@ export default function SmartTimetableV2({
         });
 
         // --- Option B: Backtracking repair pass (safe snapshot rollback) ---
-        const repairDeadline = Date.now() + 120000;
+        const repairDeadline = Date.now() + 180000;
 
         const tryPlaceInGrid = (task: any, depth: number): boolean => {
           if (Date.now() > repairDeadline) return false;
-          if (depth > 50) return false;
+          if (depth > 200) return false;
           const isDoubleAllowed = isDoublePeriodAllowedSubject(task.subjectName, task.remarks);
           for (const day of days) {
             const maxPeriodsForDay = setup.weeklyPeriodSettings?.[day] !== undefined
@@ -1689,10 +1689,27 @@ export default function SmartTimetableV2({
               const occupant = generatedGrid[occupantIdx];
               if (occupant.isLocked) continue;
 
+              // Preserve original task info for the occupant
+              const occupantClassKey = formatClassDiv(occupant.className, occupant.division);
+              const originalOccupantTask = flatTasks.find((ft) =>
+                ft.classKey === occupantClassKey &&
+                ft.subjectName === occupant.subjectName &&
+                ft.teacherName === occupant.teacherName
+              );
+
               const fullSnapshot = generatedGrid.slice();
               generatedGrid.splice(occupantIdx, 1);
-              const occupantTask = {
-                classKey: task.classKey,
+              const occupantTask = originalOccupantTask ? {
+                classKey: originalOccupantTask.classKey,
+                className: originalOccupantTask.className,
+                divisionName: originalOccupantTask.divisionName,
+                subjectName: originalOccupantTask.subjectName,
+                teacherName: originalOccupantTask.teacherName,
+                isClassTeacher: originalOccupantTask.isClassTeacher,
+                remarks: originalOccupantTask.remarks,
+                totalPeriodsForSubject: originalOccupantTask.totalPeriodsForSubject,
+              } : {
+                classKey: occupantClassKey,
                 className: occupant.className,
                 divisionName: occupant.division,
                 subjectName: occupant.subjectName,
