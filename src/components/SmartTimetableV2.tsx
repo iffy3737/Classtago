@@ -1648,7 +1648,7 @@ export default function SmartTimetableV2({
 
         const tryPlaceInGrid = (task: any, depth: number): boolean => {
           if (Date.now() > repairDeadline) return false;
-          if (depth > 15) return false;
+          if (depth > 50) return false;
           const isDoubleAllowed = isDoublePeriodAllowedSubject(task.subjectName, task.remarks);
           for (const day of days) {
             const maxPeriodsForDay = setup.weeklyPeriodSettings?.[day] !== undefined
