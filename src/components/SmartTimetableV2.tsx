@@ -522,18 +522,7 @@ interface V2TimetableCell {
 // 2) Android native bridge (if registered) - saves directly to Downloads
 // 3) saveAs fallback - works on desktop browsers
 async function smartDownload(blob: Blob, filename: string): Promise<void> {
-  try {
-    const navAny = navigator as any;
-    if (navAny.share && navAny.canShare) {
-      const file = new File([blob], filename, { type: blob.type || "application/octet-stream" });
-      if (navAny.canShare({ files: [file] })) {
-        await navAny.share({ files: [file], title: filename });
-        return;
-      }
-    }
-  } catch (err) {
-    console.warn("Web Share failed, falling back:", err);
-  }
+  // Priority 1: Android native bridge (direct download to Downloads folder, no user action)
   const androidBridge = (window as any).AndroidDownloader;
   if (androidBridge && typeof androidBridge.saveBase64 === "function") {
     return new Promise<void>((resolve, reject) => {
@@ -552,6 +541,20 @@ async function smartDownload(blob: Blob, filename: string): Promise<void> {
       reader.readAsDataURL(blob);
     });
   }
+  // Priority 2: Web Share API (for mobile browsers)
+  try {
+    const navAny = navigator as any;
+    if (navAny.share && navAny.canShare) {
+      const file = new File([blob], filename, { type: blob.type || "application/octet-stream" });
+      if (navAny.canShare({ files: [file] })) {
+        await navAny.share({ files: [file], title: filename });
+        return;
+      }
+    }
+  } catch (err) {
+    console.warn("Web Share failed, falling back:", err);
+  }
+  // Priority 3: Browser saveAs fallback
   saveAs(blob, filename);
 }
 
