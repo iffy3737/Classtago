@@ -2451,6 +2451,28 @@ export default function SmartTimetableV2({
         }
         
         const filename = `${selectedReportType}_timetable_${(reportClass || reportTeacher || reportDay).replace(/ /g, "_")}.pdf`;
+
+        // Temporarily unconstrain element + all ancestors so html2canvas captures full content
+        const restoreStyles: Array<() => void> = [];
+        let node: HTMLElement | null = element;
+        while (node && node !== document.body) {
+          const cs = window.getComputedStyle(node);
+          if (cs.overflow !== 'visible' || cs.maxHeight !== 'none' || cs.height.includes('px')) {
+            const prevOverflow = node.style.overflow;
+            const prevMaxHeight = node.style.maxHeight;
+            const prevHeight = node.style.height;
+            node.style.overflow = 'visible';
+            node.style.maxHeight = 'none';
+            node.style.height = 'auto';
+            const savedNode = node;
+            restoreStyles.push(() => {
+              savedNode.style.overflow = prevOverflow;
+              savedNode.style.maxHeight = prevMaxHeight;
+              savedNode.style.height = prevHeight;
+            });
+          }
+          node = node.parentElement;
+        }
         
         // Temporarily patch main window's getComputedStyle to safely handle oklch colors
         const originalWinGetComputedStyle = window.getComputedStyle;
@@ -2561,10 +2583,12 @@ export default function SmartTimetableV2({
         } catch (e: any) {
           console.error("PDF save bridge error:", e);
         }
+        restoreStyles.forEach(fn => fn());
         setIsExportingPdf(false);
         window.getComputedStyle = originalWinGetComputedStyle;
       }).catch((err: any) => {
         console.error("PDF Export error:", err);
+        restoreStyles.forEach(fn => fn());
         setIsExportingPdf(false);
         window.getComputedStyle = originalWinGetComputedStyle;
       });
@@ -2917,10 +2941,12 @@ export default function SmartTimetableV2({
       
       html2pdf().set(opt).from(element).outputPdf('blob').then(async (pdfBlob: Blob) => {
         try { await smartDownload(pdfBlob, filename); } catch (e: any) { console.error('PDF save error:', e); }
+        restoreStyles.forEach(fn => fn());
         setIsExportingInteractivePdf(false);
         window.getComputedStyle = originalWinGetComputedStyle;
       }).catch((err: any) => {
         console.error("Interactive PDF Export error:", err);
+        restoreStyles.forEach(fn => fn());
         setIsExportingInteractivePdf(false);
         window.getComputedStyle = originalWinGetComputedStyle;
       });
