@@ -2485,6 +2485,8 @@ export default function SmartTimetableV2({
         image:        { type: 'jpeg' as const, quality: 0.98 },
         html2canvas:  { 
           scale: 2,
+          scrollY: 0,
+          scrollX: 0,
           onclone: (clonedDoc: Document) => {
             // Replace oklch with RGB in all style elements in the cloned document
             clonedDoc.querySelectorAll('style').forEach((styleEl) => {
@@ -2499,6 +2501,19 @@ export default function SmartTimetableV2({
               if (styleAttr && (styleAttr.includes('oklch') || styleAttr.includes('oklab'))) {
                 el.setAttribute('style', replaceOklchWithRgb(styleAttr));
               }
+            });
+
+            // Remove scroll/max-height constraints on cloned elements
+            clonedDoc.querySelectorAll('.overflow-auto, .overflow-hidden, .overflow-y-auto, .overflow-x-auto').forEach((el: any) => {
+              el.style.maxHeight = 'none';
+              el.style.overflow = 'visible';
+              el.style.height = 'auto';
+            });
+            const clonedTargets = clonedDoc.querySelectorAll('#timetable-print-area, #interactive-timetable-print-area');
+            clonedTargets.forEach((el: any) => {
+              el.style.maxHeight = 'none';
+              el.style.overflow = 'visible';
+              el.style.height = 'auto';
             });
 
             const win = clonedDoc.defaultView;
@@ -2836,6 +2851,8 @@ export default function SmartTimetableV2({
         image:        { type: 'jpeg' as const, quality: 0.98 },
         html2canvas:  { 
           scale: 2,
+          scrollY: 0,
+          scrollX: 0,
           onclone: (clonedDoc: Document) => {
             // Replace oklch with RGB in all style elements in the cloned document
             clonedDoc.querySelectorAll('style').forEach((styleEl) => {
@@ -2850,6 +2867,19 @@ export default function SmartTimetableV2({
               if (styleAttr && (styleAttr.includes('oklch') || styleAttr.includes('oklab'))) {
                 el.setAttribute('style', replaceOklchWithRgb(styleAttr));
               }
+            });
+
+            // Remove scroll/max-height constraints on cloned elements
+            clonedDoc.querySelectorAll('.overflow-auto, .overflow-hidden, .overflow-y-auto, .overflow-x-auto').forEach((el: any) => {
+              el.style.maxHeight = 'none';
+              el.style.overflow = 'visible';
+              el.style.height = 'auto';
+            });
+            const clonedTargets = clonedDoc.querySelectorAll('#timetable-print-area, #interactive-timetable-print-area');
+            clonedTargets.forEach((el: any) => {
+              el.style.maxHeight = 'none';
+              el.style.overflow = 'visible';
+              el.style.height = 'auto';
             });
 
             const win = clonedDoc.defaultView;
@@ -2885,7 +2915,8 @@ export default function SmartTimetableV2({
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' as const }
       };
       
-      html2pdf().set(opt).from(element).save().then(() => {
+      html2pdf().set(opt).from(element).outputPdf('blob').then(async (pdfBlob: Blob) => {
+        try { await smartDownload(pdfBlob, filename); } catch (e: any) { console.error('PDF save error:', e); }
         setIsExportingInteractivePdf(false);
         window.getComputedStyle = originalWinGetComputedStyle;
       }).catch((err: any) => {
