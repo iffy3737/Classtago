@@ -2457,18 +2457,24 @@ export default function SmartTimetableV2({
         let node: HTMLElement | null = element;
         while (node && node !== document.body) {
           const cs = window.getComputedStyle(node);
-          if (cs.overflow !== 'visible' || cs.maxHeight !== 'none' || cs.height.includes('px')) {
+          if (cs.overflow !== 'visible' || cs.maxHeight !== 'none' || cs.height.includes('px') || cs.width.includes('px')) {
             const prevOverflow = node.style.overflow;
             const prevMaxHeight = node.style.maxHeight;
             const prevHeight = node.style.height;
+            const prevWidth = node.style.width;
+            const prevMinWidth = node.style.minWidth;
             node.style.overflow = 'visible';
             node.style.maxHeight = 'none';
             node.style.height = 'auto';
+            node.style.width = 'auto';
+            node.style.minWidth = '0';
             const savedNode = node;
             restoreStyles.push(() => {
               savedNode.style.overflow = prevOverflow;
               savedNode.style.maxHeight = prevMaxHeight;
               savedNode.style.height = prevHeight;
+              savedNode.style.width = prevWidth;
+              savedNode.style.minWidth = prevMinWidth;
             });
           }
           node = node.parentElement;
@@ -2841,6 +2847,34 @@ export default function SmartTimetableV2({
           return;
         }
         const filename = `interactive_timetable_${viewType}_${(viewType === "class" ? selectedClass : selectedTeacher).replace(/ /g, "_")}.pdf`;
+
+        // Temporarily unconstrain element + ancestors for full content capture
+        const restoreStyles: Array<() => void> = [];
+        let node: HTMLElement | null = element;
+        while (node && node !== document.body) {
+          const cs = window.getComputedStyle(node);
+          if (cs.overflow !== 'visible' || cs.maxHeight !== 'none' || cs.height.includes('px') || cs.width.includes('px')) {
+            const prevOverflow = node.style.overflow;
+            const prevMaxHeight = node.style.maxHeight;
+            const prevHeight = node.style.height;
+            const prevWidth = node.style.width;
+            const prevMinWidth = node.style.minWidth;
+            node.style.overflow = 'visible';
+            node.style.maxHeight = 'none';
+            node.style.height = 'auto';
+            node.style.width = 'auto';
+            node.style.minWidth = '0';
+            const savedNode = node;
+            restoreStyles.push(() => {
+              savedNode.style.overflow = prevOverflow;
+              savedNode.style.maxHeight = prevMaxHeight;
+              savedNode.style.height = prevHeight;
+              savedNode.style.width = prevWidth;
+              savedNode.style.minWidth = prevMinWidth;
+            });
+          }
+          node = node.parentElement;
+        }
         
         // Temporarily patch main window's getComputedStyle to safely handle oklch colors
         const originalWinGetComputedStyle = window.getComputedStyle;
