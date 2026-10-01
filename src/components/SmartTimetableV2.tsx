@@ -522,6 +522,9 @@ interface V2TimetableCell {
 // 2) Android native bridge (if registered) - saves directly to Downloads
 // 3) saveAs fallback - works on desktop browsers
 async function smartDownload(blob: Blob, filename: string): Promise<void> {
+  const bridgeType = typeof (window as any).AndroidDownloader;
+  const hasSave = (window as any).AndroidDownloader && typeof (window as any).AndroidDownloader.saveBase64 === 'function';
+  alert('DIAG:\nBridge type: ' + bridgeType + '\nHas saveBase64: ' + hasSave + '\nBlob size: ' + blob.size + '\nFile: ' + filename);
   // Priority 1: Android native bridge (direct download to Downloads folder, no user action)
   const androidBridge = (window as any).AndroidDownloader;
   if (androidBridge && typeof androidBridge.saveBase64 === "function") {
