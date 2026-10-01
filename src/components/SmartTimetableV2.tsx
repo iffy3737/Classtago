@@ -2452,8 +2452,26 @@ export default function SmartTimetableV2({
         
         const filename = `${selectedReportType}_timetable_${(reportClass || reportTeacher || reportDay).replace(/ /g, "_")}.pdf`;
 
+        // Force element width based on selected paper size
+        const PAPER_DIMS_MM: Record<string, { w: number }> = {
+          'A3_landscape': { w: 420 },
+          'A4_landscape': { w: 297 },
+          'A4_portrait':  { w: 210 },
+        };
+        const paperW = (PAPER_DIMS_MM[printLayout] || PAPER_DIMS_MM['A4_landscape']).w;
+        const contentWidthPx = Math.round((paperW - 10) / 25.4 * 96);
+        const origElemWidth = element.style.width;
+        const origElemMinWidth = element.style.minWidth;
+        element.style.width = contentWidthPx + 'px';
+        element.style.minWidth = contentWidthPx + 'px';
+        void element.offsetWidth;
+
         // Temporarily unconstrain element + all ancestors so html2canvas captures full content
         const restoreStyles: Array<() => void> = [];
+        restoreStyles.push(() => {
+          element.style.width = origElemWidth;
+          element.style.minWidth = origElemMinWidth;
+        });
         let node: HTMLElement | null = element;
         while (node && node !== document.body) {
           const cs = window.getComputedStyle(node);
@@ -2575,16 +2593,11 @@ export default function SmartTimetableV2({
           }
         },
         jsPDF: (() => {
-          const w = element.scrollWidth;
-          const h = element.scrollHeight;
-          const widthMm = (w / 96) * 25.4 + 20;
-          const heightMm = (h / 96) * 25.4 + 20;
-          return {
-            unit: 'mm',
-            format: [widthMm, heightMm],
-            orientation: (widthMm > heightMm ? 'landscape' : 'portrait') as 'landscape' | 'portrait'
-          };
-        })()
+          const fmt = printLayout === 'A3_landscape' ? 'a3' : 'a4';
+          const orient = printLayout === 'A4_portrait' ? 'portrait' : 'landscape';
+          return { unit: 'mm', format: fmt as 'a3' | 'a4', orientation: orient as 'portrait' | 'landscape' };
+        })(),
+        pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', '.avoid-print-break'] }
       };
       
       // Use outputPdf('blob') instead of .save() so we can route the blob
@@ -2854,8 +2867,21 @@ export default function SmartTimetableV2({
         }
         const filename = `interactive_timetable_${viewType}_${(viewType === "class" ? selectedClass : selectedTeacher).replace(/ /g, "_")}.pdf`;
 
+        // Force element width to A3 landscape (interactive board has no paper selector)
+        const A3_LANDSCAPE_W_MM = 420;
+        const contentWidthPx = Math.round((A3_LANDSCAPE_W_MM - 10) / 25.4 * 96);
+        const origElemWidth = element.style.width;
+        const origElemMinWidth = element.style.minWidth;
+        element.style.width = contentWidthPx + 'px';
+        element.style.minWidth = contentWidthPx + 'px';
+        void element.offsetWidth;
+
         // Temporarily unconstrain element + ancestors for full content capture
         const restoreStyles: Array<() => void> = [];
+        restoreStyles.push(() => {
+          element.style.width = origElemWidth;
+          element.style.minWidth = origElemMinWidth;
+        });
         let node: HTMLElement | null = element;
         while (node && node !== document.body) {
           const cs = window.getComputedStyle(node);
@@ -2976,17 +3002,8 @@ export default function SmartTimetableV2({
             }
           }
         },
-        jsPDF: (() => {
-          const w = element.scrollWidth;
-          const h = element.scrollHeight;
-          const widthMm = (w / 96) * 25.4 + 20;
-          const heightMm = (h / 96) * 25.4 + 20;
-          return {
-            unit: 'mm',
-            format: [widthMm, heightMm],
-            orientation: (widthMm > heightMm ? 'landscape' : 'portrait') as 'landscape' | 'portrait'
-          };
-        })()
+        jsPDF: { unit: 'mm', format: 'a3' as const, orientation: 'landscape' as const },
+        pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', '.avoid-print-break'] }
       };
       
       html2pdf().set(opt).from(element).outputPdf('blob').then(async (pdfBlob: Blob) => {
