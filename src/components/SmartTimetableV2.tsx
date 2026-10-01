@@ -2574,11 +2574,17 @@ export default function SmartTimetableV2({
             }
           }
         },
-        jsPDF: {
-          unit: 'mm',
-          format: printLayout === 'A3_landscape' ? 'a3' as const : 'a4' as const,
-          orientation: printLayout === 'A4_portrait' ? 'portrait' as const : 'landscape' as const
-        }
+        jsPDF: (() => {
+          const w = element.scrollWidth;
+          const h = element.scrollHeight;
+          const widthMm = (w / 96) * 25.4 + 20;
+          const heightMm = (h / 96) * 25.4 + 20;
+          return {
+            unit: 'mm',
+            format: [widthMm, heightMm],
+            orientation: (widthMm > heightMm ? 'landscape' : 'portrait') as 'landscape' | 'portrait'
+          };
+        })()
       };
       
       // Use outputPdf('blob') instead of .save() so we can route the blob
@@ -2970,7 +2976,17 @@ export default function SmartTimetableV2({
             }
           }
         },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' as const }
+        jsPDF: (() => {
+          const w = element.scrollWidth;
+          const h = element.scrollHeight;
+          const widthMm = (w / 96) * 25.4 + 20;
+          const heightMm = (h / 96) * 25.4 + 20;
+          return {
+            unit: 'mm',
+            format: [widthMm, heightMm],
+            orientation: (widthMm > heightMm ? 'landscape' : 'portrait') as 'landscape' | 'portrait'
+          };
+        })()
       };
       
       html2pdf().set(opt).from(element).outputPdf('blob').then(async (pdfBlob: Blob) => {
