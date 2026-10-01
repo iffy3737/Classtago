@@ -1,11 +1,18 @@
 package com.classtago.app;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Base64;
+import android.webkit.JavascriptInterface;
 import android.webkit.PermissionRequest;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -14,8 +21,13 @@ import com.getcapacitor.Bridge;
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.BridgeWebChromeClient;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+
 public class MainActivity extends BridgeActivity {
     private static final int MIC_PERMISSION_REQUEST = 9001;
+    private boolean bridgeRegistered = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -27,6 +39,7 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(EdunixoSmsGatewayPlugin.class);
         super.onCreate(savedInstanceState);
 
+        // Microphone permission for voice features
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
                     != PackageManager.PERMISSION_GRANTED) {
@@ -56,15 +69,91 @@ public class MainActivity extends BridgeActivity {
                         });
                     }
                 });
+                // Register download bridge AFTER WebView is ready
+                webView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        registerDownloadBridge();
+                    }
+                });
             }
+        }
+    }
+
+    private void registerDownloadBridge() {
+        if (bridgeRegistered) return;
+        try {
+            WebView webView = getBridge().getWebView();
+            if (webView == null) {
+                Toast.makeText(this, "Bridge: WebView null", Toast.LENGTH_LONG).show();
+                return;
+            }
+            webView.addJavascriptInterface(new DownloadBridge(), "AndroidDownloader");
+            bridgeRegistered = true;
+            Toast.makeText(this, "Bridge: Registered OK", Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Bridge register failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public class DownloadBridge {
+        @JavascriptInterface
+        public void saveBase64(String base64Data, String filename, String mimeType) {
+            try {
+                byte[] bytes = Base64.decode(base64Data, Base64.DEFAULT);
+                String mime = mimeType != null && !mimeType.isEmpty() ? mimeType : "application/octet-stream";
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    saveViaMediaStore(bytes, filename, mime);
+                } else {
+                    saveViaFile(bytes, filename);
+                }
+            } catch (Exception e) {
+                final String msg = "Save failed: " + e.getMessage();
+                runOnUiThread(() -> Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show());
+            }
+        }
+
+        private void saveViaMediaStore(byte[] bytes, String filename, String mimeType) throws Exception {
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.MediaColumns.DISPLAY_NAME, filename);
+            values.put(MediaStore.MediaColumns.MIME_TYPE, mimeType);
+            values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+
+            Uri uri = getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
+            if (uri == null) throw new Exception("MediaStore insert failed");
+
+            OutputStream os = getContentResolver().openOutputStream(uri);
+            if (os == null) throw new Exception("Cannot open output stream");
+            os.write(bytes);
+            os.flush();
+            os.close();
+
+            final String msg = "Saved to Downloads/" + filename;
+            runOnUiThread(() -> Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show());
+        }
+
+        private void saveViaFile(byte[] bytes, String filename) throws Exception {
+            File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            if (!downloadsDir.exists()) downloadsDir.mkdirs();
+            File outFile = new File(downloadsDir, filename);
+            FileOutputStream fos = new FileOutputStream(outFile);
+            fos.write(bytes);
+            fos.close();
+
+            final String msg = "Saved to Downloads/" + filename;
+            runOnUiThread(() -> Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show());
+        }
+
+        @JavascriptInterface
+        public void onError(String reason) {
+            final String msg = "Download error: " + reason;
+            runOnUiThread(() -> Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show());
         }
     }
 
     @Override
     public void onBackPressed() {
-        // R2.5.98: onBackPressed works on all Android versions when
-        // enableOnBackInvokedCallback is NOT set. If WebView has history, go back;
-        // otherwise minimize the app so the user keeps their place.
         WebView wv = getBridge() != null ? getBridge().getWebView() : null;
         if (wv != null && wv.canGoBack()) {
             wv.goBack();
