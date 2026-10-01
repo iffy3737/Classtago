@@ -1,7 +1,6 @@
 package com.classtago.app;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +19,8 @@ import java.io.OutputStream;
 
 public class MainActivity extends BridgeActivity {
 
+    private boolean bridgeRegistered = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(BellAlarmPlugin.class);
@@ -29,13 +30,32 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(EdunixoSyncGuardianPlugin.class);
         registerPlugin(EdunixoSmsGatewayPlugin.class);
         super.onCreate(savedInstanceState);
-
-        getBridge().getWebView().post(this::setupDownloadHandler);
+        // Register bridge AFTER super.onCreate() so Capacitor WebView exists.
+        // Use post() to run on UI thread once WebView is fully ready.
+        if (getBridge() != null && getBridge().getWebView() != null) {
+            getBridge().getWebView().post(new Runnable() {
+                @Override
+                public void run() {
+                    registerDownloadBridge();
+                }
+            });
+        }
     }
 
-    private void setupDownloadHandler() {
-        WebView webView = getBridge().getWebView();
-        webView.addJavascriptInterface(new DownloadBridge(), "AndroidDownloader");
+    private void registerDownloadBridge() {
+        if (bridgeRegistered) return;
+        try {
+            WebView webView = getBridge().getWebView();
+            if (webView == null) {
+                Toast.makeText(this, "Bridge: WebView null", Toast.LENGTH_LONG).show();
+                return;
+            }
+            webView.addJavascriptInterface(new DownloadBridge(), "AndroidDownloader");
+            bridgeRegistered = true;
+            Toast.makeText(this, "Bridge: Registered OK", Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Bridge register failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     public class DownloadBridge {
