@@ -310,54 +310,65 @@ export default function SmartPrintCenter() {
   const downloadPdf = async () => {
     if (!request || busy) return;
     setBusy(true);
-    let frame: HTMLIFrameElement | null = null;
+    let container: HTMLDivElement | null = null;
     try {
-      // R33.5: render a real standalone document in an off-screen iframe. The old
-      // implementation assigned an entire <html><head><body> document to a DIV's
-      // innerHTML, which is invalid document structure and caused html2canvas to
-      // lose scoped print CSS / mis-measure long RTL Homework.
-      frame = document.createElement('iframe');
-      frame.setAttribute('aria-hidden', 'true');
-      frame.style.position = 'fixed';
-      frame.style.left = '-100000px';
-      frame.style.top = '0';
-      frame.style.width = `${dimensions.width}mm`;
-      frame.style.height = `${dimensions.height}mm`;
-      frame.style.border = '0';
-      frame.style.background = '#fff';
-      document.body.appendChild(frame);
-      const doc = frame.contentDocument;
-      if (!doc) throw new Error('Printable document could not be prepared.');
-      doc.open();
-      doc.write(buildPrintableHtml(request, preferences, false));
-      doc.close();
+      // Build the printable HTML, then inject into main document so styles apply correctly
+      const printableHtml = buildPrintableHtml(request, preferences, false);
 
-      if (doc.fonts?.ready) {
-        try { await doc.fonts.ready; } catch {}
+      // Parse the full HTML and extract body content
+      const parser = new DOMParser();
+      const parsedDoc = parser.parseFromString(printableHtml, 'text/html');
+
+      // Create a container in main document
+      container = document.createElement('div');
+      container.style.cssText = 'position:fixed;left:-99999px;top:0;background:#ffffff;box-sizing:border-box;';
+      container.style.width = `${dimensions.width}mm`;
+      container.style.minHeight = `${dimensions.height}mm`;
+      container.className = 'edunixo-pdf-capture-root';
+
+      // Copy style tags from parsed doc to container's wrapper
+      const styleTags = Array.from(parsedDoc.querySelectorAll('style, link[rel="stylesheet"]'));
+      styleTags.forEach(styleEl => container!.appendChild(styleEl.cloneNode(true)));
+
+      // Wrap body content
+      const bodyWrapper = document.createElement('div');
+      bodyWrapper.style.cssText = 'background:#ffffff;padding:0;margin:0;';
+      const bodyContent = parsedDoc.body;
+      while (bodyContent.firstChild) {
+        bodyWrapper.appendChild(bodyContent.firstChild);
       }
-      const images = Array.from(doc.images);
-      if (images.some(image => !image.complete)) {
+      container.appendChild(bodyWrapper);
+      document.body.appendChild(container);
+
+      // Wait for fonts/images
+      await new Promise(resolve => window.setTimeout(resolve, 250));
+      const imgs = Array.from(container.querySelectorAll('img'));
+      if (imgs.some(img => !img.complete)) {
         await Promise.race([
-          Promise.all(images.map(image => image.complete ? Promise.resolve() : new Promise<void>(resolve => {
-            image.addEventListener('load', () => resolve(), { once: true });
-            image.addEventListener('error', () => resolve(), { once: true });
+          Promise.all(imgs.map(img => img.complete ? Promise.resolve() : new Promise<void>(r => {
+            img.addEventListener('load', () => r(), { once: true });
+            img.addEventListener('error', () => r(), { once: true });
           }))),
-          new Promise(resolve => window.setTimeout(resolve, 2400)),
+          new Promise(r => window.setTimeout(r, 2400)),
         ]);
       }
-      await new Promise(resolve => window.setTimeout(resolve, 180));
-      const printable = doc.querySelector('.edunixo-preview-shell') as HTMLElement | null;
-      if (!printable) throw new Error('Printable document could not be prepared.');
 
       // @ts-ignore
       const html2pdf = (await import('html2pdf.js')).default;
-      await html2pdf().set({
+
+      const pdfBlob = await html2pdf().set({
         margin: 0,
         filename: `${(request.title || 'School_Document').replace(/[^a-z0-9_-]+/gi, '_')}_${preferences.paperSize}_${preferences.orientation}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: {
-          scale: 2.2, useCORS: true, logging: false, backgroundColor: '#ffffff',
-          windowWidth: Math.max(794, printable.scrollWidth),
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff',
+          scrollY: 0,
+          scrollX: 0,
+          windowWidth: container.scrollWidth,
+          windowHeight: container.scrollHeight,
           onclone: (clonedDoc: Document) => {
             clonedDoc.querySelectorAll('style').forEach((styleEl) => {
               if (styleEl.textContent) {
@@ -374,28 +385,28 @@ export default function SmartPrintCenter() {
         },
         jsPDF: { unit: 'mm', format: [dimensions.width, dimensions.height], orientation: preferences.orientation },
         pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', '.avoid-print-break', '.homework-print-meta', '.homework-print-line', '.question-row', '.qp-answer-area', '.qp-match-table', '.qp-section-head', '.qp-subquestion-row', '.qp-section-match-wrap'] }
-      }).from(printable).outputPdf('blob').then(async (pdfBlob: Blob) => {
-        const filename = `${(request.title || 'School_Document').replace(/[^a-z0-9_-]+/gi, '_')}_${preferences.paperSize}_${preferences.orientation}.pdf`;
-        const reader = new FileReader();
-        const base64 = await new Promise<string>((resolve, reject) => {
-          reader.onloadend = () => {
-            const result = String(reader.result || '');
-            const comma = result.indexOf(',');
-            if (comma < 0) { reject(new Error('encode failed')); return; }
-            resolve(result.slice(comma + 1));
-          };
-          reader.onerror = () => reject(reader.error);
-          reader.readAsDataURL(pdfBlob);
-        });
-        const saved = await saveNativePdf(base64, filename);
-        window.alert(`PDF saved to ${saved.savedTo}`);
+      }).from(container).outputPdf('blob');
+
+      const filename = `${(request.title || 'School_Document').replace(/[^a-z0-9_-]+/gi, '_')}_${preferences.paperSize}_${preferences.orientation}.pdf`;
+      const reader = new FileReader();
+      const base64 = await new Promise<string>((resolve, reject) => {
+        reader.onloadend = () => {
+          const result = String(reader.result || '');
+          const comma = result.indexOf(',');
+          if (comma < 0) { reject(new Error('encode failed')); return; }
+          resolve(result.slice(comma + 1));
+        };
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(pdfBlob);
       });
+      const saved = await saveNativePdf(base64, filename);
+      window.alert(`PDF saved to ${saved.savedTo}`);
     } catch (error) {
       console.error(error);
       const proceed = window.confirm('PDF auto-generation failed on this device.\n\nOpen print dialog and choose "Save as PDF"?');
       if (proceed) { runNativePrint(); }
     } finally {
-      frame?.remove();
+      container?.remove();
       setBusy(false);
     }
   };
