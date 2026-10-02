@@ -10,10 +10,67 @@ import {
   SMART_PRINT_EVENT,
   SmartPaperSize,
   SmartPrintPreferences,
-  SmartPrintRequest
+  SmartPrintRequest,
+  saveNativePdf
 } from '../lib/smartPrint';
 
+// oklch/oklab -> rgb converter for html2canvas (Android WebView doesn't support these).
+function replaceOklchWithRgb(input: string): string {
+  if (!input || typeof input !== 'string') return input;
+  if (!input.includes('oklch') && !input.includes('oklab')) return input;
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1; canvas.height = 1;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return input;
+    return input.replace(/okl(?:ch|ab)\([^)]+\)/g, (match) => {
+      try {
+        ctx.fillStyle = '#000';
+        ctx.fillStyle = match;
+        const result = ctx.fillStyle;
+        if (result && result !== '#000000' && result !== '#000') return result;
+        return match;
+      } catch { return match; }
+    });
+  } catch { return input; }
+}
+
 const PAPER_OPTIONS: SmartPaperSize[] = ['A3', 'A4', 'A5', 'Letter', 'Legal', 'Folio', 'Custom'];
+
+function oklchToRgb(str: string): string {
+  if (!str || typeof str !== 'string') return str;
+  if (!str.includes('oklch') && !str.includes('oklab')) return str;
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1; canvas.height = 1;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return str;
+    return str.replace(/okl(?:ch|ab)\([^)]+\)/g, (m) => {
+      try {
+        ctx.fillStyle = '#000';
+        ctx.fillStyle = m;
+        const r = ctx.fillStyle;
+        if (r && r !== '#000000' && r !== '#000') return r;
+      } catch {}
+      return 'rgb(0,0,0)';
+    });
+  } catch { return str; }
+}
+
+// Temporarily convert all oklch in ALL style tags across the document, and restore later
+function globalOklchPatch(): () => void {
+  const saved: Array<{ el: HTMLStyleElement; text: string }> = [];
+  document.querySelectorAll('style').forEach(styleEl => {
+    const txt = styleEl.textContent || '';
+    if (txt.includes('oklch') || txt.includes('oklab')) {
+      saved.push({ el: styleEl, text: txt });
+      styleEl.textContent = oklchToRgb(txt);
+    }
+  });
+  return () => {
+    saved.forEach(({ el, text }) => { el.textContent = text; });
+  };
+}
 
 function escapeHtml(value: string): string {
   return value.replace(/[&<>'"]/g, char => ({
@@ -39,32 +96,10 @@ function findPrintableElement(request: SmartPrintRequest): HTMLElement | null {
 }
 
 
-function preparePrintableContent(target: HTMLElement | null, request: SmartPrintRequest): string {
+function preparePrintableContent(target: HTMLElement | null): string {
   if (!target) return '<div>Print content is not available.</div>';
   const clone = target.cloneNode(true) as HTMLElement;
   clone.querySelectorAll('.screen-only,.no-print,[data-no-print="true"]').forEach(node => node.remove());
-
-  if (request.moduleName === 'question-paper' && request.questionPaperOptions) {
-    const opts = request.questionPaperOptions;
-    if (opts.showInstructions === false) clone.querySelectorAll('.instructions').forEach(node => node.remove());
-    if (opts.customInstructions && opts.showInstructions !== false) {
-      clone.querySelectorAll('.instructions').forEach(node => node.remove());
-      const host = clone.querySelector('.qp-student-fields-with-separator')?.parentElement || clone;
-      const box = document.createElement('div');
-      box.className = 'instructions smart-print-custom-instructions';
-      const ol = document.createElement('ol');
-      String(opts.customInstructions).split(/\r?\n/).map(v => v.trim()).filter(Boolean).forEach(line => { const li=document.createElement('li'); li.textContent=line; ol.appendChild(li); });
-      box.appendChild(ol);
-      const anchor = host.querySelector('.qp-student-fields-with-separator');
-      if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(box, anchor.nextSibling); else host.insertBefore(box, host.firstChild);
-    }
-    if (opts.showMarks === false) clone.querySelectorAll('.qp-section-marks,.qp-combined-part-head > span').forEach(node => (node as HTMLElement).style.display='none');
-    if (opts.showStudentFields === false) clone.querySelectorAll('.qp-student-fields').forEach(node => node.remove());
-    if (opts.showAnswerSpace === false) clone.querySelectorAll('.qp-answer-area').forEach(node => node.remove());
-    if (opts.showSchoolHeader === false) clone.querySelectorAll('.school-header').forEach(node => node.remove());
-    if (opts.numbering === 'none') clone.querySelectorAll('.qp-section-number').forEach(node => node.remove());
-    if (opts.numbering === 'numeric') clone.querySelectorAll('.qp-section-number').forEach(node => { const el=node as HTMLElement; const match=(el.textContent||'').match(/(\d+)/); el.textContent=match ? `Q${match[1]}:` : ''; });
-  }
   clone.querySelectorAll<HTMLElement>('.print-only').forEach(node => {
     node.classList.remove('print-only');
     node.classList.add('smart-print-visible');
@@ -110,26 +145,12 @@ function buildPrintableHtml(
   const setup = LocalERPDatabase.getAcademicSetup();
   const profile = setup?.schoolProfile || ({} as any);
   const title = request.title || document.title || 'School Document';
-  const schoolName = profile.schoolName || 'National High School, Taloda';
+  const schoolName = profile.schoolName || 'School';
   const schoolLine = [profile.address, profile.villageCity, profile.district, profile.state, profile.pinCode]
     .filter(Boolean)
     .join(', ');
   const yearPlanMode = request.moduleName === 'year-plan';
   const questionPaperMode = request.moduleName === 'question-paper';
-  const questionPaperOptions = {
-    showInstructions: true,
-    customInstructions: '',
-    fontSizePt: 10.5,
-    lineSpacing: 1.45,
-    questionSpacingMm: 3.2,
-    sectionSpacingMm: 4,
-    showMarks: true,
-    showStudentFields: true,
-    showAnswerSpace: false,
-    showSchoolHeader: true,
-    numbering: 'standard' as const,
-    ...(request.questionPaperOptions || {})
-  };
   const selfContainedDocumentMode = yearPlanMode || questionPaperMode;
   const yearPlanHeaderEnabled = !yearPlanMode && (preferences.includeSchoolHeader || preferences.includeDocumentTitle);
   const yearPlanFooterEnabled = !yearPlanMode && preferences.includeFooter;
@@ -148,7 +169,7 @@ function buildPrintableHtml(
   const footer = !questionPaperMode && yearPlanFooterEnabled
     ? `<footer class="edunixo-print-footer"><span>Generated by Classtago ERP · ${new Date().toLocaleString('en-IN')}</span>${preferences.includePageNumbers ? '<span class="edunixo-page-number"></span>' : ''}</footer>`
     : '';
-  const content = preparePrintableContent(target, request);
+  const content = preparePrintableContent(target);
 
   return `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>${collectDocumentStyles()}
   <style>
@@ -218,12 +239,11 @@ function buildPrintableHtml(
     /* R33.13: pattern rows are main numbered sections; generated items are
        sub-questions under that heading instead of becoming Q1/Q2/Q3 themselves. */
     .edunixo-print-content .qp-sections{display:flex!important;flex-direction:column!important;gap:4mm!important}
-    .edunixo-print-content .qp-section{margin:0 0 ${questionPaperOptions.sectionSpacingMm}mm!important;break-inside:auto!important;page-break-inside:auto!important}
+    .edunixo-print-content .qp-section{margin:0 0 5mm!important;break-inside:auto!important;page-break-inside:auto!important}
     .edunixo-print-content .qp-section-head{margin:0 0 2mm!important;padding:0!important;break-after:avoid!important;page-break-after:avoid!important}
-    .edunixo-print-content .qp-section-title{font-size:${questionPaperOptions.fontSizePt}pt!important;line-height:${questionPaperOptions.lineSpacing}!important}
-    .edunixo-print-content .qp-section-marks{font-size:${Math.max(8, questionPaperOptions.fontSizePt - 1)}pt!important}
-    .edunixo-print-content .qp-section-items{display:flex!important;flex-direction:column!important;gap:${questionPaperOptions.questionSpacingMm}mm!important}
-    .edunixo-print-content .question-text,.edunixo-print-content .qbody{font-size:${questionPaperOptions.fontSizePt}pt!important;line-height:${questionPaperOptions.lineSpacing}!important}
+    .edunixo-print-content .qp-section-title{font-size:11.5pt!important;line-height:1.55!important}
+    .edunixo-print-content .qp-section-marks{font-size:10.5pt!important}
+    .edunixo-print-content .qp-section-items{display:flex!important;flex-direction:column!important;gap:3.2mm!important}
     .edunixo-print-content .qp-subquestion-row{break-inside:avoid!important;page-break-inside:avoid!important}
     .edunixo-print-content .qp-subno{font-size:10.5pt!important}
     .edunixo-print-content .qp-section-match-wrap{break-inside:avoid!important;page-break-inside:avoid!important}
@@ -231,8 +251,6 @@ function buildPrintableHtml(
     .edunixo-print-content .qp-answer-line{height:7.2mm!important;border-bottom:1px solid #9ca3af!important}
     .edunixo-print-content .qp-working-box.small{min-height:32mm!important}.edunixo-print-content .qp-working-box.medium{min-height:48mm!important}.edunixo-print-content .qp-working-box.large{min-height:66mm!important}
     .edunixo-print-content .qp-diagram-box.medium{min-height:55mm!important}.edunixo-print-content .qp-diagram-box.large{min-height:78mm!important}
-    .edunixo-print-content .smart-print-custom-instructions{font-size:${questionPaperOptions.fontSizePt}pt!important;line-height:${questionPaperOptions.lineSpacing}!important}
-    ${questionPaperOptions.showMarks === false ? '.edunixo-print-content .qp-section-marks,.edunixo-print-content .qp-combined-part-head > span{display:none!important}' : ''}
     ` : ''}
     .edunixo-print-footer{position:static!important;clear:both;display:flex;justify-content:space-between;gap:8mm;border-top:1px solid #cbd5e1;margin-top:8mm;padding-top:3mm;font-size:7.5pt;color:#64748b;break-inside:avoid;page-break-inside:avoid}
     .edunixo-page-number:after{content:"Page " counter(page)}
@@ -285,6 +303,12 @@ export default function SmartPrintCenter() {
 
   const runNativePrint = () => {
     if (!request) return;
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (isMobile) {
+      // Android WebView iframe print is unreliable - generate PDF instead
+      downloadPdf();
+      return;
+    }
     const frame = document.createElement('iframe');
     frame.setAttribute('aria-hidden', 'true');
     frame.style.position = 'fixed';
@@ -320,60 +344,147 @@ export default function SmartPrintCenter() {
   const downloadPdf = async () => {
     if (!request || busy) return;
     setBusy(true);
-    let frame: HTMLIFrameElement | null = null;
+    let container: HTMLDivElement | null = null;
     try {
-      // R33.5: render a real standalone document in an off-screen iframe. The old
-      // implementation assigned an entire <html><head><body> document to a DIV's
-      // innerHTML, which is invalid document structure and caused html2canvas to
-      // lose scoped print CSS / mis-measure long RTL Homework.
-      frame = document.createElement('iframe');
-      frame.setAttribute('aria-hidden', 'true');
-      frame.style.position = 'fixed';
-      frame.style.left = '-100000px';
-      frame.style.top = '0';
-      frame.style.width = `${dimensions.width}mm`;
-      frame.style.height = `${dimensions.height}mm`;
-      frame.style.border = '0';
-      frame.style.background = '#fff';
-      document.body.appendChild(frame);
-      const doc = frame.contentDocument;
-      if (!doc) throw new Error('Printable document could not be prepared.');
-      doc.open();
-      doc.write(buildPrintableHtml(request, preferences, false));
-      doc.close();
+      // Build the printable HTML, then inject into main document so styles apply correctly
+      const printableHtml = buildPrintableHtml(request, preferences, false);
 
-      if (doc.fonts?.ready) {
-        try { await doc.fonts.ready; } catch {}
+      // Parse the full HTML and extract body content
+      const parser = new DOMParser();
+      const parsedDoc = parser.parseFromString(printableHtml, 'text/html');
+
+      // Create a container in main document
+      container = document.createElement('div');
+      container.style.cssText = 'position:fixed;left:-99999px;top:0;background:#ffffff;box-sizing:border-box;';
+      container.style.width = `${dimensions.width}mm`;
+      container.style.minHeight = `${dimensions.height}mm`;
+      container.className = 'edunixo-pdf-capture-root';
+
+      // Copy style tags from parsed doc to container's wrapper
+      const styleTags = Array.from(parsedDoc.querySelectorAll('style, link[rel="stylesheet"]'));
+      styleTags.forEach(styleEl => container!.appendChild(styleEl.cloneNode(true)));
+
+      // Wrap body content
+      const bodyWrapper = document.createElement('div');
+      bodyWrapper.style.cssText = 'background:#ffffff;padding:0;margin:0;';
+      const bodyContent = parsedDoc.body;
+      while (bodyContent.firstChild) {
+        bodyWrapper.appendChild(bodyContent.firstChild);
       }
-      const images = Array.from(doc.images);
-      if (images.some(image => !image.complete)) {
+      container.appendChild(bodyWrapper);
+      document.body.appendChild(container);
+
+      // Wait for fonts/images
+      await new Promise(resolve => window.setTimeout(resolve, 250));
+      const imgs = Array.from(container.querySelectorAll('img'));
+      if (imgs.some(img => !img.complete)) {
         await Promise.race([
-          Promise.all(images.map(image => image.complete ? Promise.resolve() : new Promise<void>(resolve => {
-            image.addEventListener('load', () => resolve(), { once: true });
-            image.addEventListener('error', () => resolve(), { once: true });
+          Promise.all(imgs.map(img => img.complete ? Promise.resolve() : new Promise<void>(r => {
+            img.addEventListener('load', () => r(), { once: true });
+            img.addEventListener('error', () => r(), { once: true });
           }))),
-          new Promise(resolve => window.setTimeout(resolve, 2400)),
+          new Promise(r => window.setTimeout(r, 2400)),
         ]);
       }
-      await new Promise(resolve => window.setTimeout(resolve, 180));
-      const printable = doc.querySelector('.edunixo-preview-shell') as HTMLElement | null;
-      if (!printable) throw new Error('Printable document could not be prepared.');
 
-      // @ts-ignore
-      const html2pdf = (await import('html2pdf.js')).default;
-      await html2pdf().set({
-        margin: 0,
-        filename: `${(request.title || 'School_Document').replace(/[^a-z0-9_-]+/gi, '_')}_${preferences.paperSize}_${preferences.orientation}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2.2, useCORS: true, logging: false, backgroundColor: '#ffffff', windowWidth: Math.max(794, printable.scrollWidth) },
-        jsPDF: { unit: 'mm', format: [dimensions.width, dimensions.height], orientation: preferences.orientation },
-        pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', '.avoid-print-break', '.homework-print-meta', '.homework-print-line', '.question-row', '.qp-answer-area', '.qp-match-table', '.qp-section-head', '.qp-subquestion-row', '.qp-section-match-wrap'] }
-      }).from(printable).save();
-    } catch (error) {
+      // Globally patch oklch before html2canvas runs
+      const restoreGlobalOklch = globalOklchPatch();
+
+      // Override getComputedStyle so html2canvas never sees oklch
+      const originalGetComputedStyle = window.getComputedStyle;
+      window.getComputedStyle = function(el: Element, pseudoEl?: string | null) {
+        const style = originalGetComputedStyle.call(window, el, pseudoEl);
+        return new Proxy(style, {
+          get(target: any, prop: string | symbol) {
+            const val = target[prop as any];
+            if (prop === 'getPropertyValue') {
+              return function(propertyName: string) {
+                const originalVal = target.getPropertyValue(propertyName);
+                if (typeof originalVal === 'string' && (originalVal.includes('oklch') || originalVal.includes('oklab'))) {
+                  return oklchToRgb(originalVal);
+                }
+                return originalVal;
+              };
+            }
+            if (typeof val === 'string' && (val.includes('oklch') || val.includes('oklab'))) {
+              return oklchToRgb(val);
+            }
+            if (typeof val === 'function') {
+              return val.bind(target);
+            }
+            return val;
+          }
+        }) as any;
+      } as any;
+
+      let pdfBlob: Blob;
+      try {
+        // Use html2canvas-pro (supports oklch) + jsPDF directly
+        // @ts-ignore
+        const html2canvas = (await import('html2canvas-pro')).default;
+        const { jsPDF } = await import('jspdf');
+
+        const canvas = await html2canvas(container, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff',
+          scrollY: 0,
+          scrollX: 0,
+          windowWidth: container.scrollWidth,
+          windowHeight: container.scrollHeight,
+        } as any);
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        const pdf = new jsPDF({
+          unit: 'mm',
+          format: [dimensions.width, dimensions.height],
+          orientation: preferences.orientation as 'portrait' | 'landscape',
+        });
+
+        const pageW = dimensions.width;
+        const pageH = dimensions.height;
+        const imgW = pageW;
+        const imgH = (canvas.height * imgW) / canvas.width;
+
+        let heightLeft = imgH;
+        let position = 0;
+
+        pdf.addImage(imgData, 'JPEG', 0, position, imgW, imgH);
+        heightLeft -= pageH;
+
+        while (heightLeft > 0) {
+          position = heightLeft - imgH;
+          pdf.addPage();
+          pdf.addImage(imgData, 'JPEG', 0, position, imgW, imgH);
+          heightLeft -= pageH;
+        }
+
+        pdfBlob = pdf.output('blob');
+      } finally {
+        restoreGlobalOklch();
+        window.getComputedStyle = originalGetComputedStyle;
+      }
+
+      const filename = `${(request.title || 'School_Document').replace(/[^a-z0-9_-]+/gi, '_')}_${preferences.paperSize}_${preferences.orientation}.pdf`;
+      const reader = new FileReader();
+      const base64 = await new Promise<string>((resolve, reject) => {
+        reader.onloadend = () => {
+          const result = String(reader.result || '');
+          const comma = result.indexOf(',');
+          if (comma < 0) { reject(new Error('encode failed')); return; }
+          resolve(result.slice(comma + 1));
+        };
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(pdfBlob);
+      });
+      const saved = await saveNativePdf(base64, filename);
+      window.alert(`PDF saved to ${saved.savedTo}`);
+    } catch (error: any) {
       console.error(error);
-      window.alert('PDF could not be generated. Please use Print and choose Save as PDF in the printer dialog.');
+      alert('PDF failed: ' + (error?.message || error));
     } finally {
-      frame?.remove();
+      container?.remove();
       setBusy(false);
     }
   };
@@ -381,8 +492,8 @@ export default function SmartPrintCenter() {
   if (!request) return null;
 
   return (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/75 p-3 backdrop-blur-md no-print">
-      <div className="flex h-[95vh] w-full max-w-[96rem] flex-col overflow-hidden rounded-[1.75rem] border border-white/10 bg-slate-100 shadow-2xl">
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/75 p-0 sm:p-3 backdrop-blur-md no-print">
+      <div className="flex h-screen sm:h-[95vh] w-full max-w-full sm:max-w-[96rem] flex-col overflow-hidden rounded-none sm:rounded-[1.75rem] border border-white/10 bg-slate-100 shadow-2xl">
         <div className="flex items-center justify-between border-b border-slate-200 bg-white px-5 py-4">
           <div className="flex items-center gap-3">
             <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-cyan-500 to-indigo-600 text-white"><Printer className="h-5 w-5" /></div>
@@ -391,27 +502,36 @@ export default function SmartPrintCenter() {
           <button onClick={() => setRequest(null)} className="rounded-xl border border-slate-200 bg-white p-2 text-slate-500 hover:bg-slate-50"><X className="h-5 w-5" /></button>
         </div>
 
-        <div className="grid min-h-0 flex-1 lg:grid-cols-[360px_minmax(0,1fr)]">
+        <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[360px_minmax(0,1fr)]">
           <aside className="overflow-y-auto border-r border-slate-200 bg-white p-5">
             <div className="space-y-5">
               <section>
                 <label className="mb-2 block text-[11px] font-black uppercase tracking-wider text-slate-500">Paper size</label>
-                <div className="grid grid-cols-2 gap-2">{PAPER_OPTIONS.map(size => <button key={size} onClick={() => setPreferences(p => ({ ...p, paperSize: size }))} className={`rounded-xl border px-3 py-2 text-xs font-black ${preferences.paperSize === size ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-slate-200 bg-white text-slate-600'}`}>{size}</button>)}</div>
+                <select value={preferences.paperSize} onChange={e => setPreferences(p => ({ ...p, paperSize: e.target.value as any }))} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold text-slate-700">
+                  {PAPER_OPTIONS.map(size => <option key={size} value={size}>{size}</option>)}
+                </select>
               </section>
 
               {preferences.paperSize === 'Custom' && <section className="grid grid-cols-2 gap-3"><label className="text-xs font-bold text-slate-600">Width (mm)<input type="number" min="50" max="1000" value={preferences.customWidthMm} onChange={e => setPreferences(p => ({ ...p, customWidthMm: Number(e.target.value) }))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2" /></label><label className="text-xs font-bold text-slate-600">Height (mm)<input type="number" min="50" max="1000" value={preferences.customHeightMm} onChange={e => setPreferences(p => ({ ...p, customHeightMm: Number(e.target.value) }))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2" /></label></section>}
 
-              <section><label className="mb-2 block text-[11px] font-black uppercase tracking-wider text-slate-500">Orientation</label><div className="grid grid-cols-2 gap-2"><button onClick={() => setPreferences(p => ({ ...p, orientation: 'portrait' }))} className={`rounded-xl border px-3 py-2 text-xs font-black ${preferences.orientation === 'portrait' ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-slate-200'}`}>Portrait</button><button onClick={() => setPreferences(p => ({ ...p, orientation: 'landscape' }))} className={`rounded-xl border px-3 py-2 text-xs font-black ${preferences.orientation === 'landscape' ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-slate-200'}`}>Landscape</button></div></section>
+              <section>
+                <label className="mb-2 block text-[11px] font-black uppercase tracking-wider text-slate-500">Orientation</label>
+                <select value={preferences.orientation} onChange={e => setPreferences(p => ({ ...p, orientation: e.target.value as 'portrait' | 'landscape' }))} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold text-slate-700">
+                  <option value="portrait">Portrait</option>
+                  <option value="landscape">Landscape</option>
+                </select>
+              </section>
 
               <section><label className="mb-1 flex items-center justify-between text-xs font-bold text-slate-600"><span>Margins</span><span>{preferences.marginMm} mm</span></label><input type="range" min="0" max="30" step="1" value={preferences.marginMm} onChange={e => setPreferences(p => ({ ...p, marginMm: Number(e.target.value) }))} className="w-full" /></section>
 
-              {request.moduleName === 'question-paper' && <section className="space-y-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-3"><div className="text-[11px] font-black uppercase tracking-wider text-blue-700">Question Paper Layout</div><label className="block text-xs font-bold text-slate-600">Font size <input type="range" min="8" max="16" step="0.5" value={request.questionPaperOptions?.fontSizePt ?? 10.5} onChange={e => setRequest(r => r ? ({ ...r, questionPaperOptions: { ...r.questionPaperOptions, fontSizePt: Number(e.target.value) } }) : r)} className="w-full" /></label><label className="block text-xs font-bold text-slate-600">Line spacing <input type="range" min="1" max="2.2" step="0.05" value={request.questionPaperOptions?.lineSpacing ?? 1.45} onChange={e => setRequest(r => r ? ({ ...r, questionPaperOptions: { ...r.questionPaperOptions, lineSpacing: Number(e.target.value) } }) : r)} className="w-full" /></label><label className="block text-xs font-bold text-slate-600">Question spacing <input type="range" min="1" max="8" step="0.5" value={request.questionPaperOptions?.questionSpacingMm ?? 3.2} onChange={e => setRequest(r => r ? ({ ...r, questionPaperOptions: { ...r.questionPaperOptions, questionSpacingMm: Number(e.target.value) } }) : r)} className="w-full" /></label><label className="flex items-center gap-2 text-xs font-bold text-slate-600"><input type="checkbox" checked={request.questionPaperOptions?.showSchoolHeader !== false} onChange={e => setRequest(r => r ? ({ ...r, questionPaperOptions: { ...r.questionPaperOptions, showSchoolHeader: e.target.checked } }) : r)} /> School name / exam header</label><label className="flex items-center gap-2 text-xs font-bold text-slate-600"><input type="checkbox" checked={request.questionPaperOptions?.showInstructions !== false} onChange={e => setRequest(r => r ? ({ ...r, questionPaperOptions: { ...r.questionPaperOptions, showInstructions: e.target.checked } }) : r)} /> Show instructions</label><label className="flex items-center gap-2 text-xs font-bold text-slate-600"><input type="checkbox" checked={request.questionPaperOptions?.showMarks !== false} onChange={e => setRequest(r => r ? ({ ...r, questionPaperOptions: { ...r.questionPaperOptions, showMarks: e.target.checked } }) : r)} /> Show marks</label><label className="flex items-center gap-2 text-xs font-bold text-slate-600"><input type="checkbox" checked={request.questionPaperOptions?.showStudentFields !== false} onChange={e => setRequest(r => r ? ({ ...r, questionPaperOptions: { ...r.questionPaperOptions, showStudentFields: e.target.checked } }) : r)} /> Student Name / Roll / Date</label><label className="flex items-center gap-2 text-xs font-bold text-slate-600"><input type="checkbox" checked={request.questionPaperOptions?.showAnswerSpace === true} onChange={e => setRequest(r => r ? ({ ...r, questionPaperOptions: { ...r.questionPaperOptions, showAnswerSpace: e.target.checked } }) : r)} /> Answer writing space on paper</label><label className="block text-xs font-bold text-slate-600">Question numbering<select value={request.questionPaperOptions?.numbering ?? 'standard'} onChange={e => setRequest(r => r ? ({ ...r, questionPaperOptions: { ...r.questionPaperOptions, numbering: e.target.value as 'standard'|'numeric'|'none' } }) : r)} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"><option value="standard">Subject language / standard</option><option value="numeric">Q1, Q2, Q3…</option><option value="none">Hide section number</option></select></label><label className="block text-xs font-bold text-slate-600">Custom instructions (one per line)<textarea rows={3} value={request.questionPaperOptions?.customInstructions ?? ''} onChange={e => setRequest(r => r ? ({ ...r, questionPaperOptions: { ...r.questionPaperOptions, customInstructions: e.target.value, showInstructions: true } }) : r)} placeholder="Optional — leave blank for no instructions" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-xs" /></label></section>}
-
               <section><label className="mb-2 block text-[11px] font-black uppercase tracking-wider text-slate-500">Scaling</label><select value={preferences.scaleMode} onChange={e => setPreferences(p => ({ ...p, scaleMode: e.target.value as SmartPrintPreferences['scaleMode'] }))} className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-bold"><option value="fit">Fit to page</option><option value="actual">Actual size</option><option value="custom">Custom scale</option></select>{preferences.scaleMode === 'custom' && <div className="mt-3"><label className="flex justify-between text-xs font-bold text-slate-600"><span>Scale</span><span>{preferences.scalePercent}%</span></label><input type="range" min="50" max="150" value={preferences.scalePercent} onChange={e => setPreferences(p => ({ ...p, scalePercent: Number(e.target.value) }))} className="w-full" /></div>}</section>
 
-              <section className="space-y-2"><p className="text-[11px] font-black uppercase tracking-wider text-slate-500">Header & footer</p>{[
-                ['includeSchoolHeader','School details'],['includeDocumentTitle','Document title'],['includeFooter','Footer'],['includePageNumbers','Page numbers']
-              ].map(([key,label]) => <label key={key} className="flex items-center justify-between rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700"><span>{label}</span><input type="checkbox" checked={Boolean(preferences[key as keyof SmartPrintPreferences])} onChange={e => setPreferences(p => ({ ...p, [key]: e.target.checked }))} /></label>)}</section>
+              <section>
+                <details className="rounded-xl border border-slate-200 bg-white">
+                  <summary className="cursor-pointer select-none px-3 py-2.5 text-[11px] font-black uppercase tracking-wider text-slate-500">Header &amp; footer</summary>
+                  <div className="space-y-2 p-3 pt-1">{[['includeSchoolHeader','School details'],['includeDocumentTitle','Document title'],['includeFooter','Footer'],['includePageNumbers','Page numbers']].map(([key,label]) => <label key={key} className="flex items-center justify-between rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700"><span>{label}</span><input type="checkbox" checked={Boolean(preferences[key as keyof SmartPrintPreferences])} onChange={e => setPreferences(p => ({ ...p, [key]: e.target.checked }))} /></label>)}</div>
+                </details>
+              </section>
 
               <div className="rounded-xl border border-cyan-200 bg-cyan-50 p-3 text-xs leading-5 text-cyan-900"><strong>{dimensions.width.toFixed(1)} × {dimensions.height.toFixed(1)} mm</strong><br />Generated PDF and print layout use the selected paper dimensions. In the printer dialog, select the same physical paper size.</div>
 
@@ -421,8 +541,8 @@ export default function SmartPrintCenter() {
 
           <section className="flex min-h-0 flex-col bg-slate-200/70">
             <div className="flex items-center justify-between border-b border-slate-300 bg-slate-50 px-4 py-3"><div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-600"><Eye className="h-4 w-4" />Live print preview</div><div className="text-xs font-bold text-slate-500">Tables repeat headings and avoid row cuts automatically</div></div>
-            <div className="min-h-0 flex-1 overflow-auto p-4"><iframe ref={previewRef} title="Smart print preview" srcDoc={previewHtml} className="h-full min-h-[640px] w-full rounded-xl border border-slate-300 bg-white shadow-inner" /></div>
-            <div className="flex flex-wrap justify-end gap-3 border-t border-slate-300 bg-white px-5 py-4"><button onClick={() => setRequest(null)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-black text-slate-600">Cancel</button><button onClick={downloadPdf} disabled={busy} className="flex items-center gap-2 rounded-xl bg-rose-600 px-5 py-2.5 text-xs font-black text-white disabled:opacity-50"><Download className="h-4 w-4" />{busy ? 'Generating PDF…' : 'Download PDF'}</button><button onClick={runNativePrint} className="flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-xs font-black text-white"><Printer className="h-4 w-4" />Print</button></div>
+            <div className="min-h-0 flex-1 overflow-auto p-4"><div className="min-w-fit"><iframe ref={previewRef} title="Smart print preview" srcDoc={previewHtml} className="h-full min-h-[640px] w-full min-w-[640px] rounded-xl border border-slate-300 bg-white shadow-inner" /></div></div>
+            <div className="flex flex-col gap-2 border-t border-slate-300 bg-white px-4 pt-3 pb-24 sm:flex-row sm:flex-wrap sm:justify-end sm:gap-3 sm:px-5 sm:py-4"><button onClick={() => setRequest(null)} className="order-3 w-full rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-black text-slate-600 sm:order-1 sm:w-auto">Cancel</button><button onClick={downloadPdf} disabled={busy} className="order-1 flex w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 py-2.5 text-xs font-black text-white disabled:opacity-50 sm:order-2 sm:w-auto"><Download className="h-4 w-4" />{busy ? 'Generating PDF…' : 'Download PDF'}</button><button onClick={runNativePrint} className="order-2 flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-xs font-black text-white sm:order-3 sm:w-auto"><Printer className="h-4 w-4" />Print</button></div>
           </section>
         </div>
       </div>
