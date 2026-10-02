@@ -522,9 +522,6 @@ interface V2TimetableCell {
 // 2) Android native bridge (if registered) - saves directly to Downloads
 // 3) saveAs fallback - works on desktop browsers
 async function smartDownload(blob: Blob, filename: string): Promise<void> {
-  const bridgeType = typeof (window as any).AndroidDownloader;
-  const hasSave = (window as any).AndroidDownloader && typeof (window as any).AndroidDownloader.saveBase64 === 'function';
-  alert('DIAG:\nBridge type: ' + bridgeType + '\nHas saveBase64: ' + hasSave + '\nBlob size: ' + blob.size + '\nFile: ' + filename);
   // Priority 1: Android native bridge (direct download to Downloads folder, no user action)
   const androidBridge = (window as any).AndroidDownloader;
   if (androidBridge && typeof androidBridge.saveBase64 === "function") {
@@ -2461,7 +2458,6 @@ export default function SmartTimetableV2({
         const paperW = (PAPER_DIMS_MM[printLayout] || PAPER_DIMS_MM['A4_landscape']).w;
         const contentWidthPx = Math.round((paperW - 10) / 25.4 * 96);
 
-        alert('PDF DIAG:\nPaper: ' + printLayout + '\nPaper width (mm): ' + paperW + '\nContent width (px): ' + contentWidthPx + '\nElement scrollWidth: ' + element.scrollWidth);
 
         const offscreen = document.createElement('div');
         offscreen.style.cssText = 'position:fixed;left:-99999px;top:0;background:#ffffff;padding:10mm;box-sizing:border-box;';
@@ -2545,6 +2541,8 @@ export default function SmartTimetableV2({
           scale: 2,
           scrollY: 0,
           scrollX: 0,
+          windowWidth: contentWidthPx,
+          windowHeight: 5000,
           onclone: (clonedDoc: Document) => {
             // Replace oklch with RGB in all style elements in the cloned document
             clonedDoc.querySelectorAll('style').forEach((styleEl) => {
@@ -2964,6 +2962,8 @@ export default function SmartTimetableV2({
           scale: 2,
           scrollY: 0,
           scrollX: 0,
+          windowWidth: contentWidthPx,
+          windowHeight: 5000,
           onclone: (clonedDoc: Document) => {
             // Replace oklch with RGB in all style elements in the cloned document
             clonedDoc.querySelectorAll('style').forEach((styleEl) => {
