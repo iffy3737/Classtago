@@ -2452,7 +2452,7 @@ export default function SmartTimetableV2({
         
         const filename = `${selectedReportType}_timetable_${(reportClass || reportTeacher || reportDay).replace(/ /g, "_")}.pdf`;
 
-        // Force element width based on selected paper size
+        // Create offscreen container with fixed width = paper size
         const PAPER_DIMS_MM: Record<string, { w: number }> = {
           'A3_landscape': { w: 420 },
           'A4_landscape': { w: 297 },
@@ -2460,19 +2460,29 @@ export default function SmartTimetableV2({
         };
         const paperW = (PAPER_DIMS_MM[printLayout] || PAPER_DIMS_MM['A4_landscape']).w;
         const contentWidthPx = Math.round((paperW - 10) / 25.4 * 96);
-        const origElemWidth = element.style.width;
-        const origElemMinWidth = element.style.minWidth;
-        element.style.width = contentWidthPx + 'px';
-        element.style.minWidth = contentWidthPx + 'px';
-        void element.offsetWidth;
+
+        const offscreen = document.createElement('div');
+        offscreen.style.cssText = 'position:fixed;left:-99999px;top:0;background:#ffffff;padding:10mm;box-sizing:border-box;';
+        offscreen.style.width = contentWidthPx + 'px';
+        const clonedEl = element.cloneNode(true) as HTMLElement;
+        clonedEl.style.width = '100%';
+        clonedEl.style.maxHeight = 'none';
+        clonedEl.style.overflow = 'visible';
+        clonedEl.style.height = 'auto';
+        clonedEl.style.minWidth = '0';
+        offscreen.appendChild(clonedEl);
+        document.body.appendChild(offscreen);
+
+        // Point html2pdf to the offscreen clone
+        const captureTarget = clonedEl;
+        const cleanupOffscreen = () => {
+          if (offscreen.parentNode) offscreen.parentNode.removeChild(offscreen);
+        };
 
         // Temporarily unconstrain element + all ancestors so html2canvas captures full content
         const restoreStyles: Array<() => void> = [];
-        restoreStyles.push(() => {
-          element.style.width = origElemWidth;
-          element.style.minWidth = origElemMinWidth;
-        });
-        let node: HTMLElement | null = element;
+        restoreStyles.push(cleanupOffscreen);
+        let node: HTMLElement | null = null;
         while (node && node !== document.body) {
           const cs = window.getComputedStyle(node);
           if (cs.overflow !== 'visible' || cs.maxHeight !== 'none' || cs.height.includes('px') || cs.width.includes('px')) {
@@ -2602,7 +2612,7 @@ export default function SmartTimetableV2({
       
       // Use outputPdf('blob') instead of .save() so we can route the blob
       // through our smartDownload bridge on Android (WebView blocks direct downloads).
-      html2pdf().set(opt).from(element).outputPdf('blob').then(async (pdfBlob: Blob) => {
+      html2pdf().set(opt).from(captureTarget).outputPdf('blob').then(async (pdfBlob: Blob) => {
         try {
           await smartDownload(pdfBlob, filename);
         } catch (e: any) {
@@ -2867,21 +2877,30 @@ export default function SmartTimetableV2({
         }
         const filename = `interactive_timetable_${viewType}_${(viewType === "class" ? selectedClass : selectedTeacher).replace(/ /g, "_")}.pdf`;
 
-        // Force element width to A3 landscape (interactive board has no paper selector)
+        // Create offscreen container (A3 landscape) - interactive board has no paper selector
         const A3_LANDSCAPE_W_MM = 420;
         const contentWidthPx = Math.round((A3_LANDSCAPE_W_MM - 10) / 25.4 * 96);
-        const origElemWidth = element.style.width;
-        const origElemMinWidth = element.style.minWidth;
-        element.style.width = contentWidthPx + 'px';
-        element.style.minWidth = contentWidthPx + 'px';
-        void element.offsetWidth;
 
-        // Temporarily unconstrain element + ancestors for full content capture
+        const offscreen = document.createElement('div');
+        offscreen.style.cssText = 'position:fixed;left:-99999px;top:0;background:#ffffff;padding:10mm;box-sizing:border-box;';
+        offscreen.style.width = contentWidthPx + 'px';
+        const clonedEl = element.cloneNode(true) as HTMLElement;
+        clonedEl.style.width = '100%';
+        clonedEl.style.maxHeight = 'none';
+        clonedEl.style.overflow = 'visible';
+        clonedEl.style.height = 'auto';
+        clonedEl.style.minWidth = '0';
+        offscreen.appendChild(clonedEl);
+        document.body.appendChild(offscreen);
+
+        const captureTarget = clonedEl;
+        const cleanupOffscreen = () => {
+          if (offscreen.parentNode) offscreen.parentNode.removeChild(offscreen);
+        };
+
+        // Temporarily unconstrain original element
         const restoreStyles: Array<() => void> = [];
-        restoreStyles.push(() => {
-          element.style.width = origElemWidth;
-          element.style.minWidth = origElemMinWidth;
-        });
+        restoreStyles.push(cleanupOffscreen);
         let node: HTMLElement | null = element;
         while (node && node !== document.body) {
           const cs = window.getComputedStyle(node);
@@ -3006,7 +3025,7 @@ export default function SmartTimetableV2({
         pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', '.avoid-print-break'] }
       };
       
-      html2pdf().set(opt).from(element).outputPdf('blob').then(async (pdfBlob: Blob) => {
+      html2pdf().set(opt).from(captureTarget).outputPdf('blob').then(async (pdfBlob: Blob) => {
         try { await smartDownload(pdfBlob, filename); } catch (e: any) { console.error('PDF save error:', e); }
         restoreStyles.forEach(fn => fn());
         setIsExportingInteractivePdf(false);
