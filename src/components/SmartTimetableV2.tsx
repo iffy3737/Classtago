@@ -2452,9 +2452,6 @@ export default function SmartTimetableV2({
         
         const filename = `${selectedReportType}_timetable_${(reportClass || reportTeacher || reportDay).replace(/ /g, "_")}.pdf`;
 
-        // DIAGNOSTIC
-        alert('PDF DIAG:\nContent width px: ' + contentWidthPx + '\nElement original scrollWidth: ' + element.scrollWidth + '\nElement clientWidth: ' + element.clientWidth + '\nPaper: ' + printLayout);
-
         // Create offscreen container with fixed width = paper size
         const PAPER_DIMS_MM: Record<string, { w: number }> = {
           'A3_landscape': { w: 420 },
@@ -2463,6 +2460,8 @@ export default function SmartTimetableV2({
         };
         const paperW = (PAPER_DIMS_MM[printLayout] || PAPER_DIMS_MM['A4_landscape']).w;
         const contentWidthPx = Math.round((paperW - 10) / 25.4 * 96);
+
+        alert('PDF DIAG:\nPaper: ' + printLayout + '\nPaper width (mm): ' + paperW + '\nContent width (px): ' + contentWidthPx + '\nElement scrollWidth: ' + element.scrollWidth);
 
         const offscreen = document.createElement('div');
         offscreen.style.cssText = 'position:fixed;left:-99999px;top:0;background:#ffffff;padding:10mm;box-sizing:border-box;';
