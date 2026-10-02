@@ -2452,6 +2452,9 @@ export default function SmartTimetableV2({
         
         const filename = `${selectedReportType}_timetable_${(reportClass || reportTeacher || reportDay).replace(/ /g, "_")}.pdf`;
 
+        // DIAGNOSTIC
+        alert('PDF DIAG:\nContent width px: ' + contentWidthPx + '\nElement original scrollWidth: ' + element.scrollWidth + '\nElement clientWidth: ' + element.clientWidth + '\nPaper: ' + printLayout);
+
         // Create offscreen container with fixed width = paper size
         const PAPER_DIMS_MM: Record<string, { w: number }> = {
           'A3_landscape': { w: 420 },
