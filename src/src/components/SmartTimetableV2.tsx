@@ -2135,7 +2135,8 @@ export default function SmartTimetableV2({
     setIsExportingPdf(true);
     try {
       // @ts-ignore
-      const html2pdf = (await import('html2pdf.js')).default;
+      const html2pdfModule = await import('html2pdf.js');
+      const html2pdf = (html2pdfModule as any).default || html2pdfModule;
 
       setTimeout(() => {
         const element = document.getElementById("timetable-print-area");
@@ -2493,7 +2494,8 @@ export default function SmartTimetableV2({
     setIsExportingInteractivePdf(true);
     try {
       // @ts-ignore
-      const html2pdf = (await import('html2pdf.js')).default;
+      const html2pdfModule = await import('html2pdf.js');
+      const html2pdf = (html2pdfModule as any).default || html2pdfModule;
 
       setTimeout(() => {
         const element = document.getElementById("interactive-timetable-print-area");
