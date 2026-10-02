@@ -419,14 +419,12 @@ export default function SmartPrintCenter() {
 
       let pdfBlob: Blob;
       try {
+        // Use html2canvas-pro (supports oklch) + jsPDF directly
         // @ts-ignore
-        const html2pdf = (await import('html2pdf.js')).default;
+        const html2canvas = (await import('html2canvas-pro')).default;
+        const { jsPDF } = await import('jspdf');
 
-        pdfBlob = await html2pdf().set({
-        margin: 0,
-        filename: `${(request.title || 'School_Document').replace(/[^a-z0-9_-]+/gi, '_')}_${preferences.paperSize}_${preferences.orientation}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
+        const canvas = await html2canvas(container, {
           scale: 2,
           useCORS: true,
           logging: false,
@@ -435,55 +433,34 @@ export default function SmartPrintCenter() {
           scrollX: 0,
           windowWidth: container.scrollWidth,
           windowHeight: container.scrollHeight,
-          onclone: (clonedDoc: Document) => {
-            // Replace oklch in style tags
-            clonedDoc.querySelectorAll('style').forEach((styleEl) => {
-              if (styleEl.textContent) {
-                styleEl.textContent = replaceOklchWithRgb(styleEl.textContent);
-              }
-            });
-            // Replace oklch in inline styles
-            clonedDoc.querySelectorAll('[style]').forEach((el: any) => {
-              const styleAttr = el.getAttribute('style');
-              if (styleAttr && (styleAttr.includes('oklch') || styleAttr.includes('oklab'))) {
-                el.setAttribute('style', replaceOklchWithRgb(styleAttr));
-              }
-            });
-            // CRITICAL: Override getComputedStyle on the CLONED iframe's window
-            // (html2canvas reads colors from cloned doc, not main doc)
-            const clonedWin: any = clonedDoc.defaultView;
-            if (clonedWin && clonedWin.getComputedStyle) {
-              const origGCS = clonedWin.getComputedStyle.bind(clonedWin);
-              clonedWin.getComputedStyle = function(el: Element, pseudo?: string | null) {
-                const style = origGCS(el, pseudo);
-                return new Proxy(style, {
-                  get(target: any, prop: string | symbol) {
-                    const val = target[prop as any];
-                    if (prop === 'getPropertyValue') {
-                      return function(propertyName: string) {
-                        const originalVal = target.getPropertyValue(propertyName);
-                        if (typeof originalVal === 'string' && (originalVal.includes('oklch') || originalVal.includes('oklab'))) {
-                          return oklchToRgb(originalVal);
-                        }
-                        return originalVal;
-                      };
-                    }
-                    if (typeof val === 'string' && (val.includes('oklch') || val.includes('oklab'))) {
-                      return oklchToRgb(val);
-                    }
-                    if (typeof val === 'function') {
-                      return val.bind(target);
-                    }
-                    return val;
-                  }
-                });
-              };
-            }
-          },
-        },
-        jsPDF: { unit: 'mm', format: [dimensions.width, dimensions.height], orientation: preferences.orientation },
-        pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', '.avoid-print-break', '.homework-print-meta', '.homework-print-line', '.question-row', '.qp-answer-area', '.qp-match-table', '.qp-section-head', '.qp-subquestion-row', '.qp-section-match-wrap'] }
-      }).from(container).outputPdf('blob');
+        } as any);
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        const pdf = new jsPDF({
+          unit: 'mm',
+          format: [dimensions.width, dimensions.height],
+          orientation: preferences.orientation as 'portrait' | 'landscape',
+        });
+
+        const pageW = dimensions.width;
+        const pageH = dimensions.height;
+        const imgW = pageW;
+        const imgH = (canvas.height * imgW) / canvas.width;
+
+        let heightLeft = imgH;
+        let position = 0;
+
+        pdf.addImage(imgData, 'JPEG', 0, position, imgW, imgH);
+        heightLeft -= pageH;
+
+        while (heightLeft > 0) {
+          position = heightLeft - imgH;
+          pdf.addPage();
+          pdf.addImage(imgData, 'JPEG', 0, position, imgW, imgH);
+          heightLeft -= pageH;
+        }
+
+        pdfBlob = pdf.output('blob');
       } finally {
         restoreGlobalOklch();
         window.getComputedStyle = originalGetComputedStyle;
