@@ -1565,7 +1565,7 @@ export default function SmartSubstituteManager({
 
                     {/* TABLE OF AFFECTED PERIODS */}
                     <div className="overflow-x-auto rounded-xl border border-slate-800">
-                      <table className="w-full text-xs text-left">
+                      <table className="w-full min-w-[900px] text-xs text-left">
                         <thead className="bg-slate-950 text-slate-400 font-mono text-[10px] uppercase border-b border-slate-800">
                           <tr>
                             <th className="p-3">Period</th>
@@ -1586,11 +1586,11 @@ export default function SmartSubstituteManager({
                               <td className="p-3 font-bold text-white">
                                 {item.className} ({item.division})
                               </td>
-                              <td className="p-3 font-medium text-slate-300">{item.subjectName}</td>
+                              <td className="p-3 font-medium text-slate-300 whitespace-nowrap">{item.subjectName}</td>
                               <td className="p-3 font-medium text-slate-400">{item.originalTeacher}</td>
 
                               {/* Substitute Teacher Selector / Display */}
-                              <td className="p-3">
+                              <td className="p-3 whitespace-nowrap">
                                 {isDraft ? (
                                   <div className="flex items-center gap-2">
                                     <select
@@ -1684,13 +1684,13 @@ export default function SmartSubstituteManager({
                                 )}
                               </td>
 
-                              <td className="p-3">
+                              <td className="p-3 whitespace-nowrap">
                                 <span className="text-[10px] bg-indigo-500/10 text-indigo-300 font-bold px-2 py-0.5 rounded border border-indigo-500/20 font-mono">
                                   {item.priorityReason || "Balanced Engine"}
                                 </span>
                               </td>
 
-                              <td className="p-3">
+                              <td className="p-3 whitespace-nowrap">
                                 {isDraft ? (
                                   <input
                                     type="text"
@@ -1797,33 +1797,33 @@ export default function SmartSubstituteManager({
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-xs text-left">
+                <table className="w-full min-w-[900px] text-xs text-left">
                   <thead className="bg-slate-950 text-slate-400 font-mono text-[10px] uppercase border-b border-slate-800">
                     <tr>
-                      <th className="p-3">Date</th>
-                      <th className="p-3">Day</th>
-                      <th className="p-3">Absent Teacher</th>
-                      <th className="p-3">Reason</th>
-                      <th className="p-3">Affected Periods</th>
-                      <th className="p-3">Status</th>
-                      <th className="p-3">Prepared By</th>
-                      <th className="p-3 text-right">Actions</th>
+                      <th className="p-3 whitespace-nowrap">Date</th>
+                      <th className="p-3 whitespace-nowrap">Day</th>
+                      <th className="p-3 whitespace-nowrap">Absent Teacher</th>
+                      <th className="p-3 whitespace-nowrap">Reason</th>
+                      <th className="p-3 whitespace-nowrap">Affected Periods</th>
+                      <th className="p-3 whitespace-nowrap">Status</th>
+                      <th className="p-3 whitespace-nowrap">Prepared By</th>
+                      <th className="p-3 whitespace-nowrap text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800/80 text-slate-200">
                     {filteredHistory.map((adj) => (
                       <tr key={adj.id} className="hover:bg-slate-950/50">
-                        <td className="p-3 font-mono font-bold text-indigo-400">{adj.date}</td>
-                        <td className="p-3 font-bold text-slate-300">{adj.day}</td>
-                        <td className="p-3 font-black text-white">{adj.originalTeacher}</td>
-                        <td className="p-3 font-medium text-slate-300">
+                        <td className="p-3 font-mono font-bold text-indigo-400 whitespace-nowrap">{adj.date}</td>
+                        <td className="p-3 font-bold text-slate-300 whitespace-nowrap">{adj.day}</td>
+                        <td className="p-3 font-black text-white whitespace-nowrap">{adj.originalTeacher}</td>
+                        <td className="p-3 font-medium text-slate-300 whitespace-nowrap">
                           {adj.reason}
                           {adj.customReason ? ` (${adj.customReason})` : ""}
                         </td>
-                        <td className="p-3 font-mono font-bold text-slate-400">
+                        <td className="p-3 font-mono font-bold text-slate-400 whitespace-nowrap">
                           {adj.items.length} Periods
                         </td>
-                        <td className="p-3">
+                        <td className="p-3 whitespace-nowrap">
                           <span
                             className={`text-[10px] font-extrabold px-2 py-0.5 rounded uppercase font-mono ${
                               adj.status === "Approved"
@@ -1834,8 +1834,8 @@ export default function SmartSubstituteManager({
                             {adj.status}
                           </span>
                         </td>
-                        <td className="p-3 text-slate-400">{adj.preparedBy}</td>
-                        <td className="p-3 text-right">
+                        <td className="p-3 text-slate-400 whitespace-nowrap">{adj.preparedBy}</td>
+                        <td className="p-3 text-right whitespace-nowrap">
                           <div className="flex items-center justify-end gap-1.5">
                             <button
                               onClick={() => setPrintModalAdj(adj)}
