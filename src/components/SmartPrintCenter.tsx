@@ -390,6 +390,33 @@ export default function SmartPrintCenter() {
       // Globally patch oklch before html2canvas runs
       const restoreGlobalOklch = globalOklchPatch();
 
+      // Override getComputedStyle so html2canvas never sees oklch
+      const originalGetComputedStyle = window.getComputedStyle;
+      window.getComputedStyle = function(el: Element, pseudoEl?: string | null) {
+        const style = originalGetComputedStyle.call(window, el, pseudoEl);
+        return new Proxy(style, {
+          get(target: any, prop: string | symbol) {
+            const val = target[prop as any];
+            if (prop === 'getPropertyValue') {
+              return function(propertyName: string) {
+                const originalVal = target.getPropertyValue(propertyName);
+                if (typeof originalVal === 'string' && (originalVal.includes('oklch') || originalVal.includes('oklab'))) {
+                  return oklchToRgb(originalVal);
+                }
+                return originalVal;
+              };
+            }
+            if (typeof val === 'string' && (val.includes('oklch') || val.includes('oklab'))) {
+              return oklchToRgb(val);
+            }
+            if (typeof val === 'function') {
+              return val.bind(target);
+            }
+            return val;
+          }
+        }) as any;
+      } as any;
+
       let pdfBlob: Blob;
       try {
         // @ts-ignore
@@ -427,6 +454,7 @@ export default function SmartPrintCenter() {
       }).from(container).outputPdf('blob');
       } finally {
         restoreGlobalOklch();
+        window.getComputedStyle = originalGetComputedStyle;
       }
 
       const filename = `${(request.title || 'School_Document').replace(/[^a-z0-9_-]+/gi, '_')}_${preferences.paperSize}_${preferences.orientation}.pdf`;
