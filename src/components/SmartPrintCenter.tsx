@@ -411,20 +411,31 @@ export default function SmartPrintCenter() {
             <div className="space-y-5">
               <section>
                 <label className="mb-2 block text-[11px] font-black uppercase tracking-wider text-slate-500">Paper size</label>
-                <div className="grid grid-cols-2 gap-2">{PAPER_OPTIONS.map(size => <button key={size} onClick={() => setPreferences(p => ({ ...p, paperSize: size }))} className={`rounded-xl border px-3 py-2 text-xs font-black ${preferences.paperSize === size ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-slate-200 bg-white text-slate-600'}`}>{size}</button>)}</div>
+                <select value={preferences.paperSize} onChange={e => setPreferences(p => ({ ...p, paperSize: e.target.value as any }))} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold text-slate-700">
+                  {PAPER_OPTIONS.map(size => <option key={size} value={size}>{size}</option>)}
+                </select>
               </section>
 
               {preferences.paperSize === 'Custom' && <section className="grid grid-cols-2 gap-3"><label className="text-xs font-bold text-slate-600">Width (mm)<input type="number" min="50" max="1000" value={preferences.customWidthMm} onChange={e => setPreferences(p => ({ ...p, customWidthMm: Number(e.target.value) }))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2" /></label><label className="text-xs font-bold text-slate-600">Height (mm)<input type="number" min="50" max="1000" value={preferences.customHeightMm} onChange={e => setPreferences(p => ({ ...p, customHeightMm: Number(e.target.value) }))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2" /></label></section>}
 
-              <section><label className="mb-2 block text-[11px] font-black uppercase tracking-wider text-slate-500">Orientation</label><div className="grid grid-cols-2 gap-2"><button onClick={() => setPreferences(p => ({ ...p, orientation: 'portrait' }))} className={`rounded-xl border px-3 py-2 text-xs font-black ${preferences.orientation === 'portrait' ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-slate-200'}`}>Portrait</button><button onClick={() => setPreferences(p => ({ ...p, orientation: 'landscape' }))} className={`rounded-xl border px-3 py-2 text-xs font-black ${preferences.orientation === 'landscape' ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-slate-200'}`}>Landscape</button></div></section>
+              <section>
+                <label className="mb-2 block text-[11px] font-black uppercase tracking-wider text-slate-500">Orientation</label>
+                <select value={preferences.orientation} onChange={e => setPreferences(p => ({ ...p, orientation: e.target.value as 'portrait' | 'landscape' }))} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold text-slate-700">
+                  <option value="portrait">Portrait</option>
+                  <option value="landscape">Landscape</option>
+                </select>
+              </section>
 
               <section><label className="mb-1 flex items-center justify-between text-xs font-bold text-slate-600"><span>Margins</span><span>{preferences.marginMm} mm</span></label><input type="range" min="0" max="30" step="1" value={preferences.marginMm} onChange={e => setPreferences(p => ({ ...p, marginMm: Number(e.target.value) }))} className="w-full" /></section>
 
               <section><label className="mb-2 block text-[11px] font-black uppercase tracking-wider text-slate-500">Scaling</label><select value={preferences.scaleMode} onChange={e => setPreferences(p => ({ ...p, scaleMode: e.target.value as SmartPrintPreferences['scaleMode'] }))} className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-bold"><option value="fit">Fit to page</option><option value="actual">Actual size</option><option value="custom">Custom scale</option></select>{preferences.scaleMode === 'custom' && <div className="mt-3"><label className="flex justify-between text-xs font-bold text-slate-600"><span>Scale</span><span>{preferences.scalePercent}%</span></label><input type="range" min="50" max="150" value={preferences.scalePercent} onChange={e => setPreferences(p => ({ ...p, scalePercent: Number(e.target.value) }))} className="w-full" /></div>}</section>
 
-              <section className="space-y-2"><p className="text-[11px] font-black uppercase tracking-wider text-slate-500">Header & footer</p>{[
-                ['includeSchoolHeader','School details'],['includeDocumentTitle','Document title'],['includeFooter','Footer'],['includePageNumbers','Page numbers']
-              ].map(([key,label]) => <label key={key} className="flex items-center justify-between rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700"><span>{label}</span><input type="checkbox" checked={Boolean(preferences[key as keyof SmartPrintPreferences])} onChange={e => setPreferences(p => ({ ...p, [key]: e.target.checked }))} /></label>)}</section>
+              <section>
+                <details className="rounded-xl border border-slate-200 bg-white">
+                  <summary className="cursor-pointer select-none px-3 py-2.5 text-[11px] font-black uppercase tracking-wider text-slate-500">Header &amp; footer</summary>
+                  <div className="space-y-2 p-3 pt-1">{[['includeSchoolHeader','School details'],['includeDocumentTitle','Document title'],['includeFooter','Footer'],['includePageNumbers','Page numbers']].map(([key,label]) => <label key={key} className="flex items-center justify-between rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700"><span>{label}</span><input type="checkbox" checked={Boolean(preferences[key as keyof SmartPrintPreferences])} onChange={e => setPreferences(p => ({ ...p, [key]: e.target.checked }))} /></label>)}</div>
+                </details>
+              </section>
 
               <div className="rounded-xl border border-cyan-200 bg-cyan-50 p-3 text-xs leading-5 text-cyan-900"><strong>{dimensions.width.toFixed(1)} × {dimensions.height.toFixed(1)} mm</strong><br />Generated PDF and print layout use the selected paper dimensions. In the printer dialog, select the same physical paper size.</div>
 
@@ -434,7 +445,7 @@ export default function SmartPrintCenter() {
 
           <section className="flex min-h-0 flex-col bg-slate-200/70">
             <div className="flex items-center justify-between border-b border-slate-300 bg-slate-50 px-4 py-3"><div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-600"><Eye className="h-4 w-4" />Live print preview</div><div className="text-xs font-bold text-slate-500">Tables repeat headings and avoid row cuts automatically</div></div>
-            <div className="min-h-0 flex-1 overflow-auto p-4"><iframe ref={previewRef} title="Smart print preview" srcDoc={previewHtml} className="h-full min-h-[640px] w-full rounded-xl border border-slate-300 bg-white shadow-inner" /></div>
+            <div className="min-h-0 flex-1 overflow-auto p-4"><div className="min-w-fit"><iframe ref={previewRef} title="Smart print preview" srcDoc={previewHtml} className="h-full min-h-[640px] w-full min-w-[640px] rounded-xl border border-slate-300 bg-white shadow-inner" /></div></div>
             <div className="flex flex-col gap-2 border-t border-slate-300 bg-white px-4 pt-3 pb-24 sm:flex-row sm:flex-wrap sm:justify-end sm:gap-3 sm:px-5 sm:py-4"><button onClick={() => setRequest(null)} className="order-3 w-full rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-black text-slate-600 sm:order-1 sm:w-auto">Cancel</button><button onClick={downloadPdf} disabled={busy} className="order-1 flex w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 py-2.5 text-xs font-black text-white disabled:opacity-50 sm:order-2 sm:w-auto"><Download className="h-4 w-4" />{busy ? 'Generating PDF…' : 'Download PDF'}</button><button onClick={runNativePrint} className="order-2 flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-xs font-black text-white sm:order-3 sm:w-auto"><Printer className="h-4 w-4" />Print</button></div>
           </section>
         </div>
