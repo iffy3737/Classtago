@@ -401,8 +401,9 @@ export default function SmartPrintCenter() {
       });
       const saved = await saveNativePdf(base64, filename);
       window.alert(`PDF saved to ${saved.savedTo}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      alert('PDF FAIL DIAG:\n' + (error?.message || error) + '\n\nStack: ' + String(error?.stack || '').slice(0, 300));
       const proceed = window.confirm('PDF auto-generation failed on this device.\n\nOpen print dialog and choose "Save as PDF"?');
       if (proceed) { runNativePrint(); }
     } finally {
