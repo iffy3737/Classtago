@@ -2180,6 +2180,27 @@ export default function SmartTimetableV2({
         html2canvas:  { 
           scale: 2,
           onclone: (clonedDoc: Document) => {
+            const pdfRoot = clonedDoc.getElementById("interactive-timetable-print-area");
+            if (pdfRoot) {
+              const root = pdfRoot as HTMLElement;
+              root.style.width = "1100px";
+              root.style.maxWidth = "1100px";
+              root.style.overflow = "visible";
+              root.style.margin = "0 auto";
+              root.querySelectorAll(".overflow-x-auto").forEach((node) => {
+                const el = node as HTMLElement;
+                el.style.overflow = "visible";
+                el.style.width = "100%";
+              });
+              root.querySelectorAll("table").forEach((node) => {
+                const table = node as HTMLElement;
+                table.style.width = "100%";
+                table.style.minWidth = "0";
+                table.style.maxWidth = "100%";
+                table.style.tableLayout = "fixed";
+              });
+            }
+
             // Replace oklch with RGB in all style elements in the cloned document
             clonedDoc.querySelectorAll('style').forEach((styleEl) => {
               if (styleEl.textContent) {
@@ -2516,6 +2537,27 @@ export default function SmartTimetableV2({
         html2canvas:  { 
           scale: 2,
           onclone: (clonedDoc: Document) => {
+            const pdfRoot = clonedDoc.getElementById("timetable-print-area");
+            if (pdfRoot) {
+              const root = pdfRoot as HTMLElement;
+              root.style.width = "1100px";
+              root.style.maxWidth = "1100px";
+              root.style.overflow = "visible";
+              root.style.margin = "0 auto";
+              root.querySelectorAll(".overflow-x-auto, .overflow-hidden").forEach((node) => {
+                const el = node as HTMLElement;
+                el.style.overflow = "visible";
+                el.style.maxWidth = "100%";
+              });
+              root.querySelectorAll("table").forEach((node) => {
+                const table = node as HTMLElement;
+                table.style.width = "100%";
+                table.style.minWidth = "0";
+                table.style.maxWidth = "100%";
+                table.style.tableLayout = "fixed";
+              });
+            }
+
             // Replace oklch with RGB in all style elements in the cloned document
             clonedDoc.querySelectorAll('style').forEach((styleEl) => {
               if (styleEl.textContent) {
