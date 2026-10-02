@@ -268,6 +268,13 @@ export default function SmartPrintCenter() {
 
   const runNativePrint = () => {
     if (!request) return;
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (isMobile) {
+      // On Android WebView, iframe.contentWindow.print() usually does nothing.
+      // Fall back to generating a PDF which user can print from the viewer.
+      downloadPdf();
+      return;
+    }
     const frame = document.createElement('iframe');
     frame.setAttribute('aria-hidden', 'true');
     frame.style.position = 'fixed';
