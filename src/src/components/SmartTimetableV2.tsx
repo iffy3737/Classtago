@@ -2180,7 +2180,7 @@ export default function SmartTimetableV2({
         html2canvas:  { 
           scale: 2,
           onclone: (clonedDoc: Document) => {
-            const pdfRoot = clonedDoc.getElementById("interactive-timetable-print-area");
+            const pdfRoot = clonedDoc.getElementById("timetable-print-area");
             if (pdfRoot) {
               const root = pdfRoot as HTMLElement;
               root.style.width = "1100px";
@@ -2537,7 +2537,7 @@ export default function SmartTimetableV2({
         html2canvas:  { 
           scale: 2,
           onclone: (clonedDoc: Document) => {
-            const pdfRoot = clonedDoc.getElementById("timetable-print-area");
+            const pdfRoot = clonedDoc.getElementById("interactive-timetable-print-area");
             if (pdfRoot) {
               const root = pdfRoot as HTMLElement;
               root.style.width = "1100px";
