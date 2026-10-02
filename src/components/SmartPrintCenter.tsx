@@ -396,8 +396,8 @@ export default function SmartPrintCenter() {
   if (!request) return null;
 
   return (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/75 p-3 backdrop-blur-md no-print">
-      <div className="flex h-[95vh] w-full max-w-[96rem] flex-col overflow-hidden rounded-[1.75rem] border border-white/10 bg-slate-100 shadow-2xl">
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/75 p-0 sm:p-3 backdrop-blur-md no-print">
+      <div className="flex h-screen sm:h-[95vh] w-full max-w-full sm:max-w-[96rem] flex-col overflow-hidden rounded-none sm:rounded-[1.75rem] border border-white/10 bg-slate-100 shadow-2xl">
         <div className="flex items-center justify-between border-b border-slate-200 bg-white px-5 py-4">
           <div className="flex items-center gap-3">
             <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-cyan-500 to-indigo-600 text-white"><Printer className="h-5 w-5" /></div>
@@ -406,7 +406,7 @@ export default function SmartPrintCenter() {
           <button onClick={() => setRequest(null)} className="rounded-xl border border-slate-200 bg-white p-2 text-slate-500 hover:bg-slate-50"><X className="h-5 w-5" /></button>
         </div>
 
-        <div className="grid min-h-0 flex-1 lg:grid-cols-[360px_minmax(0,1fr)]">
+        <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[360px_minmax(0,1fr)]">
           <aside className="overflow-y-auto border-r border-slate-200 bg-white p-5">
             <div className="space-y-5">
               <section>
@@ -435,7 +435,7 @@ export default function SmartPrintCenter() {
           <section className="flex min-h-0 flex-col bg-slate-200/70">
             <div className="flex items-center justify-between border-b border-slate-300 bg-slate-50 px-4 py-3"><div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-600"><Eye className="h-4 w-4" />Live print preview</div><div className="text-xs font-bold text-slate-500">Tables repeat headings and avoid row cuts automatically</div></div>
             <div className="min-h-0 flex-1 overflow-auto p-4"><iframe ref={previewRef} title="Smart print preview" srcDoc={previewHtml} className="h-full min-h-[640px] w-full rounded-xl border border-slate-300 bg-white shadow-inner" /></div>
-            <div className="flex flex-wrap justify-end gap-3 border-t border-slate-300 bg-white px-5 py-4"><button onClick={() => setRequest(null)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-black text-slate-600">Cancel</button><button onClick={downloadPdf} disabled={busy} className="flex items-center gap-2 rounded-xl bg-rose-600 px-5 py-2.5 text-xs font-black text-white disabled:opacity-50"><Download className="h-4 w-4" />{busy ? 'Generating PDF…' : 'Download PDF'}</button><button onClick={runNativePrint} className="flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-xs font-black text-white"><Printer className="h-4 w-4" />Print</button></div>
+            <div className="flex flex-col gap-2 border-t border-slate-300 bg-white px-4 py-3 sm:flex-row sm:flex-wrap sm:justify-end sm:gap-3 sm:px-5 sm:py-4"><button onClick={() => setRequest(null)} className="order-3 w-full rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-black text-slate-600 sm:order-1 sm:w-auto">Cancel</button><button onClick={downloadPdf} disabled={busy} className="order-1 flex w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 py-2.5 text-xs font-black text-white disabled:opacity-50 sm:order-2 sm:w-auto"><Download className="h-4 w-4" />{busy ? 'Generating PDF…' : 'Download PDF'}</button><button onClick={runNativePrint} className="order-2 flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-xs font-black text-white sm:order-3 sm:w-auto"><Printer className="h-4 w-4" />Print</button></div>
           </section>
         </div>
       </div>
