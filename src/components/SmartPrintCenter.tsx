@@ -37,6 +37,50 @@ function replaceOklchWithRgb(input: string): string {
 
 const PAPER_OPTIONS: SmartPaperSize[] = ['A3', 'A4', 'A5', 'Letter', 'Legal', 'Folio', 'Custom'];
 
+function convertOklchInElement(root: HTMLElement): void {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1; canvas.height = 1;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  const convert = (str: string): string => {
+    if (!str || typeof str !== 'string') return str;
+    if (!str.includes('oklch') && !str.includes('oklab')) return str;
+    return str.replace(/okl(?:ch|ab)\([^)]+\)/g, (m) => {
+      try {
+        ctx.fillStyle = '#000';
+        ctx.fillStyle = m;
+        const r = ctx.fillStyle;
+        if (r && r !== '#000000' && r !== '#000') return r;
+      } catch {}
+      return m;
+    });
+  };
+  // 1. Replace in style tags
+  root.querySelectorAll('style').forEach(s => {
+    if (s.textContent) s.textContent = convert(s.textContent);
+  });
+  // 2. Replace in inline style attributes
+  root.querySelectorAll('[style]').forEach(el => {
+    const a = el.getAttribute('style');
+    if (a) el.setAttribute('style', convert(a));
+  });
+  // 3. Replace in computed styles (copy over inline)
+  const colorProps = ['color','backgroundColor','borderTopColor','borderRightColor','borderBottomColor','borderLeftColor','outlineColor','fill','stroke','textDecorationColor','caretColor','columnRuleColor'];
+  const all = [root, ...Array.from(root.querySelectorAll('*'))] as HTMLElement[];
+  all.forEach(el => {
+    try {
+      const cs = window.getComputedStyle(el);
+      colorProps.forEach(prop => {
+        const val = cs.getPropertyValue(prop);
+        if (val && (val.includes('oklch') || val.includes('oklab'))) {
+          const rgb = convert(val);
+          if (rgb !== val) (el.style as any)[prop] = rgb;
+        }
+      });
+    } catch {}
+  });
+}
+
 function escapeHtml(value: string): string {
   return value.replace(/[&<>'"]/g, char => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
@@ -268,13 +312,6 @@ export default function SmartPrintCenter() {
 
   const runNativePrint = () => {
     if (!request) return;
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    if (isMobile) {
-      // On Android WebView, iframe.contentWindow.print() usually does nothing.
-      // Fall back to generating a PDF which user can print from the viewer.
-      downloadPdf();
-      return;
-    }
     const frame = document.createElement('iframe');
     frame.setAttribute('aria-hidden', 'true');
     frame.style.position = 'fixed';
@@ -353,6 +390,9 @@ export default function SmartPrintCenter() {
         ]);
       }
 
+      // Convert all oklch colors to rgb inside the container before capture
+      convertOklchInElement(container);
+
       // @ts-ignore
       const html2pdf = (await import('html2pdf.js')).default;
 
@@ -403,9 +443,7 @@ export default function SmartPrintCenter() {
       window.alert(`PDF saved to ${saved.savedTo}`);
     } catch (error: any) {
       console.error(error);
-      alert('PDF FAIL DIAG:\n' + (error?.message || error) + '\n\nStack: ' + String(error?.stack || '').slice(0, 300));
-      const proceed = window.confirm('PDF auto-generation failed on this device.\n\nOpen print dialog and choose "Save as PDF"?');
-      if (proceed) { runNativePrint(); }
+      alert('PDF failed: ' + (error?.message || error));
     } finally {
       container?.remove();
       setBusy(false);
