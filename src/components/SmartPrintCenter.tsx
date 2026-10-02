@@ -37,14 +37,14 @@ function replaceOklchWithRgb(input: string): string {
 
 const PAPER_OPTIONS: SmartPaperSize[] = ['A3', 'A4', 'A5', 'Letter', 'Legal', 'Folio', 'Custom'];
 
-function convertOklchInElement(root: HTMLElement): void {
-  const canvas = document.createElement('canvas');
-  canvas.width = 1; canvas.height = 1;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-  const convert = (str: string): string => {
-    if (!str || typeof str !== 'string') return str;
-    if (!str.includes('oklch') && !str.includes('oklab')) return str;
+function oklchToRgb(str: string): string {
+  if (!str || typeof str !== 'string') return str;
+  if (!str.includes('oklch') && !str.includes('oklab')) return str;
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1; canvas.height = 1;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return str;
     return str.replace(/okl(?:ch|ab)\([^)]+\)/g, (m) => {
       try {
         ctx.fillStyle = '#000';
@@ -52,33 +52,24 @@ function convertOklchInElement(root: HTMLElement): void {
         const r = ctx.fillStyle;
         if (r && r !== '#000000' && r !== '#000') return r;
       } catch {}
-      return m;
+      return 'rgb(0,0,0)';
     });
+  } catch { return str; }
+}
+
+// Temporarily convert all oklch in ALL style tags across the document, and restore later
+function globalOklchPatch(): () => void {
+  const saved: Array<{ el: HTMLStyleElement; text: string }> = [];
+  document.querySelectorAll('style').forEach(styleEl => {
+    const txt = styleEl.textContent || '';
+    if (txt.includes('oklch') || txt.includes('oklab')) {
+      saved.push({ el: styleEl, text: txt });
+      styleEl.textContent = oklchToRgb(txt);
+    }
+  });
+  return () => {
+    saved.forEach(({ el, text }) => { el.textContent = text; });
   };
-  // 1. Replace in style tags
-  root.querySelectorAll('style').forEach(s => {
-    if (s.textContent) s.textContent = convert(s.textContent);
-  });
-  // 2. Replace in inline style attributes
-  root.querySelectorAll('[style]').forEach(el => {
-    const a = el.getAttribute('style');
-    if (a) el.setAttribute('style', convert(a));
-  });
-  // 3. Replace in computed styles (copy over inline)
-  const colorProps = ['color','backgroundColor','borderTopColor','borderRightColor','borderBottomColor','borderLeftColor','outlineColor','fill','stroke','textDecorationColor','caretColor','columnRuleColor'];
-  const all = [root, ...Array.from(root.querySelectorAll('*'))] as HTMLElement[];
-  all.forEach(el => {
-    try {
-      const cs = window.getComputedStyle(el);
-      colorProps.forEach(prop => {
-        const val = cs.getPropertyValue(prop);
-        if (val && (val.includes('oklch') || val.includes('oklab'))) {
-          const rgb = convert(val);
-          if (rgb !== val) (el.style as any)[prop] = rgb;
-        }
-      });
-    } catch {}
-  });
 }
 
 function escapeHtml(value: string): string {
@@ -312,6 +303,12 @@ export default function SmartPrintCenter() {
 
   const runNativePrint = () => {
     if (!request) return;
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (isMobile) {
+      // Android WebView iframe print is unreliable - generate PDF instead
+      downloadPdf();
+      return;
+    }
     const frame = document.createElement('iframe');
     frame.setAttribute('aria-hidden', 'true');
     frame.style.position = 'fixed';
@@ -390,13 +387,15 @@ export default function SmartPrintCenter() {
         ]);
       }
 
-      // Convert all oklch colors to rgb inside the container before capture
-      convertOklchInElement(container);
+      // Globally patch oklch before html2canvas runs
+      const restoreGlobalOklch = globalOklchPatch();
 
-      // @ts-ignore
-      const html2pdf = (await import('html2pdf.js')).default;
+      let pdfBlob: Blob;
+      try {
+        // @ts-ignore
+        const html2pdf = (await import('html2pdf.js')).default;
 
-      const pdfBlob = await html2pdf().set({
+        pdfBlob = await html2pdf().set({
         margin: 0,
         filename: `${(request.title || 'School_Document').replace(/[^a-z0-9_-]+/gi, '_')}_${preferences.paperSize}_${preferences.orientation}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
@@ -426,6 +425,9 @@ export default function SmartPrintCenter() {
         jsPDF: { unit: 'mm', format: [dimensions.width, dimensions.height], orientation: preferences.orientation },
         pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', '.avoid-print-break', '.homework-print-meta', '.homework-print-line', '.question-row', '.qp-answer-area', '.qp-match-table', '.qp-section-head', '.qp-subquestion-row', '.qp-section-match-wrap'] }
       }).from(container).outputPdf('blob');
+      } finally {
+        restoreGlobalOklch();
+      }
 
       const filename = `${(request.title || 'School_Document').replace(/[^a-z0-9_-]+/gi, '_')}_${preferences.paperSize}_${preferences.orientation}.pdf`;
       const reader = new FileReader();
