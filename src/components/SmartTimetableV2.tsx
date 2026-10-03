@@ -477,8 +477,12 @@ interface V2SchoolSetup {
   schoolStart: string;
   schoolEnd: string;
   periodsPerDay: number;
+  lunchEnabled?: boolean; // whether lunch break is scheduled
   lunchBreakPeriod: number; // e.g. after Period 3
   lunchDuration: number; // minutes
+  shortBreakEnabled?: boolean; // whether short break is scheduled
+  shortBreakPeriod?: number; // e.g. after Period 5
+  shortBreakDuration?: number; // minutes
   assemblyDuration: number; // minutes
   weeklyPeriodSettings?: {
     Monday: number;
@@ -766,8 +770,12 @@ export default function SmartTimetableV2({
       schoolStart: st.openingTime || "08:00 AM",
       schoolEnd: st.closingTime || "01:30 PM",
       periodsPerDay: Math.max(...(Object.values(wps) as number[])),
+      lunchEnabled: true,
       lunchBreakPeriod: 3,
       lunchDuration: 30,
+      shortBreakEnabled: false,
+      shortBreakPeriod: 5,
+      shortBreakDuration: 15,
       assemblyDuration: 15,
       weeklyPeriodSettings: wps,
     };
@@ -2339,7 +2347,7 @@ export default function SmartTimetableV2({
         });
 
         // Insert Lunch Break if configured
-        if (p === setup.lunchBreakPeriod && setup.lunchDuration > 0) {
+        if (setup.lunchEnabled !== false && p === setup.lunchBreakPeriod && setup.lunchDuration > 0) {
           const lunchRow = sheet.addRow(Array(days.length + 1).fill("LUNCH BREAK"));
           lunchRow.height = 20;
           sheet.mergeCells(`A${lunchRow.number}:${String.fromCharCode(65 + days.length)}${lunchRow.number}`);
@@ -2364,7 +2372,7 @@ export default function SmartTimetableV2({
       headers = ["Class / Div"];
       for (let p = 1; p <= schoolPeriods; p++) {
         headers.push(`Period ${p}`);
-        if (p === setup.lunchBreakPeriod && setup.lunchDuration > 0) {
+        if (setup.lunchEnabled !== false && p === setup.lunchBreakPeriod && setup.lunchDuration > 0) {
           headers.push("Lunch");
         }
       }
@@ -2399,7 +2407,7 @@ export default function SmartTimetableV2({
           } else {
             rowData.push("-");
           }
-          if (p === setup.lunchBreakPeriod && setup.lunchDuration > 0) {
+          if (setup.lunchEnabled !== false && p === setup.lunchBreakPeriod && setup.lunchDuration > 0) {
             rowData.push("LUNCH");
           }
         }
@@ -3682,28 +3690,79 @@ export default function SmartTimetableV2({
               </div>
 
               {/* Lunch break scheduling */}
-              <div className="bg-slate-900/60 border border-slate-800/80 p-4 rounded-2xl space-y-1.5">
-                <label className="text-[10px] font-black uppercase text-slate-500 tracking-wider block">
-                  {t(
-                    "Lunch Break After Period",
-                    "दोपहर के भोजन का अंतराल",
-                    "کھانے کا وقفہ",
-                  )}
-                </label>
-                <select
-                  value={setup.lunchBreakPeriod}
-                  onChange={(e) =>
-                    handleUpdateSetup({
-                      ...setup,
-                      lunchBreakPeriod: parseInt(e.target.value) || 3,
-                    })
-                  }
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-cyan-400"
-                >
-                  <option value={2}>After Period 2</option>
-                  <option value={3}>After Period 3 (Standard)</option>
-                  <option value={4}>After Period 4</option>
-                </select>
+              <div className="bg-slate-900/60 border border-slate-800/80 p-4 rounded-2xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-black uppercase text-slate-500 tracking-wider">
+                    {t("Lunch Break", "दोपहर का भोजन", "کھانے کا وقفہ")}
+                  </label>
+                  <label className="inline-flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={setup.lunchEnabled !== false}
+                      onChange={(e) => handleUpdateSetup({ ...setup, lunchEnabled: e.target.checked })}
+                      className="w-4 h-4 cursor-pointer"
+                    />
+                    <span className="text-[10px] font-bold text-slate-400">
+                      {setup.lunchEnabled !== false ? "Enabled" : "Disabled"}
+                    </span>
+                  </label>
+                </div>
+                {setup.lunchEnabled !== false && (
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-400 block">
+                      {t("Lunch Break After Period", "दोपहर भोजन के बाद", "کھانے کا وقفہ بعد")}
+                    </label>
+                    <select
+                      value={setup.lunchBreakPeriod}
+                      onChange={(e) => handleUpdateSetup({ ...setup, lunchBreakPeriod: parseInt(e.target.value) || 3 })}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-cyan-400"
+                    >
+                      <option value={2}>After Period 2</option>
+                      <option value={3}>After Period 3 (Standard)</option>
+                      <option value={4}>After Period 4</option>
+                      <option value={5}>After Period 5</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+
+              {/* Short break scheduling */}
+              <div className="bg-slate-900/60 border border-slate-800/80 p-4 rounded-2xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-black uppercase text-slate-500 tracking-wider">
+                    {t("Short Break", "छोटा विराम", "مختصر وقفہ")}
+                  </label>
+                  <label className="inline-flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={setup.shortBreakEnabled === true}
+                      onChange={(e) => handleUpdateSetup({ ...setup, shortBreakEnabled: e.target.checked })}
+                      className="w-4 h-4 cursor-pointer"
+                    />
+                    <span className="text-[10px] font-bold text-slate-400">
+                      {setup.shortBreakEnabled === true ? "Enabled" : "Disabled"}
+                    </span>
+                  </label>
+                </div>
+                {setup.shortBreakEnabled === true && (
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-400 block">
+                      {t("Short Break After Period", "छोटा विराम के बाद", "مختصر وقفہ بعد")}
+                    </label>
+                    <select
+                      value={setup.shortBreakPeriod || 5}
+                      onChange={(e) => handleUpdateSetup({ ...setup, shortBreakPeriod: parseInt(e.target.value) || 5 })}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-cyan-400"
+                    >
+                      <option value={2}>After Period 2</option>
+                      <option value={3}>After Period 3</option>
+                      <option value={4}>After Period 4</option>
+                      <option value={5}>After Period 5</option>
+                      <option value={6}>After Period 6</option>
+                      <option value={7}>After Period 7</option>
+                    </select>
+                  </div>
+                )}
               </div>
             </div>
 
