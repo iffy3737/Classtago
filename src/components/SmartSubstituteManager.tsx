@@ -111,11 +111,110 @@ export default function SmartSubstituteManager({
     return [];
   });
 
-  // Save adjustments to localStorage
+  // Save adjustments to localStorage + cloud
   const saveAdjustments = (updated: V2SubstituteAdjustment[]) => {
     setAdjustments(updated);
     localStorage.setItem("nhs_v2_substitute_adjustments", JSON.stringify(updated));
+    // Async cloud push — fire & forget
+    void (async () => {
+      try {
+        const { supabase } = await import('../lib/supabase');
+        const session = await supabase.auth.getSession();
+        const token = session?.data?.session?.access_token;
+        if (!token) return;
+        const { data: membership } = await supabase
+          .from('user_school_memberships')
+          .select('school_id')
+          .eq('user_id', session.data.session.user.id)
+          .eq('is_active', true)
+          .maybeSingle();
+        const schoolId = membership?.school_id;
+        if (!schoolId) return;
+        const payload = updated.map((adj) => ({
+          id: adj.id,
+          school_id: schoolId,
+          adjustment_date: adj.date,
+          adjustment_day: adj.day,
+          original_teacher: adj.originalTeacher,
+          reason: adj.reason,
+          custom_reason: adj.customReason || null,
+          excluded_teachers: adj.excludedTeachers || [],
+          status: adj.status,
+          prepared_by: adj.preparedBy,
+          overall_remarks: adj.overallRemarks || null,
+          leave_application_id: adj.leaveApplicationId || null,
+          items: adj.items || [],
+          updated_at: new Date().toISOString(),
+        }));
+        const { error } = await supabase.from('edunixo_substitute_adjustments').upsert(payload, { onConflict: 'id' });
+        if (error) console.warn('[Substitute] Cloud sync failed:', error.message);
+      } catch (e) {
+        console.warn('[Substitute] Cloud sync error:', e);
+      }
+    })();
   };
+
+  // Load adjustments from cloud on mount (in addition to localStorage)
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const { supabase } = await import('../lib/supabase');
+        const session = await supabase.auth.getSession();
+        if (!session?.data?.session?.user?.id) return;
+        const { data: membership } = await supabase
+          .from('user_school_memberships')
+          .select('school_id')
+          .eq('user_id', session.data.session.user.id)
+          .eq('is_active', true)
+          .maybeSingle();
+        const schoolId = membership?.school_id;
+        if (!schoolId) return;
+        const { data, error } = await supabase
+          .from('edunixo_substitute_adjustments')
+          .select('*')
+          .eq('school_id', schoolId)
+          .order('adjustment_date', { ascending: false })
+          .limit(500);
+        if (error) {
+          console.warn('[Substitute] Cloud load failed:', error.message);
+          return;
+        }
+        if (cancelled || !data) return;
+        const cloudAdjs: V2SubstituteAdjustment[] = data.map((row: any) => ({
+          id: row.id,
+          date: row.adjustment_date,
+          day: row.adjustment_day,
+          originalTeacher: row.original_teacher || '',
+          reason: row.reason || 'Leave',
+          customReason: row.custom_reason || undefined,
+          excludedTeachers: row.excluded_teachers || [],
+          status: row.status || 'Draft',
+          preparedBy: row.prepared_by || '',
+          createdAt: row.created_at || new Date().toISOString(),
+          items: row.items || [],
+          overallRemarks: row.overall_remarks || '',
+          leaveApplicationId: row.leave_application_id || undefined,
+        }));
+        // Merge with localStorage (cloud takes priority for same id)
+        const localRaw = localStorage.getItem('nhs_v2_substitute_adjustments');
+        const localAdjs: V2SubstituteAdjustment[] = localRaw ? JSON.parse(localRaw) : [];
+        const merged = new Map<string, V2SubstituteAdjustment>();
+        localAdjs.forEach((a) => merged.set(a.id, a));
+        cloudAdjs.forEach((a) => merged.set(a.id, a));
+        const finalList = Array.from(merged.values()).sort(
+          (a, b) => (b.createdAt || '').localeCompare(a.createdAt || '')
+        );
+        if (!cancelled) {
+          setAdjustments(finalList);
+          localStorage.setItem('nhs_v2_substitute_adjustments', JSON.stringify(finalList));
+        }
+      } catch (e) {
+        console.warn('[Substitute] Cloud load error:', e);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   // Selected Date for forms / views (defaults to YYYY-MM-DD today)
   const [selectedDate, setSelectedDate] = useState<string>(() => {
