@@ -3399,8 +3399,6 @@ export default function SmartTimetableV2({
       className="edx-dark-contrast-surface edx-smart-timetable-v2 bg-slate-900 border border-slate-800 text-slate-100 rounded-3xl p-4 md:p-8 space-y-6 shadow-2xl relative overflow-hidden font-sans"
     >
       {/* Decorative gradient blur blocks */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-400/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
 
       {/* Auto Save Alert Toast */}
       {showAutoSaveAlert && (
