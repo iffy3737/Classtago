@@ -340,18 +340,12 @@ export default function RoleModuleMenu({
           <button
             type="button"
             onClick={() => module.navigationOnly ? toggleModule(module.id) : openModule(module)}
-            className={`flex min-w-0 flex-1 items-center gap-3 text-left ${
-              standalone ? 'px-4 py-4' : 'px-3.5 py-3'
-            }`}
+            className="flex min-w-0 flex-1 items-center gap-3 px-3.5 py-3.5 text-left"
           >
-            {standalone
-              ? <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${active ? 'bg-cyan-300 text-slate-950' : 'bg-cyan-300/10 text-cyan-300'}`}><LayoutGrid className="h-4 w-4" /></span>
-              : <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${
-                  active ? 'bg-cyan-300 shadow-[0_0_16px_rgba(34,211,238,.8)]' : 'bg-slate-600'
-                }`} />}
+            <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${active ? 'bg-cyan-300 text-slate-950' : 'bg-cyan-300/10 text-cyan-300'}`}><LayoutGrid className="h-4 w-4" /></span>
             <span className="min-w-0 flex-1">
               <span className="flex flex-wrap items-center gap-2">
-                <span className={`truncate font-extrabold text-white ${standalone ? 'text-xs uppercase tracking-[0.08em]' : 'text-sm'}`}>
+                <span className="truncate text-xs font-black uppercase tracking-[0.08em] text-white">
                   {module.label}
                 </span>
                 {module.badge && (
@@ -366,14 +360,9 @@ export default function RoleModuleMenu({
                 </span>
               )}
             </span>
-            {!route && !module.navigationOnly
-              ? <span className="flex shrink-0 items-center gap-1 rounded-full border border-amber-300/20 bg-amber-300/10 px-2 py-1 text-[8px] font-black uppercase tracking-wider text-amber-200"><LockKeyhole className="h-3 w-3" />Locked</span>
-              : module.navigationOnly
-                ? (moduleOpen ? <ChevronDown className="h-3.5 w-3.5 shrink-0 text-cyan-300" /> : <ChevronRight className={`h-3.5 w-3.5 shrink-0 text-slate-500 ${rtl ? 'rotate-180' : ''}`} />)
-                : <ArrowRight className={`h-3.5 w-3.5 shrink-0 text-slate-500 ${rtl ? 'rotate-180' : ''}`} />}
-          </button>
+            </button>
 
-          {module.features.length > 0 && !module.navigationOnly && (
+          {module.features.length > 0 && (
             <button
               type="button"
               onClick={() => toggleModule(module.id)}
