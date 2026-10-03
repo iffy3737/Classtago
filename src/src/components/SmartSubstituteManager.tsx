@@ -978,10 +978,10 @@ export default function SmartSubstituteManager({
         </div>
 
         {/* TOP NAVIGATION TABS */}
-        <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800/80">
+        <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800/80 overflow-x-auto">
           <button
             onClick={() => setActiveSubTab("generate")}
-            className={`px-3.5 py-2 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3.5 py-2 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
               activeSubTab === "generate"
                 ? "bg-indigo-600 text-white shadow-md"
                 : "text-slate-400 hover:text-white hover:bg-slate-900"
@@ -993,7 +993,7 @@ export default function SmartSubstituteManager({
 
           <button
             onClick={() => setActiveSubTab("today")}
-            className={`px-3.5 py-2 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 relative ${
+            className={`px-3.5 py-2 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 relative whitespace-nowrap shrink-0 ${
               activeSubTab === "today"
                 ? "bg-indigo-600 text-white shadow-md"
                 : "text-slate-400 hover:text-white hover:bg-slate-900"
@@ -1008,7 +1008,7 @@ export default function SmartSubstituteManager({
 
           <button
             onClick={() => setActiveSubTab("register")}
-            className={`px-3.5 py-2 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3.5 py-2 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
               activeSubTab === "register"
                 ? "bg-indigo-600 text-white shadow-md"
                 : "text-slate-400 hover:text-white hover:bg-slate-900"
@@ -1568,13 +1568,13 @@ export default function SmartSubstituteManager({
                       <table className="w-full min-w-[900px] text-xs text-left">
                         <thead className="bg-slate-950 text-slate-400 font-mono text-[10px] uppercase border-b border-slate-800">
                           <tr>
-                            <th className="p-3">Period</th>
-                            <th className="p-3">Class & Div</th>
-                            <th className="p-3">Subject</th>
-                            <th className="p-3">Original Teacher</th>
-                            <th className="p-3">Assigned Substitute Teacher</th>
-                            <th className="p-3">Allocation Basis / Reason</th>
-                            <th className="p-3">Remarks</th>
+                            <th className="p-3 whitespace-nowrap min-w-[70px]">Period</th>
+                            <th className="p-3 whitespace-nowrap min-w-[110px]">Class & Div</th>
+                            <th className="p-3 whitespace-nowrap min-w-[120px]">Subject</th>
+                            <th className="p-3 whitespace-nowrap min-w-[130px]">Original Teacher</th>
+                            <th className="p-3 whitespace-nowrap min-w-[200px]">Assigned Substitute Teacher</th>
+                            <th className="p-3 whitespace-nowrap min-w-[160px]">Allocation Basis / Reason</th>
+                            <th className="p-3 whitespace-nowrap min-w-[100px]">Remarks</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800/80 text-slate-200">
