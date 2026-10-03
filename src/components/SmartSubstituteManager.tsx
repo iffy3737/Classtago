@@ -157,6 +157,9 @@ export default function SmartSubstituteManager({
   // Printable Register Modal State
   const [printModalAdj, setPrintModalAdj] = useState<V2SubstituteAdjustment | null>(null);
 
+  // NEW: Also create Leave Application option
+  const [alsoCreateLeave, setAlsoCreateLeave] = useState(false);
+
   // History Filters
   const [historySearch, setHistorySearch] = useState("");
   const [historyStatusFilter, setHistoryStatusFilter] = useState<string>("All");
@@ -320,7 +323,7 @@ export default function SmartSubstituteManager({
     targetDay: string,
     exclTeachers: string[],
     leaveAppId?: string,
-    options: { strictCanonical?: boolean; automatic?: boolean } = {}
+    options: { strictCanonical?: boolean; automatic?: boolean; alsoCreateLeave?: boolean } = {}
   ) => {
     if (!teacherList || teacherList.length === 0) {
       alert(t("Please select at least one absent teacher.", "कृपया कम से कम एक अनुपस्थित शिक्षक चुनें।", "براہ کرم کم از کم ایک غیر حاضر استاد منتخب کریں۔"));
@@ -1396,7 +1399,25 @@ export default function SmartSubstituteManager({
                 </div>
               </div>
 
-              {/* RUN ENGINE ACTION BUTTON */}
+              {/* OPTIONAL: Also create Leave Application */}
+                <div className="flex items-start gap-3 p-3 bg-slate-950/60 border border-slate-800/80 rounded-xl">
+                  <input
+                    type="checkbox"
+                    id="also-create-leave"
+                    checked={alsoCreateLeave}
+                    onChange={(e) => setAlsoCreateLeave(e.target.checked)}
+                    className="w-4 h-4 mt-0.5 cursor-pointer shrink-0"
+                  />
+                  <label htmlFor="also-create-leave" className="text-xs font-bold text-slate-300 cursor-pointer select-none leading-5">
+                    {t(
+                      "Also create & approve Leave Application in Leave Management",
+                      "Leave Management में भी Leave Application बनाएं",
+                      "Leave Management میں بھی Leave Application بنائیں"
+                    )}
+                  </label>
+                </div>
+
+                {/* RUN ENGINE ACTION BUTTON */}
               <button
                 onClick={() => {
                   if (selectedTeachers.length === 0) {
@@ -1410,7 +1431,7 @@ export default function SmartSubstituteManager({
                     const rData = teacherReasonsMap[tName] || { reason: "Leave" as const };
                     return { name: tName, reason: rData.reason, customReason: rData.customReason };
                   });
-                  runAutoSubstituteEngine(teacherList, selectedDate, selectedDay, excludedTeachers);
+                  runAutoSubstituteEngine(teacherList, selectedDate, selectedDay, excludedTeachers, undefined, { alsoCreateLeave });
                 }}
                 className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black text-sm py-3.5 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
               >
