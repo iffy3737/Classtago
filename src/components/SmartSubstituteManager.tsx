@@ -1523,7 +1523,8 @@ export default function SmartSubstituteManager({
                           <>
                             <button
                               onClick={() => handleApproveAdjustment(adj.id)}
-                              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+                              style={{ backgroundColor: '#059669', color: '#ffffff', borderColor: '#10b981' }}
+                              className="px-4 py-2 border hover:opacity-90 font-black text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
                             >
                               <CheckCircle2 className="w-3.5 h-3.5" />
                               <span>{t("Approve Adjustment", "स्वीकृत करें", "منظور کریں")}</span>
