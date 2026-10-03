@@ -675,6 +675,45 @@ export default function SmartSubstituteManager({
     setReviewingAdjId(newAdj.id);
     setActiveSubTab("today");
     setSelectedDate(targetDate);
+
+                // NEW: Also create Leave Application if opted
+                if (options.alsoCreateLeave && teacherList.length > 0) {
+                  void (async () => {
+                    try {
+                      const { supabase } = await import('../lib/supabase');
+                      const session = await supabase.auth.getSession();
+                      const token = session?.data?.session?.access_token;
+                      if (!token) return;
+                      for (const t of teacherList) {
+                        const submitResp = await fetch('/api/leave-management/applications', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                          body: JSON.stringify({
+                            application: {
+                              applicantName: t.name,
+                              startDate: targetDate,
+                              endDate: targetDate,
+                              leaveType: t.reason || 'Leave',
+                              reason: t.customReason || t.reason || 'Marked absent via Substitute Management',
+                            }
+                          })
+                        });
+                        const submitData = await submitResp.json().catch(() => ({}));
+                        if (!submitResp.ok) continue;
+                        const reqId = submitData?.application?.id || submitData?.application?.cloudRequestId;
+                        if (reqId) {
+                          await fetch(`/api/leave-management/applications/${reqId}/decision`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                            body: JSON.stringify({ decision: 'approve' })
+                          });
+                        }
+                      }
+                    } catch (e) {
+                      console.error('[Substitute] Auto-leave failed:', e);
+                    }
+                  })();
+                }
   };
 
   // Approved Teacher leave automatically prepares a Draft substitute sheet when
