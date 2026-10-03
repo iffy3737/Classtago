@@ -625,7 +625,7 @@ export default function RoleModuleMenu({
                         <button
                           type="button"
                           onClick={() => toggleCategory(category.id)}
-                          className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition hover:bg-white/[0.045]"
+                          className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left transition hover:bg-slate-800/40"
                         >
                           <span className="flex min-w-0 items-center gap-3">
                             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-cyan-300/10 text-cyan-300">
