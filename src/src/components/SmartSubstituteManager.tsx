@@ -1776,7 +1776,7 @@ export default function SmartSubstituteManager({
           </div>
 
           {/* HISTORY DATA TABLE */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-md">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-md">
             <div className="p-4 border-b border-slate-800 flex justify-between items-center">
               <h4 className="text-sm font-black text-white flex items-center gap-2">
                 <FileSpreadsheet className="w-4 h-4 text-indigo-400" />
@@ -1796,7 +1796,7 @@ export default function SmartSubstituteManager({
                 <p className="text-xs font-bold">No adjustment records matched your search filters.</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto w-full max-w-full -webkit-overflow-scrolling-touch" style={{ WebkitOverflowScrolling: 'touch' }}>
                 <table className="w-full min-w-[900px] text-xs text-left">
                   <thead className="bg-slate-950 text-slate-400 font-mono text-[10px] uppercase border-b border-slate-800">
                     <tr>
