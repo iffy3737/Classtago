@@ -25,10 +25,18 @@ export default function RoleFeatureContextHeader({ module, feature, onBack, back
           </div>
         </div>
         <div className="relative flex flex-wrap items-center gap-2">
-          <span className="inline-flex items-center gap-2 rounded-xl border border-emerald-300/15 bg-emerald-300/[0.06] px-3 py-2 text-[10px] font-bold text-emerald-100">
-            <ShieldCheck className="h-4 w-4 text-emerald-300" /> Role and plan scoped
+          <span
+            style={{ backgroundColor: 'rgba(16, 185, 129, 0.12)', borderColor: 'rgba(16, 185, 129, 0.35)', color: '#a7f3d0' }}
+            className="inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-[10px] font-bold"
+          >
+            <ShieldCheck className="h-4 w-4" style={{ color: '#6ee7b7' }} /> Role and plan scoped
           </span>
-          <button type="button" onClick={onBack} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-[10px] font-black text-white transition hover:border-cyan-300/30 hover:bg-white/10">
+          <button
+            type="button"
+            onClick={onBack}
+            style={{ backgroundColor: 'rgba(255, 255, 255, 0.08)', borderColor: 'rgba(255, 255, 255, 0.18)', color: '#ffffff' }}
+            className="inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-[10px] font-black transition hover:opacity-90"
+          >
             <ArrowLeft className="h-4 w-4" /> {backLabel}
           </button>
         </div>

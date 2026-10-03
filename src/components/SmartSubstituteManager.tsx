@@ -1668,11 +1668,10 @@ export default function SmartSubstituteManager({
                               {adj.originalTeacher}
                             </h4>
                             <span
-                              className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider font-mono ${
-                                isDraft
-                                  ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                                  : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                              }`}
+                              style={isDraft
+                                ? { backgroundColor: 'rgba(245, 158, 11, 0.15)', color: '#fcd34d', borderColor: 'rgba(245, 158, 11, 0.4)' }
+                                : { backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#6ee7b7', borderColor: 'rgba(16, 185, 129, 0.4)' }}
+                              className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider font-mono border"
                             >
                               {adj.status === "Draft" ? "Draft (Pending Review)" : "Approved & Active"}
                             </span>
@@ -1993,11 +1992,10 @@ export default function SmartSubstituteManager({
                         </td>
                         <td className="p-3 whitespace-nowrap">
                           <span
-                            className={`text-[10px] font-extrabold px-2 py-0.5 rounded uppercase font-mono ${
-                              adj.status === "Approved"
-                                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                                : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                            }`}
+                            style={adj.status === "Approved"
+                              ? { backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#6ee7b7', borderColor: 'rgba(16, 185, 129, 0.4)' }
+                              : { backgroundColor: 'rgba(245, 158, 11, 0.15)', color: '#fcd34d', borderColor: 'rgba(245, 158, 11, 0.4)' }}
+                            className="text-[10px] font-extrabold px-2 py-0.5 rounded uppercase font-mono border"
                           >
                             {adj.status}
                           </span>
