@@ -51,7 +51,7 @@ const uiCopy: Record<string, Record<string, string>> = {
     openMenu: 'Open modules',
     menu: 'Modules',
     roleWorkspace: 'Role workspace',
-    search: 'Search modules or features...',
+    search: 'V10 · Search modules or features...',
     available: 'modules',
     permitted: 'Teacher roadmap modules stay visible. Locked items require plan and role access.',
     feature: 'features',
