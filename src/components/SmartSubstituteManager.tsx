@@ -196,13 +196,8 @@ export default function SmartSubstituteManager({
           overallRemarks: row.overall_remarks || '',
           leaveApplicationId: row.leave_application_id || undefined,
         }));
-        // Merge with localStorage (cloud takes priority for same id)
-        const localRaw = localStorage.getItem('nhs_v2_substitute_adjustments');
-        const localAdjs: V2SubstituteAdjustment[] = localRaw ? JSON.parse(localRaw) : [];
-        const merged = new Map<string, V2SubstituteAdjustment>();
-        localAdjs.forEach((a) => merged.set(a.id, a));
-        cloudAdjs.forEach((a) => merged.set(a.id, a));
-        const finalList = Array.from(merged.values()).sort(
+        // Cloud is source of truth — replace local entirely
+        const finalList = cloudAdjs.sort(
           (a, b) => (b.createdAt || '').localeCompare(a.createdAt || '')
         );
         if (!cancelled) {
