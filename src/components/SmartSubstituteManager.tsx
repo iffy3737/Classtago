@@ -1041,10 +1041,10 @@ export default function SmartSubstituteManager({
               </p>
             </div>
 
-            <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800">
+            <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 overflow-x-auto max-w-full">
               <button
                 onClick={() => setGenMode("auto")}
-                className={`px-4 py-2 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
+                className={`px-4 py-2 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
                   genMode === "auto"
                     ? "bg-blue-600 text-white shadow"
                     : "text-slate-400 hover:text-white"
@@ -1055,7 +1055,7 @@ export default function SmartSubstituteManager({
               </button>
               <button
                 onClick={() => setGenMode("manual")}
-                className={`px-4 py-2 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
+                className={`px-4 py-2 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
                   genMode === "manual"
                     ? "bg-blue-600 text-white shadow"
                     : "text-slate-400 hover:text-white"

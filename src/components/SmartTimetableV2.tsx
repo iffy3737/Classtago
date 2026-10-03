@@ -3418,8 +3418,8 @@ export default function SmartTimetableV2({
 
       {/* PREMIUM HEADER SECTION */}
       <div className="relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-950/85 p-5 md:p-7 shadow-2xl">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/60 to-transparent" />
-        <div className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-violet-500/10 blur-3xl" />
+        
+        
         <div className="relative flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
           <div className="max-w-3xl">
             <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -3841,8 +3841,8 @@ export default function SmartTimetableV2({
         {activeTab === "workload" && (
           <div className="space-y-5">
             <div className="relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-950/80 p-5 md:p-6 shadow-xl">
-              <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-cyan-400/10 blur-3xl" />
-              <div className="pointer-events-none absolute -left-16 bottom-0 h-40 w-40 rounded-full bg-violet-500/10 blur-3xl" />
+              
+              
               <div className="relative flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div className="max-w-2xl">
                   <div className="mb-2 flex flex-wrap items-center gap-2">
