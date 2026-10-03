@@ -1781,7 +1781,7 @@ export default function SmartSubstituteManager({
               <h4 className="text-sm font-black text-white flex items-center gap-2">
                 <FileSpreadsheet className="w-4 h-4 text-indigo-400" />
                 <span>
-                  {t("Permanent Substitute Adjustment History", "स्थायी स्थानापन्न समायोजन इतिहास", "مستقل متبادل ایڈجسٹمنٹ ہسٹری")}
+                  {t("Permanent Substitute Adjustment History V9", "स्थायी स्थानापन्न समायोजन इतिहास", "مستقل متبادل ایڈجسٹمنٹ ہسٹری")}
                 </span>
               </h4>
 
