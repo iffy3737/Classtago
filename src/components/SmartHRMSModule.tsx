@@ -444,7 +444,7 @@ export default function SmartHRMSModule({ lang, user, onRefreshData, activeSecti
           {/* Main Employment Card */}
           <div className="lg:col-span-1 space-y-6">
             <div className="bg-gradient-to-br from-indigo-900 to-slate-900 text-white p-6 rounded-2xl shadow-xl space-y-6 relative overflow-hidden">
-              <div className="absolute top-0 right-0 transform translate-x-8 -translate-y-8 w-32 h-32 bg-white/5 rounded-full blur-xl"></div>
+              <div className="absolute top-0 right-0 transform translate-x-8 -translate-y-8 w-32 h-32 bg-slate-900 rounded-full blur-xl"></div>
               
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-950 border-4 border-white/20 text-2xl font-bold font-mono">

@@ -1,0 +1,1 @@
+import{o}from"./index-DEv5FTIz.js";function c(t,e="Print Document",n){if(!document.getElementById(t)){window.alert("Print content is not ready. Please generate or open the document first.");return}o({elementId:t,title:e,moduleName:n})}export{c as p};

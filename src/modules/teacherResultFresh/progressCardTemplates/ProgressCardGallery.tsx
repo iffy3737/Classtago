@@ -189,7 +189,7 @@ export default function ProgressCardGallery({
                 >
                   Apply This Design
                 </button>
-                <button onClick={() => setPreviewDesign(null)} className="rounded-lg bg-white/20 px-3 py-1.5 text-xs font-black">
+                <button onClick={() => setPreviewDesign(null)} className="rounded-lg bg-slate-700 px-3 py-1.5 text-xs font-black">
                   Close
                 </button>
               </div>

@@ -73,7 +73,7 @@ export default function TeacherAssignmentsFresh({ context, loading, error, onNav
               This page shows exactly which Class Teacher duty and Subject Teaching duties the Headmaster has assigned to your account for {context.academicYear}. You cannot change these assignments yourself.
             </p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-slate-200">
+          <div className="rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-xs text-slate-200">
             <b>{context.schoolName}</b><br />Cloud source: Academic Assignments
           </div>
         </div>

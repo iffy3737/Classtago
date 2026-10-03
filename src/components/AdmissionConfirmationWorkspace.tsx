@@ -187,7 +187,7 @@ export default function AdmissionConfirmationWorkspace({activeFeatureId}:Props){
     <header className="edx-dark-contrast-surface rounded-[1.75rem] bg-[radial-gradient(circle_at_8%_0%,rgba(34,211,238,.2),transparent_35%),radial-gradient(circle_at_92%_0%,rgba(139,92,246,.2),transparent_38%),linear-gradient(135deg,#07172d,#080b1c_56%,#17112e)] p-6 text-white shadow-2xl sm:p-8">
       <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
         <div><div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[.2em] text-cyan-300"><BadgeCheck className="h-4 w-4"/>Admission Confirmation</div><h1 className="mt-3 text-2xl font-black sm:text-3xl">Review → approve → allocate → confirm.</h1><p className="mt-2 max-w-3xl text-xs leading-6 text-slate-300">The Headmaster makes the final admission decision. The permanent Student Master record is created only after approval and GR allocation.</p></div>
-        <button onClick={()=>void load()} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-xs font-black"><RefreshCw className="h-4 w-4"/>Refresh queue</button>
+        <button onClick={()=>void load()} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-slate-800 px-4 py-3 text-xs font-black"><RefreshCw className="h-4 w-4"/>Refresh queue</button>
       </div>
     </header>
 

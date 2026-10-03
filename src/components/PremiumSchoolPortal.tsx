@@ -192,7 +192,7 @@ export default function PremiumSchoolPortal({
 
   const languageControl = (compact = false) => (
     <label
-      className={`relative flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/[0.055] text-white shadow-lg backdrop-blur-xl transition hover:border-white/25 hover:bg-white/10 ${compact ? 'h-10 px-3' : 'px-3.5 py-2.5'}`}
+      className={`relative flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/[0.055] text-white shadow-lg backdrop-blur-xl transition hover:border-white/25 hover:bg-slate-800 ${compact ? 'h-10 px-3' : 'px-3.5 py-2.5'}`}
       title={ui.websiteLanguage}
     >
       {languagesLoading ? <Loader2 className="h-4 w-4 animate-spin text-slate-400" /> : <Languages className="h-4 w-4 text-[var(--school-accent)]" />}
@@ -282,7 +282,7 @@ export default function PremiumSchoolPortal({
           <div className="hidden items-center gap-3 sm:flex">
             {languageControl()}
             {admissionsOpen && (
-              <button onClick={() => setAdmissionOpen(true)} className="rounded-xl border border-white/12 bg-white/5 px-4 py-2.5 text-xs font-extrabold text-white transition hover:border-white/25 hover:bg-white/10">
+              <button onClick={() => setAdmissionOpen(true)} className="rounded-xl border border-white/12 bg-slate-900 px-4 py-2.5 text-xs font-extrabold text-white transition hover:border-white/25 hover:bg-slate-800">
                 {ui.applyForAdmission}
               </button>
             )}
@@ -293,7 +293,7 @@ export default function PremiumSchoolPortal({
 
           <div className="flex items-center gap-2 sm:hidden">
             {languageControl(true)}
-            <button onClick={() => setMobileMenuOpen(value => !value)} className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/5" aria-label="Open school menu">
+            <button onClick={() => setMobileMenuOpen(value => !value)} className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-slate-900" aria-label="Open school menu">
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
@@ -301,7 +301,7 @@ export default function PremiumSchoolPortal({
         {mobileMenuOpen && (
           <div className="edx-public-dark-surface border-t border-white/10 bg-[#070b1c] px-5 py-4 sm:hidden">
             <div className="grid gap-2">
-              {navItems.map(([key, label]) => <a key={key} href={`#${key}`} onClick={() => setMobileMenuOpen(false)} className="rounded-xl px-3 py-3 text-sm font-bold text-slate-300 hover:bg-white/5">{label}</a>)}
+              {navItems.map(([key, label]) => <a key={key} href={`#${key}`} onClick={() => setMobileMenuOpen(false)} className="rounded-xl px-3 py-3 text-sm font-bold text-slate-300 hover:bg-slate-900">{label}</a>)}
               {admissionsOpen && <button onClick={() => { setAdmissionOpen(true); setMobileMenuOpen(false); }} className="rounded-xl bg-[var(--school-accent)] px-4 py-3 text-sm font-black text-slate-950">{ui.applyForAdmission}</button>}
               <button onClick={onOpenERP} className="rounded-xl bg-white px-4 py-3 text-sm font-black text-slate-950">{ui.schoolLogin}</button>
             </div>
@@ -334,7 +334,7 @@ export default function PremiumSchoolPortal({
               <div className="grid items-end gap-8 lg:grid-cols-[1fr_340px]">
                 <div className="max-w-4xl">
                   <div className="mb-6 flex items-center gap-4">
-                    <div className="grid h-16 w-16 place-items-center overflow-hidden rounded-[1.4rem] border border-white/15 bg-white/10 text-xl font-black shadow-2xl backdrop-blur-xl sm:h-20 sm:w-20">
+                    <div className="grid h-16 w-16 place-items-center overflow-hidden rounded-[1.4rem] border border-white/15 bg-slate-800 text-xl font-black shadow-2xl backdrop-blur-xl sm:h-20 sm:w-20">
                       {school.logoUrl ? <img src={school.logoUrl} alt="" className="h-full w-full bg-white object-contain p-2" /> : initials(school.shortName || school.schoolName)}
                     </div>
                     <div className="rounded-2xl border border-white/15 bg-black/45 px-4 py-3 shadow-xl backdrop-blur-md"><p className="text-[10px] font-black uppercase tracking-[0.24em] text-cyan-200">{ui.welcomeTo}</p><p className="mt-1 text-sm font-black text-white drop-shadow sm:text-base">{school.schoolName}</p></div>
@@ -347,7 +347,7 @@ export default function PremiumSchoolPortal({
                   </p>
                   <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                     {admissionsOpen && <button onClick={() => setAdmissionOpen(true)} className="group flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[var(--school-accent)] to-[var(--school-accent-2)] px-6 py-4 text-sm font-black text-slate-950 shadow-2xl transition hover:-translate-y-1">{ui.applyForAdmission} <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></button>}
-                    <button onClick={onOpenERP} className="flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-black/25 px-6 py-4 text-sm font-black text-white backdrop-blur-xl transition hover:border-white/30 hover:bg-white/10">{ui.studentStaffLogin} <ChevronRight className="h-4 w-4" /></button>
+                    <button onClick={onOpenERP} className="flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-black/25 px-6 py-4 text-sm font-black text-white backdrop-blur-xl transition hover:border-white/30 hover:bg-slate-800">{ui.studentStaffLogin} <ChevronRight className="h-4 w-4" /></button>
                   </div>
                 </div>
 
@@ -474,7 +474,7 @@ export default function PremiumSchoolPortal({
           <section className="edx-public-lazy-section mx-auto max-w-7xl px-5 py-24 lg:px-8">
             <div className="grid gap-8 lg:grid-cols-[.75fr_1.25fr]">
               <div><p className="text-xs font-black uppercase tracking-[0.22em] text-[var(--school-accent)]">{rules.eyebrow || ui.rulesInformation}</p><h2 className="mt-4 text-4xl font-black tracking-[-0.045em] sm:text-5xl">{rules.title}</h2>{rules.body && <p className="mt-5 text-base leading-8 text-slate-400">{rules.body}</p>}</div>
-              <div className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 sm:p-8"><div className="space-y-4">{(rules.items || []).map((item, index) => <div key={`${item}-${index}`} className="flex gap-4"><div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white/5 text-xs font-black text-[var(--school-accent)]">{String(index + 1).padStart(2, '0')}</div><p className="pt-1 text-sm leading-7 text-slate-300">{item}</p></div>)}</div></div>
+              <div className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 sm:p-8"><div className="space-y-4">{(rules.items || []).map((item, index) => <div key={`${item}-${index}`} className="flex gap-4"><div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-900 text-xs font-black text-[var(--school-accent)]">{String(index + 1).padStart(2, '0')}</div><p className="pt-1 text-sm leading-7 text-slate-300">{item}</p></div>)}</div></div>
             </div>
           </section>
         )}
@@ -517,7 +517,7 @@ export default function PremiumSchoolPortal({
       )}
 
       <div className="fixed bottom-4 right-4 z-[70] w-[min(24rem,calc(100vw-2rem))]">
-        {mariaReceptionOpen && <div className="mb-2 overflow-hidden rounded-[1.4rem] border border-white/15 bg-white shadow-2xl"><div className="flex items-center justify-between bg-slate-950 px-4 py-2.5 text-white"><div><div className="text-[10px] font-black uppercase tracking-[.16em] text-cyan-300">Public School Reception</div><div className="text-xs font-black">Talk to Maria · मारिया</div></div><button type="button" onClick={()=>setMariaReceptionOpen(false)} className="grid h-8 w-8 place-items-center rounded-full border border-white/15 bg-white/5" aria-label="Close Maria Receptionist"><X className="h-4 w-4"/></button></div><RealtimeVoiceAssistant lang={activeLanguage} publicSchoolSlug={school.slug} publicSchoolName={school.schoolName}/></div>}
+        {mariaReceptionOpen && <div className="mb-2 overflow-hidden rounded-[1.4rem] border border-white/15 bg-white shadow-2xl"><div className="flex items-center justify-between bg-slate-950 px-4 py-2.5 text-white"><div><div className="text-[10px] font-black uppercase tracking-[.16em] text-cyan-300">Public School Reception</div><div className="text-xs font-black">Talk to Maria · मारिया</div></div><button type="button" onClick={()=>setMariaReceptionOpen(false)} className="grid h-8 w-8 place-items-center rounded-full border border-white/15 bg-slate-900" aria-label="Close Maria Receptionist"><X className="h-4 w-4"/></button></div><RealtimeVoiceAssistant lang={activeLanguage} publicSchoolSlug={school.slug} publicSchoolName={school.schoolName}/></div>}
         <button type="button" onClick={()=>setMariaReceptionOpen(value=>!value)} className="ml-auto flex items-center gap-2 rounded-full border border-cyan-300/30 bg-slate-950 px-4 py-3 text-xs font-black text-white shadow-2xl transition hover:-translate-y-0.5"><Sparkles className="h-4 w-4 text-cyan-300"/>{mariaReceptionOpen?'Close Maria':'Talk to Maria'}</button>
       </div>
     </div>

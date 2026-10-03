@@ -42,14 +42,14 @@ export default function AcademicAssignmentValidity() {
       <section className="edx-dark-contrast-surface relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-[radial-gradient(circle_at_12%_10%,rgba(34,211,238,.18),transparent_32%),radial-gradient(circle_at_92%_8%,rgba(139,92,246,.22),transparent_35%),linear-gradient(135deg,#07182f,#080b1d_58%,#17122f)] p-5 text-white shadow-[0_28px_80px_rgba(2,6,23,.28)] sm:p-7">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-start gap-4">
-            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl border border-white/15 bg-white/10"><CalendarCheck2 className="h-6 w-6 text-cyan-200"/></div>
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl border border-white/15 bg-slate-800"><CalendarCheck2 className="h-6 w-6 text-cyan-200"/></div>
             <div>
               <p className="text-[10px] font-black uppercase tracking-[.26em] text-cyan-200">Canonical Academic Assignment Scope</p>
               <h2 className="mt-1 text-2xl font-black tracking-tight sm:text-3xl">Academic-year assignment validity</h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">Shows the current Supabase-backed Class Teacher and Subject Teacher assignment set. Browser LocalStorage is not used to decide production access.</p>
             </div>
           </div>
-          <button type="button" onClick={() => void load()} disabled={loading} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-xs font-black hover:bg-white/15 disabled:opacity-50"><RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}/>Refresh Cloud</button>
+          <button type="button" onClick={() => void load()} disabled={loading} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-slate-800 px-4 py-3 text-xs font-black hover:bg-slate-700 disabled:opacity-50"><RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}/>Refresh Cloud</button>
         </div>
         <div className="mt-6 grid gap-3 sm:grid-cols-3">
           <Metric icon={Cloud} label="Academic year" value={text(data?.academicYear, 'Current year')} />

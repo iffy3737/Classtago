@@ -1,0 +1,32 @@
+[
+    {
+      "scene": 1,
+      "narration": "Dosto, kya aapko pata hai? Hospital me admit hona utna dardnak nahi hota, jitna un rishtedaro se milna jo aapka haal-chaal puchne aate hain! Chaliye dekhte hain ek mazedaar kahani jab hamare hero ki taang toot gayi.",
+      "image_prompt": "A funny cartoon of a man lying in a hospital bed with one leg in a plaster cast suspended in the air, looking worried as a crowd of smiling visitors approaches him."
+    },
+    {
+      "scene": 2,
+      "narration": "Hero kahte hain ki sabse pehle wo log aaye jinki haddi tootne par ye kabhi unse milne gaye the. Unki aankhon me saaf likha tha - 'Beta, waqt sab par aata hai, aaj hamara badla poora hua!'",
+      "image_prompt": "A funny illustration of an old relative grinning and pointing at the patient's plastered leg, with a thought bubble showing the patient doing the same to him in the past."
+    },
+    {
+      "scene": 3,
+      "narration": "Dard ke maare bechare ko waise hi neend nahi aati thi. Aur agar thodi neend aa bhi jaye, to ye formality nibhane wale log use jaga dete! Inhe hamdarzi nahi, bas apni shakl dikhani hoti thi.",
+      "image_prompt": "A tired patient trying to sleep in a hospital bed while a visitor in a fancy suit stands close, waving and trying to wake him up just to say hello."
+    },
+    {
+      "scene": 4,
+      "narration": "Ek din hero ne socha ki aaj wo aankhein nahi kholega. Tabhi office ke Bade Babu aaye. Unhone socha agar hero ne unhe dekha hi nahi, to unki haziri kaise lagegi? Unhone hero ki tooti taang ko zor se daba diya!",
+      "image_prompt": "An office boss in formal wear squeezing the plastered leg of a sleeping patient, who is screaming with his eyes wide open in pain."
+    },
+    {
+      "scene": 5,
+      "narration": "Aur phir aayi Sonabai apne chaar bachon ke saath! Unhone aate hi bachon se kaha - 'Ye dekho Chacha ji!' Jaise zoo me bachon ko bandar dikha rahi hon! Bachon ne aate hi dhoom-dhadaka shuru kar diya.",
+      "image_prompt": "A chaotic hospital room where a mother points at the patient on the bed, and four mischievous kids are running around creating a mess."
+    },
+    {
+      "scene": 6,
+      "narration": "Ek bacha taang par latak rahi reyti ki thaili par boxing karne laga, aur ladki ne dawa ki sheeshi hi tod di! Sonabai boli- 'Dawa giri matlab bimari gayi!' Bechare hero ki to jaan hi nikal gayi!",
+      "image_prompt": "A little boy punching the sandbag hanging from the patient's traction, while a girl drops a glass medicine bottle on the floor, glass shattering everywhere, the patient looks terrified."
+    }
+  ]

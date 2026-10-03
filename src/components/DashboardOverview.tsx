@@ -2186,7 +2186,7 @@ export default function DashboardOverview({ lang, user, onRefreshData }: Dashboa
                   setProfileMessage(null);
                   setShowProfileEditor(true);
                 }}
-                className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[10px] font-black text-cyan-200 hover:bg-white/10"
+                className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-slate-900 px-2 py-1 text-[10px] font-black text-cyan-200 hover:bg-slate-800"
                 title={t.editProfilePictureAndName}
               >
                 <Edit className="w-3 h-3" /> {t.edit}
@@ -2210,7 +2210,7 @@ export default function DashboardOverview({ lang, user, onRefreshData }: Dashboa
           <div className="relative">
             <button
               onClick={() => { setShowNotifications(!showNotifications); void loadNotifications(); }}
-              className="relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition hover:bg-white/10 hover:text-white"
+              className="relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl border border-white/10 bg-slate-900 text-slate-300 transition hover:bg-slate-800 hover:text-white"
               title="View system notifications"
             >
               <Bell className="w-5 h-5" />
@@ -2510,7 +2510,7 @@ export default function DashboardOverview({ lang, user, onRefreshData }: Dashboa
         return (
           <div className="bg-gradient-to-r from-rose-500 to-amber-500 text-white rounded-2xl p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 no-print animate-pulse">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0">
+              <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-white shrink-0">
                 <Bell className="w-5 h-5 text-white" />
               </div>
               <div className="text-left">

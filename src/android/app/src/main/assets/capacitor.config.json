@@ -3,7 +3,14 @@
 	"appName": "Classtago",
 	"webDir": "mobile-dist",
 	"server": {
-		"androidScheme": "https"
+		"url": "https://classtago.in/?edunixoApp=1",
+		"cleartext": false,
+		"androidScheme": "https",
+		"allowNavigation": [
+			"edunixo-production-final.onrender.com",
+			"*.onrender.com",
+			"*.supabase.co"
+		]
 	},
 	"android": {
 		"allowMixedContent": false,
@@ -12,14 +19,14 @@
 	},
 	"plugins": {
 		"CapacitorHttp": {
-			"enabled": true
+			"enabled": false
 		},
 		"SystemBars": {
 			"insetsHandling": "css"
 		},
 		"SplashScreen": {
-			"launchAutoHide": false,
-			"launchShowDuration": 1200,
+			"launchAutoHide": true,
+			"launchShowDuration": 800,
 			"backgroundColor": "#F7F9FF",
 			"showSpinner": false,
 			"androidScaleType": "CENTER_CROP"

@@ -642,7 +642,7 @@ export default function SmartAttendanceManager({ lang, user, onRefreshData, acti
             </p>
           </div>
 
-          <div className="flex items-center gap-2 bg-white/10 px-3 py-2 rounded-xl border border-white/10 font-mono text-xs">
+          <div className="flex items-center gap-2 bg-slate-800 px-3 py-2 rounded-xl border border-white/10 font-mono text-xs">
             <Calendar className="w-4 h-4 text-emerald-400" />
             <input 
               type="date" 

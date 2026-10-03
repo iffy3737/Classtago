@@ -391,7 +391,7 @@ export default function EdunixoPlatformLanding({
             <button onClick={() => openInterest('demo')} className="ml-2 flex items-center gap-2 rounded-xl bg-cyan-300 px-4 py-2.5 text-xs font-black text-slate-950 transition hover:bg-cyan-200"><Zap className="h-3.5 w-3.5" />Try Live Demo</button>
             <button
               onClick={platformSessionActive && onOpenPlatformConsole ? onOpenPlatformConsole : onOpenPlatformLogin}
-              className="ml-2 flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-extrabold text-white transition hover:border-cyan-300/50 hover:bg-cyan-300/10"
+              className="ml-2 flex items-center gap-2 rounded-xl border border-white/15 bg-slate-900 px-4 py-2.5 text-xs font-extrabold text-white transition hover:border-cyan-300/50 hover:bg-cyan-300/10"
             >
               <LockKeyhole className="h-3.5 w-3.5" />
               {platformSessionActive ? selectedCopy.openConsole : selectedCopy.admin}
@@ -466,7 +466,7 @@ export default function EdunixoPlatformLanding({
                   {[
                     [selectedCopy.students, '2,480', UsersRound], [selectedCopy.attendance, '94.8%', BadgeCheck], [selectedCopy.classes, '48', BookOpenCheck], [selectedCopy.notices, '12', MessageSquareText]
                   ].map(([label, value, Icon]: any) => (
-                    <div key={label} className="rounded-xl border border-white/10 bg-white/5 p-3">
+                    <div key={label} className="rounded-xl border border-white/10 bg-slate-900 p-3">
                       <Icon className="h-4 w-4 text-cyan-300" /><div className="mt-3 text-lg font-black">{value}</div><div className="text-[9px] uppercase tracking-wider text-slate-500">{label}</div>
                     </div>
                   ))}
@@ -476,16 +476,16 @@ export default function EdunixoPlatformLanding({
                   <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-sky-500/15 to-indigo-500/10 p-4">
                     <div className="flex items-center justify-between"><div><p className="text-[10px] font-bold uppercase tracking-wider text-sky-300">{selectedCopy.smartTimetable}</p><h3 className="mt-1 text-base font-black">{selectedCopy.wholeSchoolGenerated}</h3></div><CalendarClock className="h-6 w-6 text-sky-300" /></div>
                     <div className="mt-4 space-y-2">
-                      {[82, 68, 92].map((width, index) => <div key={width} className="h-2 rounded-full bg-white/10"><div className="h-2 rounded-full bg-gradient-to-r from-cyan-300 to-blue-400" style={{ width: `${width}%`, animationDelay: `${index * 120}ms` }} /></div>)}
+                      {[82, 68, 92].map((width, index) => <div key={width} className="h-2 rounded-full bg-slate-800"><div className="h-2 rounded-full bg-gradient-to-r from-cyan-300 to-blue-400" style={{ width: `${width}%`, animationDelay: `${index * 120}ms` }} /></div>)}
                     </div>
                     <div className="mt-4 flex items-center gap-2 text-[10px] font-bold text-emerald-300"><Check className="h-3.5 w-3.5" />{selectedCopy.noClashes}</div>
                   </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div className="rounded-2xl border border-white/10 bg-slate-900 p-4">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-violet-300">{selectedCopy.languageLayer}</p>
                     <div className="mt-3 space-y-2 text-xs font-bold">
-                      <div className="rounded-lg bg-white/5 px-3 py-2">English · हिन्दी</div>
-                      <div className="rounded-lg bg-white/5 px-3 py-2 text-right">اردو · मराठी</div>
-                      <div className="rounded-lg bg-white/5 px-3 py-2">ગુજરાતી · தமிழ்</div>
+                      <div className="rounded-lg bg-slate-900 px-3 py-2">English · हिन्दी</div>
+                      <div className="rounded-lg bg-slate-900 px-3 py-2 text-right">اردو · मराठी</div>
+                      <div className="rounded-lg bg-slate-900 px-3 py-2">ગુજરાતી · தமிழ்</div>
                     </div>
                     <div className="mt-3 text-[10px] leading-5 text-slate-400">{selectedCopy.languageLayerText}</div>
                   </div>
@@ -545,7 +545,7 @@ export default function EdunixoPlatformLanding({
               <h2 className="mt-4 text-4xl font-black tracking-[-0.04em] sm:text-5xl">{selectedCopy.studentPricing}</h2>
               <p className="mt-5 text-base leading-8 text-slate-400">{selectedCopy.studentFree}</p>
             </div>
-            <button onClick={() => openInterest('demo')} className="rounded-2xl border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-black text-white transition hover:border-cyan-300/30 hover:bg-cyan-300/10">{selectedCopy.demo}</button>
+            <button onClick={() => openInterest('demo')} className="rounded-2xl border border-white/15 bg-slate-900 px-6 py-3.5 text-sm font-black text-white transition hover:border-cyan-300/30 hover:bg-cyan-300/10">{selectedCopy.demo}</button>
           </div>
           <div className="mt-10 grid gap-5 lg:grid-cols-3">
             {plansLoading && [0,1,2].map((item) => <div key={item} className="h-64 animate-pulse rounded-[1.75rem] border border-white/10 bg-white/[0.04]" />)}
@@ -602,7 +602,7 @@ export default function EdunixoPlatformLanding({
               </button>
             )}
             <form onSubmit={findSchools} className="mx-auto mt-8 flex max-w-2xl flex-col gap-3 rounded-2xl border border-white/10 bg-slate-950/70 p-3 shadow-2xl sm:flex-row">
-              <div className="relative flex-1"><Search className="absolute start-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" /><input value={finderQuery} onChange={(event) => setFinderQuery(event.target.value)} className="w-full rounded-xl border border-white/10 bg-white/5 py-3.5 ps-12 pe-4 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-300/50" placeholder={selectedCopy.finderPlaceholder} autoComplete="off" spellCheck={false} aria-label={selectedCopy.finderPlaceholder} /></div>
+              <div className="relative flex-1"><Search className="absolute start-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" /><input value={finderQuery} onChange={(event) => setFinderQuery(event.target.value)} className="w-full rounded-xl border border-white/10 bg-slate-900 py-3.5 ps-12 pe-4 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-300/50" placeholder={selectedCopy.finderPlaceholder} autoComplete="off" spellCheck={false} aria-label={selectedCopy.finderPlaceholder} /></div>
               <button disabled={finderLoading || !finderQuery.trim()} className="flex items-center justify-center gap-2 rounded-xl bg-cyan-300 px-6 py-3.5 text-sm font-black text-slate-950 disabled:opacity-50">{finderLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}{selectedCopy.finderButton}</button>
             </form>
             <div className="mx-auto mt-2 max-w-2xl text-left text-[10px] font-semibold text-slate-500">Live search starts from the first character. Your last opened school stays on this device for quick access.</div>
@@ -613,7 +613,7 @@ export default function EdunixoPlatformLanding({
               <div className="mt-7 grid gap-3 text-left sm:grid-cols-2">
                 {schools.map((school) => (
                   <button key={school.id} onClick={() => openSchool(school)} className="group rounded-2xl border border-white/10 bg-white/[0.055] p-5 text-left transition hover:border-cyan-300/30 hover:bg-white/[0.08]">
-                    <div className="flex items-start gap-4"><div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white/10 text-cyan-300"><Building2 className="h-5 w-5" /></div><div className="min-w-0 flex-1"><div className="truncate text-base font-black text-white">{school.schoolName}</div><div className="mt-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">{school.schoolCode}{school.city ? ` · ${school.city}` : ''}</div>{school.admissionsOpen && <div className="mt-2 inline-flex rounded-full bg-emerald-300/10 px-2.5 py-1 text-[9px] font-bold text-emerald-300">{selectedCopy.admissionsOpen}{school.admissionSession ? ` · ${school.admissionSession}` : ''}</div>}<div className="mt-3 flex items-center gap-1 text-xs font-bold text-cyan-300">{selectedCopy.openWebsite}<ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1" /></div></div></div>
+                    <div className="flex items-start gap-4"><div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-slate-800 text-cyan-300"><Building2 className="h-5 w-5" /></div><div className="min-w-0 flex-1"><div className="truncate text-base font-black text-white">{school.schoolName}</div><div className="mt-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">{school.schoolCode}{school.city ? ` · ${school.city}` : ''}</div>{school.admissionsOpen && <div className="mt-2 inline-flex rounded-full bg-emerald-300/10 px-2.5 py-1 text-[9px] font-bold text-emerald-300">{selectedCopy.admissionsOpen}{school.admissionSession ? ` · ${school.admissionSession}` : ''}</div>}<div className="mt-3 flex items-center gap-1 text-xs font-bold text-cyan-300">{selectedCopy.openWebsite}<ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1" /></div></div></div>
                   </button>
                 ))}
               </div>
@@ -644,7 +644,7 @@ export default function EdunixoPlatformLanding({
           <div className="max-h-[94vh] w-full max-w-4xl overflow-y-auto rounded-[2rem] border border-white/10 bg-slate-900 shadow-2xl">
             <div className="sticky top-0 z-10 flex items-start justify-between border-b border-white/10 bg-slate-900/95 px-6 py-5 backdrop-blur-xl sm:px-8">
               <div><p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300">{selectedCopy.onboarding}</p><h2 className="mt-1 text-2xl font-black">{interestType === 'registration' ? selectedCopy.leadTitleRegistration : 'Start Live Demo'}</h2><p className="mt-1 max-w-2xl text-xs leading-5 text-slate-400">{interestType === 'demo' ? 'Verify the WhatsApp mobile number with OTP and enter the selected role immediately. No manual approval or waiting.' : selectedCopy.leadText}</p></div>
-              <button onClick={() => setInterestType(null)} className="ml-4 rounded-xl border border-white/10 p-2 text-slate-400 hover:bg-white/10 hover:text-white" aria-label={selectedCopy.close}><X className="h-5 w-5" /></button>
+              <button onClick={() => setInterestType(null)} className="ml-4 rounded-xl border border-white/10 p-2 text-slate-400 hover:bg-slate-800 hover:text-white" aria-label={selectedCopy.close}><X className="h-5 w-5" /></button>
             </div>
 
             {leadReference ? (
@@ -653,10 +653,10 @@ export default function EdunixoPlatformLanding({
               <form onSubmit={submitLead} className="space-y-6 p-6 sm:p-8">
                 {interestType === 'demo' ? (<>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <label className="block"><span className="mb-1.5 block text-xs font-bold text-slate-300">School Name *</span><input type="text" value={leadState.institutionName} onChange={(event) => setLeadState((current) => ({ ...current, institutionName: event.target.value }))} placeholder="School Name" className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-300/50 focus:bg-white/[0.07]" /></label>
+                    <label className="block"><span className="mb-1.5 block text-xs font-bold text-slate-300">School Name *</span><input type="text" value={leadState.institutionName} onChange={(event) => setLeadState((current) => ({ ...current, institutionName: event.target.value }))} placeholder="School Name" className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-300/50 focus:bg-white/[0.07]" /></label>
                     <label className="block"><span className="mb-1.5 block text-xs font-bold text-slate-300">Role *</span><select value={leadState.demoRole} onChange={(event) => setLeadState((current) => ({ ...current, demoRole: event.target.value as DemoRole }))} className="w-full rounded-xl border border-white/10 bg-slate-950 px-4 py-3 text-sm font-bold text-white outline-none focus:border-cyan-300/50">{DEMO_ROLE_OPTIONS.map((role) => <option key={role.value} value={role.value}>{role.label}</option>)}</select></label>
-                    <label className="block"><span className="mb-1.5 block text-xs font-bold text-slate-300">Mobile Number (WhatsApp) *</span><input type="tel" value={leadState.mobile} onChange={(event) => { setLeadState((current) => ({ ...current, mobile: event.target.value })); resetLeadOtp(); }} placeholder="+91…" className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-300/50 focus:bg-white/[0.07]" /></label>
-                    <label className="block"><span className="mb-1.5 block text-xs font-bold text-slate-300">Email <span className="font-semibold text-slate-500">(Optional)</span></span><input type="email" value={leadState.email} onChange={(event) => { setLeadState((current) => ({ ...current, email: event.target.value })); resetLeadOtp(); }} placeholder="name@example.com" className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-300/50 focus:bg-white/[0.07]" /></label>
+                    <label className="block"><span className="mb-1.5 block text-xs font-bold text-slate-300">Mobile Number (WhatsApp) *</span><input type="tel" value={leadState.mobile} onChange={(event) => { setLeadState((current) => ({ ...current, mobile: event.target.value })); resetLeadOtp(); }} placeholder="+91…" className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-300/50 focus:bg-white/[0.07]" /></label>
+                    <label className="block"><span className="mb-1.5 block text-xs font-bold text-slate-300">Email <span className="font-semibold text-slate-500">(Optional)</span></span><input type="email" value={leadState.email} onChange={(event) => { setLeadState((current) => ({ ...current, email: event.target.value })); resetLeadOtp(); }} placeholder="name@example.com" className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-300/50 focus:bg-white/[0.07]" /></label>
                   </div>
 
                   <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/[0.06] p-4">
@@ -684,7 +684,7 @@ export default function EdunixoPlatformLanding({
                     [selectedCopy.mobile, 'mobile', 'tel', '+91…'], [selectedCopy.officialEmail, 'email', 'email', 'name@institution.org'],
                     [selectedCopy.approxStudents, 'studentCount', 'number', '1200'], [selectedCopy.approxStaff, 'staffCount', 'number', '75']
                   ].map(([label, key, type, placeholder]) => (
-                    <label key={key} className="block"><span className="mb-1.5 block text-xs font-bold text-slate-300">{label}{['institutionName','contactName','mobile','email'].includes(key) ? ' *' : ''}</span><input type={type} min={type === 'number' ? 0 : undefined} value={(leadState as any)[key]} onChange={(event) => { setLeadState((current) => ({ ...current, [key]: event.target.value })); if (key === 'mobile' || key === 'email') resetLeadOtp(); }} placeholder={placeholder} className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-300/50 focus:bg-white/[0.07]" /></label>
+                    <label key={key} className="block"><span className="mb-1.5 block text-xs font-bold text-slate-300">{label}{['institutionName','contactName','mobile','email'].includes(key) ? ' *' : ''}</span><input type={type} min={type === 'number' ? 0 : undefined} value={(leadState as any)[key]} onChange={(event) => { setLeadState((current) => ({ ...current, [key]: event.target.value })); if (key === 'mobile' || key === 'email') resetLeadOtp(); }} placeholder={placeholder} className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-300/50 focus:bg-white/[0.07]" /></label>
                   ))}
                 </div>
 
@@ -702,7 +702,7 @@ export default function EdunixoPlatformLanding({
 
                 <div><div className="mb-3 text-xs font-bold text-slate-300">{selectedCopy.modulesInterest}</div><div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">{MODULE_OPTIONS.map((moduleName) => { const selected = leadState.requestedModules.includes(moduleName); return <button key={moduleName} type="button" onClick={() => toggleModule(moduleName)} className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-left text-xs font-bold transition ${selected ? 'border-cyan-300/40 bg-cyan-300/10 text-cyan-100' : 'border-white/10 bg-white/[0.035] text-slate-400 hover:border-white/20'}`}><span className={`grid h-4 w-4 place-items-center rounded border ${selected ? 'border-cyan-300 bg-cyan-300 text-slate-950' : 'border-slate-600'}`}>{selected && <Check className="h-3 w-3" />}</span>{selectedCopy.moduleLabels[moduleName] || moduleName}</button>; })}</div></div>
 
-                <label className="block"><span className="mb-1.5 block text-xs font-bold text-slate-300">{selectedCopy.additionalRequirements}</span><textarea rows={3} value={leadState.message} onChange={(event) => setLeadState((current) => ({ ...current, message: event.target.value }))} className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-300/50" placeholder={selectedCopy.additionalPlaceholder} /></label>
+                <label className="block"><span className="mb-1.5 block text-xs font-bold text-slate-300">{selectedCopy.additionalRequirements}</span><textarea rows={3} value={leadState.message} onChange={(event) => setLeadState((current) => ({ ...current, message: event.target.value }))} className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-300/50" placeholder={selectedCopy.additionalPlaceholder} /></label>
 
                 <input aria-hidden="true" tabIndex={-1} autoComplete="off" value={leadState.website} onChange={(event) => setLeadState((current) => ({ ...current, website: event.target.value }))} className="hidden" />
                 <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-white/[0.035] p-4"><input type="checkbox" checked={leadState.consent} onChange={(event) => setLeadState((current) => ({ ...current, consent: event.target.checked }))} className="mt-0.5 h-4 w-4 accent-cyan-300" /><span className="text-xs leading-5 text-slate-400">{selectedCopy.consent}</span></label>

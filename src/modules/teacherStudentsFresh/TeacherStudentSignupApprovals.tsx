@@ -183,7 +183,7 @@ export default function TeacherStudentSignupApprovals({ context, loading, error,
             <h1 className="mt-2 text-2xl font-black">Student Signup Approvals</h1>
             <p className="mt-2 max-w-3xl text-xs leading-5 text-slate-300">Only Student Portal signups belonging to your current Headmaster-assigned Class Teacher class/division appear here. Passwords are never visible.</p>
           </div>
-          <button type="button" onClick={() => void load()} disabled={busy} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-black hover:bg-white/15 disabled:opacity-50">
+          <button type="button" onClick={() => void load()} disabled={busy} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-slate-800 px-4 py-2.5 text-xs font-black hover:bg-slate-700 disabled:opacity-50">
             {busy ? <Loader2 className="h-4 w-4 animate-spin"/> : <RefreshCw className="h-4 w-4"/>} Refresh
           </button>
         </div>

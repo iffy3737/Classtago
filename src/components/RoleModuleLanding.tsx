@@ -19,7 +19,7 @@ export default function RoleModuleLanding({ module, categoryLabel, role, onBack,
           <button
             type="button"
             onClick={onBack}
-            className="relative mb-5 inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3.5 py-2 text-[10px] font-black uppercase tracking-wider text-white transition hover:border-cyan-300/35 hover:bg-white/15 focus:outline-none focus:ring-4 focus:ring-cyan-300/15"
+            className="relative mb-5 inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/15 bg-slate-800 px-3.5 py-2 text-[10px] font-black uppercase tracking-wider text-white transition hover:border-cyan-300/35 hover:bg-slate-700 focus:outline-none focus:ring-4 focus:ring-cyan-300/15"
             aria-label="Back to dashboard"
           >
             <ArrowLeft className="h-4 w-4" /> Back to Dashboard
@@ -31,7 +31,7 @@ export default function RoleModuleLanding({ module, categoryLabel, role, onBack,
             <div className="flex flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300">
               <Sparkles className="h-4 w-4" />
               <span>{categoryLabel || 'Role workspace'}</span>
-              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[8px] text-slate-300">{role.replaceAll('_', ' ')}</span>
+              <span className="rounded-full border border-white/10 bg-slate-900 px-2 py-1 text-[8px] text-slate-300">{role.replaceAll('_', ' ')}</span>
             </div>
             <h1 className="mt-3 text-2xl font-black tracking-tight sm:text-3xl">{module.label}</h1>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-400">

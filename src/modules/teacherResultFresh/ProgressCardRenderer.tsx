@@ -103,7 +103,7 @@ export default function ProgressCardRenderer(props: ProgressCardRendererProps) {
       <div className="bg-gradient-to-r from-[#06163f] via-[#0b3d86] to-[#06163f] text-white px-6 py-5">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="grid h-20 w-20 place-items-center rounded-2xl border-2 border-amber-300 bg-white/10">
+            <div className="grid h-20 w-20 place-items-center rounded-2xl border-2 border-amber-300 bg-slate-800">
               <span className="text-2xl font-black text-amber-300">NHS</span>
             </div>
             <div>

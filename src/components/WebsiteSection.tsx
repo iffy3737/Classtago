@@ -75,7 +75,7 @@ export default function WebsiteSection({ lang, notices, onOpenERP }: WebsiteSect
             </button>
             <a
               href="#about-section"
-              className="px-6 py-3 bg-white/10 hover:bg-white/15 text-sm font-semibold text-white border border-white/10 hover:border-white/25 rounded-xl transition-all text-center"
+              className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-sm font-semibold text-white border border-white/10 hover:border-white/25 rounded-xl transition-all text-center"
             >
               {lang === 'ur' ? 'مزید معلومات' : lang === 'hi' ? 'अधिक जानकारी' : 'Learn More'}
             </a>
@@ -219,7 +219,7 @@ export default function WebsiteSection({ lang, notices, onOpenERP }: WebsiteSect
 
           {/* Admission Quick Info Card */}
           <div className="bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-2xl p-6 shadow-md relative overflow-hidden">
-            <div className="absolute -right-12 -bottom-12 w-32 h-32 bg-white/5 rounded-full"></div>
+            <div className="absolute -right-12 -bottom-12 w-32 h-32 bg-slate-900 rounded-full"></div>
             <h3 className="font-bold text-md mb-2 font-sans">{t.admissionInfo}</h3>
             <UrduWrapper lang={lang} className="text-xs text-blue-100 leading-relaxed mb-4">
               <p>{t.admissionText}</p>

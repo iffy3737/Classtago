@@ -232,7 +232,7 @@ export default function HeadmasterAttendanceCloudWorkspace({ user, activeFeature
     <div className="rounded-[1.75rem] bg-slate-950 p-6 text-white shadow-xl sm:p-7">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex gap-4"><div className="rounded-2xl bg-cyan-400/15 p-3 text-cyan-300">{icon}</div><div><div className="text-[10px] font-black uppercase tracking-[.2em] text-cyan-300">Headmaster · Canonical Attendance</div><h2 className="mt-2 text-2xl font-black">{title}</h2><p className="mt-2 max-w-3xl text-xs leading-6 text-slate-300">{subtitle}</p></div></div>
-        <button onClick={() => void refresh()} disabled={loading} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-black disabled:opacity-50"><RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}/>Refresh</button>
+        <button onClick={() => void refresh()} disabled={loading} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-slate-800 px-4 py-2.5 text-xs font-black disabled:opacity-50"><RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}/>Refresh</button>
       </div>
       <div className="mt-5 text-[10px] font-bold text-slate-400">{snapshot?.academicYear?.year || 'Current academic year'} · {user.name || 'Headmaster'} · school-scoped cloud records only</div>
     </div>

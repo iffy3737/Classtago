@@ -120,7 +120,7 @@ export default function TeacherLeavePersonalHR({
     <header className="overflow-hidden rounded-3xl bg-slate-950 p-6 text-white shadow-xl">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div><div className="text-[10px] font-black uppercase tracking-[.2em] text-cyan-300">Leave & Personal HR</div><h1 className="mt-2 text-2xl font-black">{title}</h1><p className="mt-1 text-xs text-slate-300">{context.teacherName} · {context.academicYear}</p></div>
-        <button type="button" onClick={() => void reload()} disabled={busy} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2 text-xs font-black disabled:opacity-50"><RefreshCw className={`h-4 w-4 ${busy ? 'animate-spin' : ''}`}/>Refresh</button>
+        <button type="button" onClick={() => void reload()} disabled={busy} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-slate-800 px-4 py-2 text-xs font-black disabled:opacity-50"><RefreshCw className={`h-4 w-4 ${busy ? 'animate-spin' : ''}`}/>Refresh</button>
       </div>
     </header>
 

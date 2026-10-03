@@ -743,7 +743,7 @@ export default function PlatformAdminPortal({ lang, user }: PlatformAdminPortalP
         <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-blue-950 px-5 py-6 text-white sm:px-7">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-start gap-4">
-              <div className="rounded-2xl border border-white/10 bg-white/10 p-3"><ShieldCheck className="h-7 w-7 text-cyan-300" /></div>
+              <div className="rounded-2xl border border-white/10 bg-slate-800 p-3"><ShieldCheck className="h-7 w-7 text-cyan-300" /></div>
               <div>
                 <div className="mb-2 flex flex-wrap items-center gap-2">
                   <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.16em] text-cyan-200">Classtago ERP</span>
@@ -753,7 +753,7 @@ export default function PlatformAdminPortal({ lang, user }: PlatformAdminPortalP
                 <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-300">{c.subtitle}</p>
               </div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm">
+            <div className="rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm">
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{c.currentAdmin}</p>
               <p className="mt-1 font-extrabold text-white">{overview?.admin.displayName || user.name}</p>
               <p className="mt-0.5 text-xs text-slate-400">{overview?.admin.email || user.email}</p>

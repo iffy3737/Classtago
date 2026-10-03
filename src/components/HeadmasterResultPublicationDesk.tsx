@@ -64,7 +64,7 @@ export default function HeadmasterResultPublicationDesk() {
     <header className="overflow-hidden rounded-[1.8rem] bg-slate-950 p-6 text-white shadow-2xl sm:p-8">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
         <div><div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[.2em] text-violet-300"><ShieldCheck className="h-4 w-4"/>Headmaster Final Authority</div><h1 className="mt-3 text-2xl font-black tracking-tight sm:text-3xl">Result Publication & Lock</h1><p className="mt-2 max-w-3xl text-xs leading-6 text-slate-400">Class Teachers prepare Progress Cards. Students can see a Progress Card only after this final Headmaster publication. Published batches are locked and every action is written to the audit trail.</p></div>
-        <button onClick={()=>void load()} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-xs font-black"><RefreshCw className="h-4 w-4"/>Refresh Queue</button>
+        <button onClick={()=>void load()} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-slate-800 px-4 py-3 text-xs font-black"><RefreshCw className="h-4 w-4"/>Refresh Queue</button>
       </div>
     </header>
     {error&&<div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-bold text-rose-800">{error}</div>}

@@ -589,7 +589,7 @@ export default function QuestionPaperManager({ lang, user, onRefreshData }: Ques
   };
 
   const executeSystemPrint = () => {
-    printSectionById('printable-question-paper', 'Official Question Paper');
+    printSectionById('printable-question-paper', 'Official Question Paper', 'question-paper');
   };
 
   return (

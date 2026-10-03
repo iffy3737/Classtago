@@ -2,6 +2,11 @@ package com.classtago.app;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.ContentValues;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.os.Build;
 
 import androidx.biometric.BiometricManager;
@@ -21,6 +26,7 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions;
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning;
 import com.google.mlkit.vision.barcode.common.Barcode;
 
+import java.io.OutputStream;
 import java.util.concurrent.Executor;
 
 @CapacitorPlugin(
@@ -101,6 +107,67 @@ public class EdunixoSmartPlugin extends Plugin {
         out.put("savedUri", data.getStringExtra("savedUri"));
         out.put("savedTo", data.getStringExtra("savedTo"));
         call.resolve(out);
+    }
+
+    @PluginMethod
+    public void savePdf(PluginCall call) {
+        try {
+            String base64 = call.getString("base64", "");
+            String fileName = call.getString("fileName", "Classtago_Document.pdf");
+
+            if (base64 == null || base64.trim().isEmpty()) {
+                call.reject("PDF data is empty.");
+                return;
+            }
+
+            if (!fileName.toLowerCase().endsWith(".pdf")) {
+                fileName = fileName + ".pdf";
+            }
+
+            byte[] pdfBytes = Base64.decode(base64, Base64.DEFAULT);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Downloads.DISPLAY_NAME, fileName);
+                values.put(MediaStore.Downloads.MIME_TYPE, "application/pdf");
+                values.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/Classtago");
+                values.put(MediaStore.Downloads.IS_PENDING, 1);
+
+                Uri uri = getContext().getContentResolver().insert(
+                    MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                    values
+                );
+
+                if (uri == null) {
+                    call.reject("Android could not create the PDF in Downloads.");
+                    return;
+                }
+
+                try (OutputStream output = getContext().getContentResolver().openOutputStream(uri)) {
+                    if (output == null) {
+                        throw new IllegalStateException("Could not open the PDF destination.");
+                    }
+                    output.write(pdfBytes);
+                    output.flush();
+                }
+
+                ContentValues completed = new ContentValues();
+                completed.put(MediaStore.Downloads.IS_PENDING, 0);
+                getContext().getContentResolver().update(uri, completed, null, null);
+
+                JSObject out = new JSObject();
+                out.put("saved", true);
+                out.put("fileName", fileName);
+                out.put("savedTo", "Downloads/Classtago");
+                out.put("uri", uri.toString());
+                call.resolve(out);
+                return;
+            }
+
+            call.reject("PDF download requires Android 10 or newer.");
+        } catch (Exception error) {
+            call.reject("Could not save PDF to Downloads.", error);
+        }
     }
 
     @PluginMethod

@@ -61,7 +61,7 @@ export default function SchoolPortalResolver({
   if (loading) {
     return (
       <div className="flex min-h-[78vh] flex-col items-center justify-center bg-[#050816] p-8 text-center text-white">
-        <div className="grid h-20 w-20 place-items-center rounded-[1.6rem] border border-white/10 bg-white/5 shadow-2xl">
+        <div className="grid h-20 w-20 place-items-center rounded-[1.6rem] border border-white/10 bg-slate-900 shadow-2xl">
           <Loader2 className="h-9 w-9 animate-spin text-cyan-300" />
         </div>
         <h2 className="mt-6 text-2xl font-black tracking-tight">Opening secure school experience…</h2>

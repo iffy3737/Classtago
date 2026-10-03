@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Download, Eye, FileText, Printer, RotateCcw, Settings2, X } from 'lucide-react';
 import { LocalERPDatabase } from '../lib/supabase';
+import { Capacitor } from '@capacitor/core';
+import { saveNativePdf } from '../lib/phase5NativeSmart';
 import {
   DEFAULT_SMART_PRINT_PREFERENCES,
   getSmartPaperDimensions,
@@ -290,8 +292,10 @@ export default function SmartPrintCenter() {
       frame = document.createElement('iframe');
       frame.setAttribute('aria-hidden', 'true');
       frame.style.position = 'fixed';
-      frame.style.left = '-100000px';
+      frame.style.left = '0';
       frame.style.top = '0';
+      frame.style.opacity = '0';
+      frame.style.pointerEvents = 'none';
       frame.style.width = `${dimensions.width}mm`;
       frame.style.height = `${dimensions.height}mm`;
       frame.style.border = '0';
@@ -321,15 +325,42 @@ export default function SmartPrintCenter() {
       if (!printable) throw new Error('Printable document could not be prepared.');
 
       // @ts-ignore
+      // @ts-ignore
       const html2pdf = (await import('html2pdf.js')).default;
-      await html2pdf().set({
+      const pdfFileName = `${(request.title || 'School_Document').replace(/[^a-z0-9_-]+/gi, '_')}_${preferences.paperSize}_${preferences.orientation}.pdf`;
+
+      const pdfWorker = html2pdf().set({
         margin: 0,
-        filename: `${(request.title || 'School_Document').replace(/[^a-z0-9_-]+/gi, '_')}_${preferences.paperSize}_${preferences.orientation}.pdf`,
+        filename: pdfFileName,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2.2, useCORS: true, logging: false, backgroundColor: '#ffffff', windowWidth: Math.max(794, printable.scrollWidth) },
         jsPDF: { unit: 'mm', format: [dimensions.width, dimensions.height], orientation: preferences.orientation },
         pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', '.avoid-print-break', '.homework-print-meta', '.homework-print-line', '.question-row', '.qp-answer-area', '.qp-match-table', '.qp-section-head', '.qp-subquestion-row', '.qp-section-match-wrap'] }
-      }).from(printable).save();
+      }).from(printable);
+
+      if (Capacitor.isNativePlatform()) {
+        const pdfBlob = await pdfWorker.outputPdf('blob');
+        const reader = new FileReader();
+
+        const base64 = await new Promise<string>((resolve, reject) => {
+          reader.onloadend = () => {
+            const result = typeof reader.result === 'string' ? reader.result : '';
+            const comma = result.indexOf(',');
+            if (comma < 0) {
+              reject(new Error('Could not encode the generated PDF.'));
+              return;
+            }
+            resolve(result.slice(comma + 1));
+          };
+          reader.onerror = () => reject(reader.error || new Error('Could not encode the generated PDF.'));
+          reader.readAsDataURL(pdfBlob);
+        });
+
+        const saved = await saveNativePdf(base64, pdfFileName);
+        window.alert(`PDF saved successfully in ${saved.savedTo}.`);
+      } else {
+        await pdfWorker.save();
+      }
     } catch (error) {
       console.error(error);
       window.alert('PDF could not be generated. Please use Print and choose Save as PDF in the printer dialog.');

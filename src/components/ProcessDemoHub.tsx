@@ -255,7 +255,7 @@ export default function ProcessDemoHub(props:Props){
     <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-[#07111f]/95 backdrop-blur">
       <div className="mx-auto flex w-full max-w-[100rem] items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <div className="flex min-w-0 items-center gap-3">
-          <button onClick={props.onBack} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-white/10 hover:bg-white/5"><ArrowLeft className="h-4 w-4"/></button>
+          <button onClick={props.onBack} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-white/10 hover:bg-slate-900"><ArrowLeft className="h-4 w-4"/></button>
           <div className="min-w-0"><div className="truncate text-sm font-black">Classtago Process Demo</div><div className="truncate text-[9px] font-bold uppercase tracking-[.16em] text-cyan-300">{props.boardName} · {props.medium} Medium</div><div className="mt-0.5 truncate text-[8px] font-bold text-slate-600">{ccopy.pass} · {props.visitorName||'Visitor'}{props.institutionName?` · ${props.institutionName}`:''}</div></div>
         </div>
         <button onClick={()=>props.onOpenRole('headmaster')} className="hidden shrink-0 rounded-xl border border-white/10 px-3 py-2 text-[10px] font-black sm:block">Explore by Role</button>

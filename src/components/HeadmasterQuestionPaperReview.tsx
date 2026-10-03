@@ -146,7 +146,7 @@ export default function HeadmasterQuestionPaperReview({ lang, user }: Headmaster
             <h1 className="text-2xl font-bold tracking-tight">Question Paper Review & Finalization</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">Reviews the same cloud Question Papers saved by Teachers. Finalization changes only approval status; Teacher assignment, study-material scope and question content remain immutable from this desk.</p>
           </div>
-          <button type="button" onClick={() => void load()} disabled={loading} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold text-white hover:bg-white/15 disabled:opacity-60">
+          <button type="button" onClick={() => void load()} disabled={loading} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-slate-800 px-4 py-2 text-xs font-bold text-white hover:bg-slate-700 disabled:opacity-60">
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} /> Refresh Cloud Queue
           </button>
         </div>

@@ -380,7 +380,7 @@ export default function StudentDirectoryWorkspace({ user, activeFeatureId }: Pro
             <h1 className="mt-3 text-2xl font-black sm:text-3xl">{focusedSectionLabel || 'One student record, six dedicated operational pages.'}</h1>
             <p className="mt-2 max-w-3xl text-xs leading-6 text-slate-300">Profile, guardians, placement, lifecycle and admission documents remain separate, but always use the same permanent Student Master record. Clerk lifecycle work is routed to Headmaster approval.</p>
           </div>
-          <button onClick={() => void load(true)} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-xs font-black"><RefreshCw className="h-4 w-4" />Refresh</button>
+          <button onClick={() => void load(true)} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-slate-800 px-4 py-3 text-xs font-black"><RefreshCw className="h-4 w-4" />Refresh</button>
         </div>
       </header>
 

@@ -111,8 +111,8 @@ export default function TopBar({
 
         <div className="flex flex-wrap items-center justify-center gap-2 xl:justify-end">
           <div className="flex rounded-xl border border-white/10 bg-white/[0.045] p-1 text-xs shadow-inner">
-            <button onClick={() => onNavigate('website')} id="tab-website-view" className={`flex items-center gap-2 rounded-lg px-3 py-2 font-black transition-all ${currentView === 'website' ? 'bg-white text-slate-950 shadow-lg' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}><Globe2 className="h-3.5 w-3.5" />{t.website}</button>
-            <button onClick={user ? () => onNavigate('erp') : onOpenLogin} id="tab-erp-view" className={`flex items-center gap-2 rounded-lg px-3 py-2 font-black transition-all ${currentView === 'erp' ? 'bg-gradient-to-r from-cyan-300 to-violet-400 text-slate-950 shadow-lg' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}><Sparkles className="h-3.5 w-3.5" />{t.erpPortal}</button>
+            <button onClick={() => onNavigate('website')} id="tab-website-view" className={`flex items-center gap-2 rounded-lg px-3 py-2 font-black transition-all ${currentView === 'website' ? 'bg-white text-slate-950 shadow-lg' : 'text-slate-400 hover:bg-slate-900 hover:text-white'}`}><Globe2 className="h-3.5 w-3.5" />{t.website}</button>
+            <button onClick={user ? () => onNavigate('erp') : onOpenLogin} id="tab-erp-view" className={`flex items-center gap-2 rounded-lg px-3 py-2 font-black transition-all ${currentView === 'erp' ? 'bg-gradient-to-r from-cyan-300 to-violet-400 text-slate-950 shadow-lg' : 'text-slate-400 hover:bg-slate-900 hover:text-white'}`}><Sparkles className="h-3.5 w-3.5" />{t.erpPortal}</button>
           </div>
 
           <div className="hidden items-center gap-2 xl:flex">

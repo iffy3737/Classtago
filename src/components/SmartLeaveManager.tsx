@@ -1931,7 +1931,7 @@ export default function SmartLeaveManager({ lang, user, onRefreshData, activeFea
           <button
             onClick={() => setActiveTab('dashboard')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
-              activeTab === 'dashboard' ? 'bg-indigo-600 text-white' : 'bg-white/10 text-slate-200 hover:bg-white/20'
+              activeTab === 'dashboard' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'
             }`}
           >
             Dashboard
@@ -1947,7 +1947,7 @@ export default function SmartLeaveManager({ lang, user, onRefreshData, activeFea
                 }
               }}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
-                activeTab === 'apply' ? 'bg-indigo-600 text-white' : 'bg-white/10 text-slate-200 hover:bg-white/20'
+                activeTab === 'apply' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'
               }`}
             >
               <Plus className="w-3.5 h-3.5" />
@@ -1959,7 +1959,7 @@ export default function SmartLeaveManager({ lang, user, onRefreshData, activeFea
             <button
               onClick={() => setActiveTab('master_settings')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
-                activeTab === 'master_settings' ? 'bg-indigo-600 text-white' : 'bg-white/10 text-slate-200 hover:bg-white/20'
+                activeTab === 'master_settings' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'
               }`}
             >
               Reason Master
@@ -1970,7 +1970,7 @@ export default function SmartLeaveManager({ lang, user, onRefreshData, activeFea
           <button
             onClick={() => setActiveTab('reports')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
-              activeTab === 'reports' ? 'bg-indigo-600 text-white' : 'bg-white/10 text-slate-200 hover:bg-white/20'
+              activeTab === 'reports' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'
             }`}
           >
             Reports Desk
@@ -1979,7 +1979,7 @@ export default function SmartLeaveManager({ lang, user, onRefreshData, activeFea
           {/* Notifications */}
           <button
             onClick={() => setActiveTab('notifications')}
-            className="p-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-slate-200 relative cursor-pointer"
+            className="p-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-200 relative cursor-pointer"
             title="Leave Notifications Panel"
           >
             <Bell className="w-4 h-4" />
@@ -2240,7 +2240,7 @@ export default function SmartLeaveManager({ lang, user, onRefreshData, activeFea
                   </h4>
                   <div className="text-[11px] text-slate-300 space-y-3 leading-relaxed">
                     <p>Configure intervening Sunday/holiday calculations dynamically. Current active school ruleset: </p>
-                    <div className="bg-white/10 rounded-lg p-2.5 border border-white/10 font-mono text-slate-100">
+                    <div className="bg-slate-800 rounded-lg p-2.5 border border-white/10 font-mono text-slate-100">
                       <strong>{leaveRule === 'Rule A' ? 'Rule A: Ignored' : leaveRule === 'Rule B' ? 'Rule B: Sandwiched' : 'Rule C: Sunday Sandwich Only'}</strong>
                       <p className="text-[10px] text-slate-400 mt-1 leading-snug">
                         {leaveRule === 'Rule A' && "Holidays and Sundays do not consume leave days."}
@@ -3263,7 +3263,7 @@ export default function SmartLeaveManager({ lang, user, onRefreshData, activeFea
                       className={`p-4 rounded-xl text-left border cursor-pointer transition-all ${
                         leaveRule === r.id 
                           ? 'bg-indigo-600/20 border-indigo-500 text-white ring-2 ring-indigo-500/50' 
-                          : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                          : 'bg-slate-900 border-white/10 text-slate-300 hover:bg-slate-800'
                       }`}
                     >
                       <strong className="block text-xs text-indigo-200">{r.title}</strong>

@@ -4997,7 +4997,7 @@ export default function ResultManagement({
             </p>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10 space-y-1 max-w-xs">
+          <div className="bg-slate-800 backdrop-blur-sm rounded-xl p-3 border border-white/10 space-y-1 max-w-xs">
             <span className="text-[10px] uppercase font-extrabold text-slate-300 tracking-wider block">
               {t.roleLabel}
             </span>

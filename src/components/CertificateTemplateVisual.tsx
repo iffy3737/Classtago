@@ -71,7 +71,7 @@ export function CertificateTemplateDecorations({ preset }: DecorationProps) {
       return <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute inset-5 border-2" style={{ borderColor: b }} />
         <div className="absolute bottom-0 left-[13%] top-0 w-[18%]" style={{ background: a }} />
-        <div className="absolute bottom-0 left-[16%] top-0 w-[5%] bg-white/15" />
+        <div className="absolute bottom-0 left-[16%] top-0 w-[5%] bg-slate-700" />
         <div className="absolute left-[10.5%] top-[34%] flex h-24 w-24 items-center justify-center rounded-full border-[7px] bg-[#e8c35a] shadow-xl" style={{ borderColor: b }}>
           <Medal className="h-10 w-10" style={{ color: a }} />
         </div>

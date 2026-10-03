@@ -1,0 +1,3409 @@
+/* Classtago Premium Theme v2 — Bright Spring Palette (aggressive) */
+
+:root {
+  --cs-lilac: #ECBEED;
+  --cs-lilac-deep: #D68FD9;
+  --cs-pink: #FF3473;
+  --cs-pink-deep: #D91B5C;
+  --cs-orange: #FFA202;
+  --cs-orange-deep: #E08800;
+  --cs-rose: #FE9BBA;
+  --cs-mint: #93D7D6;
+  --cs-mint-deep: #5DBFBE;
+  --cs-primary: #FF3473;
+  --cs-primary-2: #FFA202;
+  --cs-bg: #FFF9FC;
+  --cs-bg-soft: #FDF3F8;
+  --cs-surface: #FFFFFF;
+  --cs-ink: #1A0F2E;
+  --cs-muted: #6B5E7B;
+  --cs-border: #F5ECF7;
+}
+
+/* Force body + root backgrounds */
+html, body, #root, .edunixo-theme-root, .edunixo-interface-root {
+  background: #FFF9FC !important;
+  background-color: #FFF9FC !important;
+}
+
+/* Kill the dark navy ERP wrapper gradient */
+.edunixo-premium-erp,
+.edunixo-erp-shell,
+.edunixo-erp-grid,
+.edunixo-erp-command-banner {
+  background: #FFF9FC !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* White cards → warm white */
+html body .bg-white,
+html body [class*="bg-white "],
+html body [class*=" bg-white"],
+html body [class*="rounded-2xl"][class*="bg-white"],
+html body [class*="rounded-3xl"][class*="bg-white"],
+html body [class*="rounded-xl"][class*="bg-white"] {
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+  border-color: var(--cs-border) !important;
+  box-shadow: 0 2px 12px -4px rgba(255, 52, 115, 0.08) !important;
+}
+
+/* Slate/grey backgrounds → soft warm */
+html body [class*="bg-slate-50"]:not([class*="bg-slate-500"]):not([class*="bg-slate-900"]) {
+  background-color: #FDF3F8 !important;
+  background-image: none !important;
+}
+html body [class*="bg-slate-100"]:not([class*="bg-slate-1000"]) {
+  background-color: #F9E8F1 !important;
+  background-image: none !important;
+}
+
+/* Borders */
+html body [class*="border-slate-100"],
+html body [class*="border-slate-200"],
+html body [class*="border-slate-300"] {
+  border-color: #F5ECF7 !important;
+}
+
+/* ALL primary buttons — force gradient */
+html body button[class*="bg-slate-950"],
+html body button[class*="bg-slate-900"],
+html body button[class*="bg-blue-"],
+html body button[class*="bg-indigo-"],
+html body button[class*="bg-cyan-"],
+html body button[class*="bg-purple-"],
+html body button[class*="bg-violet-"],
+html body a[class*="bg-slate-950"],
+html body a[class*="bg-blue-"],
+html body a[class*="bg-indigo-"] {
+  background-image: linear-gradient(135deg, #FF3473, #FFA202) !important;
+  background-color: #FF3473 !important;
+  border-color: transparent !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 6px 18px -6px rgba(255, 52, 115, 0.5) !important;
+}
+
+/* Keep the "active/selected" state also pink-orange */
+html body [class*="bg-blue-600"] {
+  background-color: #FF3473 !important;
+}
+
+/* Section headings text — gradient accent */
+html body h1[class*="font-black"],
+html body h2[class*="font-black"],
+html body h3[class*="font-bold"] {
+  color: #1A0F2E !important;
+}
+
+/* Small uppercase tracking labels */
+html body [class*="uppercase"][class*="tracking"] {
+  color: #B04A6E !important;
+}
+
+/* Inputs — pink focus */
+:where(html body) input:not([type="checkbox"]):not([type="radio"]),
+:where(html body) textarea,
+:where(html body) select {
+  background-color: #FFFFFF !important;
+  border-color: #F5ECF7 !important;
+  border-radius: 12px !important;
+}
+:where(html body) input:not([type="checkbox"]):not([type="radio"]):focus,
+:where(html body) textarea:focus,
+:where(html body) select:focus {
+  border-color: #FF3473 !important;
+  box-shadow: 0 0 0 3px rgba(255, 52, 115, 0.15) !important;
+  outline: none !important;
+}
+
+/* Icon circles — gradient backgrounds for pastel containers */
+html body [class*="bg-cyan-50"],
+html body [class*="bg-blue-50"],
+html body [class*="bg-indigo-50"] {
+  background-image: linear-gradient(135deg, rgba(236, 190, 237, 0.5), rgba(147, 215, 214, 0.5)) !important;
+  background-color: transparent !important;
+}
+html body [class*="bg-emerald-50"],
+html body [class*="bg-green-50"] {
+  background-image: linear-gradient(135deg, rgba(147, 215, 214, 0.5), rgba(93, 191, 190, 0.5)) !important;
+  background-color: transparent !important;
+}
+html body [class*="bg-amber-50"],
+html body [class*="bg-orange-50"],
+html body [class*="bg-yellow-50"] {
+  background-image: linear-gradient(135deg, rgba(255, 194, 88, 0.4), rgba(255, 162, 2, 0.35)) !important;
+  background-color: transparent !important;
+}
+html body [class*="bg-rose-50"],
+html body [class*="bg-pink-50"],
+html body [class*="bg-red-50"] {
+  background-image: linear-gradient(135deg, rgba(254, 155, 186, 0.5), rgba(255, 52, 115, 0.25)) !important;
+  background-color: transparent !important;
+}
+
+/* Badges — softer */
+html body [class*="rounded-full"][class*="bg-slate-100"] {
+  background-color: #F9E8F1 !important;
+  color: #B04A6E !important;
+}
+
+/* Dividers */
+html body [class*="divide-slate"] > * + * {
+  border-color: #F5ECF7 !important;
+}
+
+/* Rounded corners consistency */
+html body [class*="rounded-2xl"] {
+  border-radius: 20px !important;
+}
+html body [class*="rounded-3xl"] {
+  border-radius: 24px !important;
+}
+
+/* Page transition */
+@keyframes cs-page-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+html body .edx-mobile-main > * {
+  animation: cs-page-in 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Selection color */
+::selection {
+  background: #FE9BBA !important;
+  color: #1A0F2E !important;
+}
+
+/* ============================================================
+   PHASE 2 — Typography upgrade (Material 3 + Notion inspired)
+   ============================================================ */
+
+/* Bigger base font for readability */
+html body {
+  font-size: 16px !important;
+  line-height: 1.55 !important;
+  letter-spacing: -0.005em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Titles — larger, tighter tracking */
+html body h1 { font-size: 28px !important; font-weight: 800 !important; line-height: 34px !important; letter-spacing: -0.02em !important; }
+html body h2 { font-size: 22px !important; font-weight: 800 !important; line-height: 28px !important; letter-spacing: -0.015em !important; }
+html body h3 { font-size: 18px !important; font-weight: 700 !important; line-height: 24px !important; letter-spacing: -0.01em !important; }
+
+/* Module list titles — bump up text sizes */
+html body [class*="text-xs"]  { font-size: 13px !important; line-height: 18px !important; }
+html body [class*="text-sm"]  { font-size: 15px !important; line-height: 21px !important; }
+html body [class*="text-base"]{ font-size: 17px !important; line-height: 24px !important; }
+html body [class*="text-lg"]  { font-size: 19px !important; line-height: 26px !important; }
+html body [class*="text-xl"]  { font-size: 22px !important; line-height: 28px !important; }
+html body [class*="text-2xl"] { font-size: 26px !important; line-height: 32px !important; }
+
+/* Font weight boosts for titles/buttons */
+html body button,
+html body [role="button"] { font-weight: 700 !important; }
+
+/* Small labels — better tracking */
+html body [class*="text-[10px]"],
+html body [class*="text-[11px]"] {
+  letter-spacing: 0.03em !important;
+}
+
+/* Buttons — bigger tap targets */
+html body button:not([class*="p-0"]):not([class*="w-"]):not([class*="h-"]) {
+  min-height: 44px;
+}
+
+/* ============================================================
+   PHASE 3 — Bottom Navigation Bar (Material 3 Android style)
+   ============================================================ */
+
+.cs-bottom-nav {
+  display: none;
+}
+
+.edunixo-mobile-runtime .cs-bottom-nav,
+.edunixo-app-runtime .cs-bottom-nav {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  background: #FFFFFF;
+  border-top: 1px solid #F5ECF7;
+  box-shadow: 0 -8px 28px -8px rgba(255, 52, 115, 0.15);
+  padding: 8px 6px calc(10px + env(safe-area-inset-bottom, 0px));
+  justify-content: space-around;
+  align-items: stretch;
+}
+
+.cs-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: transparent;
+  border: none;
+  padding: 6px 4px;
+  min-height: 0 !important;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease;
+}
+.cs-nav-item:active { transform: scale(0.94); }
+
+.cs-nav-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 30px;
+  border-radius: 100px;
+  transition: background-image 0.2s ease, background-color 0.2s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cs-nav-icon {
+  color: #6B5E7B;
+  stroke-width: 2.25;
+  transition: color 0.2s ease;
+}
+
+.cs-nav-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #6B5E7B;
+  transition: color 0.2s ease;
+}
+
+.cs-nav-item-active .cs-nav-icon-wrap {
+  background-image: linear-gradient(135deg, #FF3473, #FFA202);
+  box-shadow: 0 8px 18px -8px rgba(255, 52, 115, 0.55);
+  transform: translateY(-1px);
+}
+.cs-nav-item-active .cs-nav-icon { color: #FFFFFF; }
+.cs-nav-item-active .cs-nav-label {
+  background-image: linear-gradient(90deg, #FF3473, #FFA202);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: #FF3473;
+  font-weight: 800;
+}
+
+.edunixo-mobile-runtime .edx-mobile-main,
+.edunixo-app-runtime .edx-mobile-main {
+  padding-bottom: calc(78px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* ============================================================
+   PHASE 3b — FORCE bottom nav visible (specificity override)
+   ============================================================ */
+
+html body .cs-bottom-nav {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: auto !important;
+  z-index: 60 !important;
+  background: #FFFFFF !important;
+  border-top: 1px solid #F5ECF7 !important;
+  box-shadow: 0 -8px 28px -8px rgba(255, 52, 115, 0.15) !important;
+  padding: 8px 6px calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+  justify-content: space-around !important;
+  align-items: stretch !important;
+  min-height: 62px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Hide on large desktop screens */
+@media (min-width: 1024px) {
+  html body .cs-bottom-nav { display: none !important; }
+}
+
+/* Also add a temporary visible marker to verify it's in DOM */
+html body .cs-bottom-nav::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #FF3473, #FFA202);
+  pointer-events: none;
+}
+
+/* ============================================================
+   PHASE 4 — Role Module Menu Redesign (Light Premium)
+   Transforms the dark navy drawer into a light, colourful
+   Android-style menu matching the Spring theme.
+   ============================================================ */
+
+/* Overlay — softer pink backdrop */
+.edx-role-module-overlay-backdrop {
+  background-color: rgba(26, 15, 46, 0.55) !important;
+  backdrop-filter: blur(6px) !important;
+}
+
+/* Main drawer — light background + premium shadow */
+.edx-role-module-drawer {
+  background: #FFF9FC !important;
+  border-color: #F5ECF7 !important;
+  box-shadow: 0 30px 80px -10px rgba(255, 52, 115, 0.35) !important;
+}
+
+/* Header — gradient pink-orange */
+.edx-role-module-drawer-header {
+  background: linear-gradient(135deg, #FF3473 0%, #FFA202 100%) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 10px 30px -8px rgba(255, 52, 115, 0.5) !important;
+  color: #FFFFFF !important;
+}
+.edx-role-module-drawer-header p[class*="text-cyan-300"] {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+.edx-role-module-drawer-header h2,
+.edx-role-module-drawer-header [class*="text-white"] {
+  color: #FFFFFF !important;
+}
+.edx-role-module-drawer-header [class*="text-slate-400"] {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+/* Close button — soft white on gradient */
+.edx-role-module-drawer-header button[aria-label] {
+  background: rgba(255, 255, 255, 0.22) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  color: #FFFFFF !important;
+  backdrop-filter: blur(10px);
+}
+
+/* Search bar — clean white */
+.edx-role-module-search {
+  background: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 4px 14px -4px rgba(26, 15, 46, 0.15) !important;
+}
+.edx-role-module-search svg { color: #FF3473 !important; }
+.edx-role-module-search input {
+  background: transparent !important;
+  color: #1A0F2E !important;
+}
+.edx-role-module-search input::placeholder {
+  color: #9CA3AF !important;
+}
+
+/* Content area — light */
+.edx-role-module-drawer > div {
+  background: #FFF9FC !important;
+}
+
+/* Category + module cards — white with soft shadow */
+.edx-role-module-drawer section {
+  background: #FFFFFF !important;
+  border-color: #F5ECF7 !important;
+  box-shadow: 0 2px 12px -4px rgba(255, 52, 115, 0.08) !important;
+}
+
+/* Category header buttons — clean */
+.edx-role-module-drawer section > button {
+  background: transparent !important;
+  color: #1A0F2E !important;
+}
+.edx-role-module-drawer section > button:hover {
+  background: rgba(255, 52, 115, 0.04) !important;
+}
+
+/* Category label text — dark */
+.edx-role-module-drawer [class*="text-slate-100"],
+.edx-role-module-drawer [class*="text-white"] {
+  color: #1A0F2E !important;
+}
+.edx-role-module-drawer [class*="text-slate-300"] {
+  color: #4B5563 !important;
+}
+.edx-role-module-drawer [class*="text-slate-400"],
+.edx-role-module-drawer [class*="text-slate-500"] {
+  color: #6B5E7B !important;
+}
+.edx-role-module-drawer [class*="text-slate-600"] {
+  color: #9CA3AF !important;
+}
+
+/* Category icon square — gradient */
+.edx-role-module-drawer [class*="bg-cyan-300/10"] {
+  background: linear-gradient(135deg, rgba(236, 190, 237, 0.55), rgba(147, 215, 214, 0.55)) !important;
+  color: #B04A6E !important;
+}
+.edx-role-module-drawer [class*="text-cyan-300"] {
+  color: #FF3473 !important;
+}
+
+/* Active/selected module — pink highlight */
+.edx-role-module-drawer [class*="border-cyan-300/35"] {
+  border-color: #FF3473 !important;
+  background: rgba(255, 52, 115, 0.06) !important;
+}
+.edx-role-module-drawer [class*="bg-cyan-300/[0.085]"] {
+  background: rgba(255, 52, 115, 0.08) !important;
+}
+.edx-role-module-drawer [class*="bg-cyan-300"][class*="text-slate-950"] {
+  background: linear-gradient(135deg, #FF3473, #FFA202) !important;
+  color: #FFFFFF !important;
+}
+
+/* Nested feature list — soft background */
+.edx-role-module-drawer [class*="bg-slate-950/45"] {
+  background: #FDF3F8 !important;
+  border-color: #F5ECF7 !important;
+}
+.edx-role-module-drawer [class*="bg-slate-950/75"] {
+  background: #FFFFFF !important;
+}
+
+/* Divider borders — soft pink */
+.edx-role-module-drawer [class*="border-white/"] {
+  border-color: #F5ECF7 !important;
+}
+
+/* Hover states for features */
+.edx-role-module-drawer button:hover {
+  background-color: rgba(255, 52, 115, 0.04) !important;
+}
+
+/* Shortcut chips — pink tint */
+.edx-role-module-drawer [class*="bg-violet-300/10"] {
+  background: rgba(255, 52, 115, 0.1) !important;
+  color: #B04A6E !important;
+}
+.edx-role-module-drawer [class*="text-violet-300"],
+.edx-role-module-drawer [class*="text-violet-200"] {
+  color: #FF3473 !important;
+}
+
+/* Locked badge — keep amber but soft */
+.edx-role-module-drawer [class*="bg-amber-300/10"] {
+  background: rgba(255, 162, 2, 0.12) !important;
+  color: #B45309 !important;
+  border-color: rgba(255, 162, 2, 0.3) !important;
+}
+
+/* ============================================================
+   PHASE 4b — Hamburger Button (TopBar) — make it look like native menu
+   ============================================================ */
+button[aria-label*="menu" i],
+button[aria-label*="Menu" i] {
+  transition: transform 0.15s ease;
+}
+button[aria-label*="menu" i]:active,
+button[aria-label*="Menu" i]:active {
+  transform: scale(0.94);
+}
+
+/* ============================================================
+   PHASE 5 — Page Transitions & Micro-interactions
+   Smooth animations when navigating between pages and modules.
+   ============================================================ */
+
+/* Base page enter animation — every page container fades + slides */
+@keyframes cs-page-enter {
+  0%   { opacity: 0; transform: translateY(12px) scale(0.995); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes cs-page-exit {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-8px) scale(0.995); }
+}
+
+/* Apply enter animation to the main content area when it changes */
+.edx-mobile-main > *,
+.edunixo-mobile-runtime .edx-mobile-main > div {
+  animation: cs-page-enter 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+/* Modal / dialog entrance animation */
+@keyframes cs-modal-enter {
+  0%   { opacity: 0; transform: translateY(24px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Target React portal dialogs and fixed overlays */
+body > div[role="dialog"],
+body > div[aria-modal="true"],
+.edx-role-module-drawer,
+[class*="fixed inset-0"][class*="z-50"] {
+  animation: cs-modal-enter 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Drawer slide-in from left/right */
+@keyframes cs-drawer-slide-left {
+  0%   { transform: translateX(-100%); opacity: 0.4; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes cs-drawer-slide-right {
+  0%   { transform: translateX(100%); opacity: 0.4; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+.edx-role-module-drawer.left-0 {
+  animation: cs-drawer-slide-left 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.edx-role-module-drawer.right-0 {
+  animation: cs-drawer-slide-right 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Overlay backdrop fade */
+@keyframes cs-overlay-fade {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+.edx-role-module-overlay-backdrop {
+  animation: cs-overlay-fade 0.22s ease-out !important;
+}
+
+/* Card tap feedback — subtle scale + glow */
+button,
+a,
+[role="button"],
+[class*="rounded-2xl"][class*="border"],
+[class*="rounded-3xl"][class*="border"] {
+  transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.16s ease,
+              background-color 0.16s ease;
+}
+button:active,
+[role="button"]:active {
+  transform: scale(0.97);
+}
+
+/* Card hover (desktop only — safe for mobile) */
+@media (hover: hover) {
+  [class*="rounded-2xl"][class*="border"]:hover {
+    box-shadow: 0 12px 32px -10px rgba(255, 52, 115, 0.2) !important;
+    transform: translateY(-2px);
+  }
+}
+
+/* Smooth scroll throughout the app */
+html, body {
+  scroll-behavior: smooth;
+}
+
+/* Scroll containers — momentum */
+.edx-mobile-main,
+.edx-role-module-drawer > div,
+[class*="overflow-y-auto"] {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Text/fade-in for the initial dashboard load */
+@keyframes cs-fade-in {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+.edunixo-mobile-runtime .edx-mobile-main {
+  animation: cs-fade-in 0.35s ease-out;
+}
+
+/* View Transitions API — modern Chrome 111+ */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root) {
+  animation: cs-page-exit 0.2s ease-in;
+}
+::view-transition-new(root) {
+  animation: cs-page-enter 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   PHASE 5c — Module Dock Menu Button (make prominent)
+   The "MODULES / Teacher Dashboard" card button at top.
+   ============================================================ */
+
+/* Main button — pink-orange gradient */
+html body .erp-module-dock button[aria-label] {
+  background: linear-gradient(135deg, #FF3473 0%, #FFA202 100%) !important;
+  border-color: transparent !important;
+  box-shadow: 0 8px 24px -8px rgba(255, 52, 115, 0.5) !important;
+  color: #FFFFFF !important;
+}
+html body .erp-module-dock button[aria-label]:active {
+  transform: scale(0.97);
+  box-shadow: 0 4px 12px -6px rgba(255, 52, 115, 0.6) !important;
+}
+
+/* Icon square inside — glass white on gradient */
+html body .erp-module-dock button[aria-label] > span:first-child {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.15) !important;
+  backdrop-filter: blur(10px);
+}
+html body .erp-module-dock button[aria-label] > span:first-child svg {
+  color: #FFFFFF !important;
+  stroke-width: 2.5 !important;
+}
+
+/* Small uppercase "MODULES" label — white */
+html body .erp-module-dock button[aria-label] [class*="text-cyan-300"] {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Card title inside — white bold */
+html body .erp-module-dock button[aria-label] [class*="text-white"],
+html body .erp-module-dock button[aria-label] [class*="text-slate-100"] {
+  color: #FFFFFF !important;
+}
+
+/* Any remaining cyan text in the dock — pink accent */
+html body .erp-module-dock [class*="text-cyan-300"] {
+  color: #FF3473 !important;
+}
+
+/* Dock container — subtle pink border to match */
+html body .erp-module-dock {
+  border-color: rgba(255, 52, 115, 0.15) !important;
+  background: linear-gradient(135deg, rgba(255, 52, 115, 0.04), rgba(255, 162, 2, 0.04)) !important;
+}
+
+/* ============================================================
+   PHASE 5d — FIX: menu button visibility (override 5c)
+   ============================================================ */
+
+/* Force gradient on button */
+html body .erp-module-dock button[aria-label] {
+  background: linear-gradient(135deg, #FF3473 0%, #FFA202 100%) !important;
+  background-color: #FF3473 !important;
+  border: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* ALL children text white */
+html body .erp-module-dock button[aria-label] span,
+html body .erp-module-dock button[aria-label] p,
+html body .erp-module-dock button[aria-label] div {
+  color: #FFFFFF !important;
+}
+
+/* SVG icons white */
+html body .erp-module-dock button[aria-label] svg {
+  stroke: #FFFFFF !important;
+  color: #FFFFFF !important;
+  fill: none !important;
+}
+
+/* Icon square background - glass */
+html body .erp-module-dock button[aria-label] > span:first-child {
+  background: rgba(255, 255, 255, 0.28) !important;
+  color: #FFFFFF !important;
+}
+
+/* Make dock sticky at top */
+html body .erp-module-dock {
+  position: sticky !important;
+  top: 4px !important;
+  z-index: 70 !important;
+  background: #FFFFFF !important;
+  border-radius: 20px !important;
+  box-shadow: 0 6px 20px -6px rgba(255, 52, 115, 0.2) !important;
+  margin-bottom: 12px !important;
+}
+
+/* ============================================================
+   PHASE 5f — Hamburger in TopBar + hide dock button
+   ============================================================ */
+
+.edx-mobile-hamburger {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  flex-shrink: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 14px !important;
+  border: none !important;
+  background: linear-gradient(135deg, #FF3473 0%, #FFA202 100%) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 6px 18px -6px rgba(255, 52, 115, 0.55) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+  margin-right: 6px !important;
+  cursor: pointer !important;
+}
+.edx-mobile-hamburger:active {
+  transform: scale(0.94) !important;
+}
+.edx-mobile-hamburger svg {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+  stroke-width: 2.5 !important;
+}
+
+.edx-mobile-topbar-inner {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 10px 14px !important;
+}
+
+.edx-mobile-brand-lockup {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+html body .erp-module-dock button[aria-label] {
+  display: none !important;
+}
+
+html body .erp-module-dock {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 0 8px 0 !important;
+  min-height: 0 !important;
+}
+html body .erp-module-dock > div {
+  gap: 0 !important;
+  padding: 0 !important;
+}
+
+/* ============================================================
+   PHASE 6 — Fix issues 1, 2, 5
+   ============================================================ */
+
+/* ---- ISSUE 1: TopBar — don't overlap system status bar ---- */
+.edx-mobile-topbar {
+  padding-top: max(12px, env(safe-area-inset-top)) !important;
+  background: #FFF9FC !important;
+}
+.edx-mobile-topbar-inner {
+  padding-top: 4px !important;
+  padding-bottom: 10px !important;
+}
+
+/* ---- ISSUE 2: Bottom nav — bigger icons + labels ---- */
+.cs-bottom-nav {
+  padding: 10px 8px calc(14px + env(safe-area-inset-bottom, 0px)) !important;
+  min-height: 72px !important;
+}
+.cs-nav-icon-wrap {
+  width: 66px !important;
+  height: 38px !important;
+}
+.cs-nav-icon {
+  width: 26px !important;
+  height: 26px !important;
+  stroke-width: 2.4 !important;
+}
+.cs-nav-label {
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
+.cs-nav-item-active .cs-nav-label {
+  font-size: 12.5px !important;
+}
+
+/* ---- ISSUE 5: Richer premium pink theme ---- */
+:root {
+  --cs-bg: #FDF5F8 !important;
+  --cs-bg-soft: #FBE8F0 !important;
+}
+html, body, #root, .edunixo-theme-root {
+  background: #FDF5F8 !important;
+}
+html body .bg-white {
+  border-color: #F5D9E5 !important;
+  box-shadow: 0 3px 16px -6px rgba(233, 30, 99, 0.12) !important;
+}
+
+/* ============================================================
+   PHASE 7 — Deeper premium pink
+   ============================================================ */
+
+html, body, #root, .edunixo-theme-root, .edunixo-interface-root {
+  background: #FBE5EF !important;
+  background-color: #FBE5EF !important;
+}
+
+.edunixo-mobile-runtime .edx-mobile-main,
+.edunixo-app-runtime .edx-mobile-main {
+  background: #FBE5EF !important;
+}
+
+html body .bg-white {
+  box-shadow: 0 4px 18px -6px rgba(233, 30, 99, 0.18) !important;
+}
+
+.edx-mobile-topbar {
+  background: #FBE5EF !important;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255, 162, 2, 0.08), transparent 45%),
+    radial-gradient(circle at 80% 90%, rgba(236, 190, 237, 0.15), transparent 45%);
+}
+
+/* ============================================================
+   PHASE 8 — Fix: revert pink dominance, back to premium cream
+   ============================================================ */
+
+/* Soft cream background — only hint of pink */
+html, body, #root, .edunixo-theme-root, .edunixo-interface-root {
+  background: #FDFAFB !important;
+  background-color: #FDFAFB !important;
+}
+
+.edunixo-mobile-runtime .edx-mobile-main,
+.edunixo-app-runtime .edx-mobile-main {
+  background: #FDFAFB !important;
+}
+
+.edx-mobile-topbar {
+  background: #FDFAFB !important;
+}
+
+/* Remove the pink radial gradient overlay */
+body::before {
+  background: none !important;
+}
+
+/* Cards stay white, pop against cream */
+html body .bg-white {
+  background: #FFFFFF !important;
+  box-shadow: 0 2px 12px -6px rgba(255, 52, 115, 0.1) !important;
+}
+
+/* Keep subtle pink only on accent areas */
+html body [class*="bg-pink-50"],
+html body [class*="bg-rose-50"] {
+  background: linear-gradient(135deg, rgba(255, 52, 115, 0.06), rgba(255, 162, 2, 0.06)) !important;
+}
+
+/* Bottom nav stays white */
+.cs-bottom-nav {
+  background: #FFFFFF !important;
+}
+
+/* ============================================================
+   PHASE 9 — Deep Indigo / Violet theme (pink removed)
+   ============================================================ */
+
+:root {
+  --cs-primary: #6366F1 !important;
+  --cs-primary-2: #8B5CF6 !important;
+  --cs-pink: #6366F1 !important;
+  --cs-pink-deep: #4F46E5 !important;
+  --cs-orange: #8B5CF6 !important;
+  --cs-orange-deep: #7C3AED !important;
+  --cs-bg: #F1F5F9 !important;
+  --cs-bg-soft: #E2E8F0 !important;
+  --cs-border: #E2E8F0 !important;
+}
+
+/* Darker slate background */
+html, body, #root, .edunixo-theme-root, .edunixo-interface-root {
+  background: #F1F5F9 !important;
+  background-color: #F1F5F9 !important;
+}
+.edunixo-mobile-runtime .edx-mobile-main,
+.edunixo-app-runtime .edx-mobile-main {
+  background: #F1F5F9 !important;
+}
+.edx-mobile-topbar {
+  background: #F1F5F9 !important;
+}
+
+/* Remove any pink radial overlays */
+body::before {
+  background: none !important;
+}
+
+/* Cards */
+html body .bg-white {
+  background: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 2px 14px -6px rgba(99, 102, 241, 0.12) !important;
+}
+
+/* ALL primary buttons — indigo→violet */
+button[class*="bg-slate-950"],
+button[class*="bg-blue-600"],
+button[class*="bg-indigo-600"],
+button[class*="bg-cyan-600"],
+button[class*="bg-rose-"],
+button[class*="bg-pink-"],
+a[class*="bg-slate-950"],
+a[class*="bg-blue-"],
+a[class*="bg-indigo-"] {
+  background-image: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%) !important;
+  background-color: #6366F1 !important;
+  border-color: transparent !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 6px 18px -6px rgba(99, 102, 241, 0.5) !important;
+}
+
+/* Hamburger */
+.edx-mobile-hamburger {
+  background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%) !important;
+  box-shadow: 0 6px 18px -6px rgba(99, 102, 241, 0.55) !important;
+}
+
+/* Menu drawer header */
+.edx-role-module-drawer-header {
+  background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%) !important;
+  box-shadow: 0 10px 30px -8px rgba(99, 102, 241, 0.5) !important;
+}
+
+/* Menu — module icons (remove pink, use indigo) */
+.edx-role-module-drawer [class*="bg-cyan-300/10"] {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15)) !important;
+  color: #6366F1 !important;
+}
+.edx-role-module-drawer [class*="text-cyan-300"] {
+  color: #6366F1 !important;
+}
+
+/* Menu — active/selected */
+.edx-role-module-drawer [class*="border-cyan-300/35"] {
+  border-color: #6366F1 !important;
+  background: rgba(99, 102, 241, 0.06) !important;
+}
+.edx-role-module-drawer [class*="bg-cyan-300/[0.085]"] {
+  background: rgba(99, 102, 241, 0.08) !important;
+}
+.edx-role-module-drawer [class*="bg-cyan-300"][class*="text-slate-950"] {
+  background: linear-gradient(135deg, #6366F1, #8B5CF6) !important;
+  color: #FFFFFF !important;
+}
+
+/* Menu — shortcut chips */
+.edx-role-module-drawer [class*="bg-violet-300/10"] {
+  background: rgba(99, 102, 241, 0.1) !important;
+  color: #4F46E5 !important;
+}
+.edx-role-module-drawer [class*="text-violet-300"],
+.edx-role-module-drawer [class*="text-violet-200"] {
+  color: #6366F1 !important;
+}
+
+/* Menu — search icon */
+.edx-role-module-search svg {
+  color: #6366F1 !important;
+}
+
+/* Bottom nav — active tab */
+.cs-nav-item-active .cs-nav-icon-wrap {
+  background-image: linear-gradient(135deg, #6366F1, #8B5CF6) !important;
+  box-shadow: 0 8px 18px -8px rgba(99, 102, 241, 0.55) !important;
+}
+.cs-nav-item-active .cs-nav-label {
+  background-image: linear-gradient(90deg, #6366F1, #8B5CF6) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  color: #6366F1 !important;
+}
+
+/* Module dock button */
+html body .erp-module-dock button[aria-label] {
+  background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%) !important;
+  box-shadow: 0 8px 24px -8px rgba(99, 102, 241, 0.5) !important;
+}
+
+/* Pink/rose pastel backgrounds → indigo tint */
+html body [class*="bg-pink-50"],
+html body [class*="bg-rose-50"] {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.06), rgba(139, 92, 246, 0.06)) !important;
+}
+
+/* Input focus */
+:where(html body) input:not([type="checkbox"]):not([type="radio"]):focus,
+:where(html body) textarea:focus,
+:where(html body) select:focus {
+  border-color: #6366F1 !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+}
+
+/* Pink pastel avatar ring → indigo */
+html body [class*="border-pink"],
+html body [class*="ring-pink"] {
+  border-color: #6366F1 !important;
+}
+
+/* ============================================================
+   PHASE 10 — Darker body + remove ALL pink pastels
+   ============================================================ */
+
+:root {
+  --cs-bg: #E8EBF2 !important;
+  --cs-bg-soft: #DDE2EC !important;
+  --cs-border: #CBD5E1 !important;
+}
+
+/* Darker slate background */
+html, body, #root, .edunixo-theme-root, .edunixo-interface-root {
+  background: #E8EBF2 !important;
+  background-color: #E8EBF2 !important;
+}
+.edunixo-mobile-runtime .edx-mobile-main,
+.edunixo-app-runtime .edx-mobile-main {
+  background: #E8EBF2 !important;
+}
+.edx-mobile-topbar {
+  background: #E8EBF2 !important;
+}
+
+/* Remove EVERY pink pastel — convert to slate/indigo tints */
+html body [class*="bg-pink-"]:not([class*="bg-pink-5"]):not([class*="bg-pink-6"]):not([class*="bg-pink-7"]),
+html body [class*="bg-rose-"]:not([class*="bg-rose-5"]):not([class*="bg-rose-6"]):not([class*="bg-rose-7"]),
+html body [class*="bg-red-50"],
+html body [class*="bg-red-100"] {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.06), rgba(139, 92, 246, 0.05)) !important;
+  background-color: #EEF2FF !important;
+}
+
+/* Catch pink-tinted card patterns — inline style/class variants */
+html body [class*="bg-fce7f3"],
+html body [class*="bg-fbe5ef"],
+html body [class*="bg-fdf3f8"],
+html body [class*="bg-fdf5f8"],
+html body [class*="bgFCE7F3"],
+html body [class*="bgFBE5EF"] {
+  background: #EEF2FF !important;
+  background-color: #EEF2FF !important;
+}
+
+/* Any element with pink-tint via style attribute */
+html body [style*="fce7f3" i],
+html body [style*="fbe5ef" i],
+html body [style*="fdf3f8" i],
+html body [style*="fff5fa" i],
+html body [style*="fff1f2" i] {
+  background: #EEF2FF !important;
+  background-color: #EEF2FF !important;
+}
+
+/* The many light boxes inside class cards — make them cool slate */
+html body [class*="rounded"][class*="bg-"] {
+  /* default fallback */
+}
+
+/* "Class Teacher Class" / "Teaching Class" badges */
+html body [class*="bg-pink-100"],
+html body [class*="bg-rose-100"] {
+  background: #E0E7FF !important;
+  color: #4338CA !important;
+}
+
+/* All text that was pink → indigo */
+html body [class*="text-pink-"]:not([class*="text-pink-5"]):not([class*="text-pink-6"]):not([class*="text-pink-7"]),
+html body [class*="text-rose-"]:not([class*="text-rose-5"]):not([class*="text-rose-6"]):not([class*="text-rose-7"]),
+html body [class*="text-pink-700"],
+html body [class*="text-pink-800"],
+html body [class*="text-rose-700"],
+html body [class*="text-rose-800"] {
+  color: #4338CA !important;
+}
+
+/* Border pink → slate/indigo */
+html body [class*="border-pink-"]:not([class*="border-pink-5"]):not([class*="border-pink-6"]):not([class*="border-pink-7"]),
+html body [class*="border-rose-"]:not([class*="border-rose-5"]):not([class*="border-rose-6"]):not([class*="border-rose-7"]) {
+  border-color: #CBD5E1 !important;
+}
+
+/* Section header "My Classes" / "My Subjects" — keep clean */
+html body h2, html body h3 {
+  color: #0F172A !important;
+}
+
+/* Card inner soft boxes — light slate instead of pink */
+html body [class*="bg-white/"] {
+  background: #F1F5F9 !important;
+}
+
+/* Bottom nav — pure white */
+.cs-bottom-nav {
+  background: #FFFFFF !important;
+  border-top-color: #E2E8F0 !important;
+  box-shadow: 0 -8px 24px -8px rgba(99, 102, 241, 0.12) !important;
+}
+
+/* Any remaining "pink-ish" small boxes — force cool */
+html body [class*="rounded-xl"][style*="background"][style*="f" i] {
+  /* ignore default */
+}
+
+/* ============================================================
+   PHASE 11 — FIX: slate boxes back to neutral + dark borders
+   ============================================================ */
+
+/* Override the earlier pink conversion of slate-50 */
+html body [class*="bg-slate-50"]:not([class*="bg-slate-500"]):not([class*="bg-slate-900"]):not([class*="bg-slate-50/"]) {
+  background-color: #F8FAFC !important;
+  background-image: none !important;
+}
+
+/* Override the earlier pink conversion of slate-100 */
+html body [class*="bg-slate-100"]:not([class*="bg-slate-1000"]) {
+  background-color: #F1F5F9 !important;
+  background-image: none !important;
+}
+
+/* Catch any subtle pink leftovers with a hard rule */
+html body [class*="bg-[#FDF3F8]" i],
+html body [class*="bg-[#F9E8F1]" i],
+html body [class*="bg-[#fdf3f8]" i],
+html body [class*="bg-[#f9e8f1]" i] {
+  background-color: #F8FAFC !important;
+  background-image: none !important;
+}
+
+/* Inner "info box" cards inside class/subject — clean neutral */
+html body [class*="rounded"][class*="bg-slate-50"],
+html body [class*="rounded-lg"][class*="bg-slate-100"],
+html body [class*="rounded-xl"][class*="bg-slate-100"] {
+  background-color: #F8FAFC !important;
+  border: 1px solid #E2E8F0 !important;
+}
+
+/* Class/badge chips — small pills like "Class 6 · All" */
+html body [class*="bg-pink-50"],
+html body [class*="bg-rose-50"],
+html body [class*="bg-pink-100"],
+html body [class*="bg-rose-100"] {
+  background-color: #EEF2FF !important;
+  background-image: none !important;
+  color: #4338CA !important;
+  border-color: #C7D2FE !important;
+}
+
+/* Text that was pink */
+html body [class*="text-pink-"],
+html body [class*="text-rose-"] {
+  color: #4338CA !important;
+}
+html body [class*="text-pink-500"],
+html body [class*="text-pink-600"],
+html body [class*="text-pink-700"],
+html body [class*="text-rose-500"],
+html body [class*="text-rose-600"],
+html body [class*="text-rose-700"] {
+  color: #6366F1 !important;
+}
+
+/* ============================================================
+   BUTTON BORDERS — darker, more visible
+   ============================================================ */
+
+/* All outlined buttons — dark slate border */
+html body button[class*="border-slate-200"],
+html body button[class*="border-slate-300"],
+html body button[class*="border-slate-100"],
+html body a[class*="border-slate-200"],
+html body a[class*="border-slate-300"] {
+  border-color: #94A3B8 !important;
+  border-width: 1.5px !important;
+  color: #1E293B !important;
+  background-color: #FFFFFF !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+}
+
+html body button[class*="border-slate-200"]:active,
+html body button[class*="border-slate-300"]:active {
+  border-color: #6366F1 !important;
+  background-color: #EEF2FF !important;
+}
+
+/* Also darken default button borders */
+html body button:not([class*="bg-gradient"]):not([class*="bg-slate-9"]):not([class*="bg-indigo"]):not([class*="bg-blue"]):not([class*="bg-cyan"]):not([class*="bg-purple"]):not([class*="bg-violet"]):not([class*="bg-rose"]):not([class*="bg-pink"]):not([class*="bg-emerald"]):not([class*="bg-green"]):not([class*="bg-amber"]):not([class*="bg-orange"]):not([class*="bg-red"]) {
+  /* Only if it has a border class already */
+}
+
+/* ============================================================
+   UNIFIED THEME — consistent look across the app
+   ============================================================ */
+
+/* Primary action buttons — indigo-violet consistently */
+html body button[class*="bg-rose-"],
+html body button[class*="bg-pink-"],
+html body button[class*="bg-orange-"],
+html body button[class*="bg-amber-"] {
+  background-image: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%) !important;
+  background-color: #6366F1 !important;
+  border-color: transparent !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px -6px rgba(99, 102, 241, 0.5) !important;
+}
+
+/* Section headers consistent slate */
+html body h1, html body h2, html body h3, html body h4 {
+  color: #0F172A !important;
+}
+
+/* All cards — same subtle border */
+html body [class*="rounded-2xl"][class*="bg-white"],
+html body [class*="rounded-3xl"][class*="bg-white"] {
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 2px 12px -6px rgba(15, 23, 42, 0.08) !important;
+}
+
+/* ============================================================
+   PHASE 12 — Final fixes: topbar spacing, bottom nav active, 
+   menu search ring, keyboard stability, remove pink leftovers
+   ============================================================ */
+
+/* ---- ISSUE 1: TopBar — language box smaller so "Classtago" text visible ---- */
+.edx-mobile-topbar-inner {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 10px 12px !important;
+}
+.edx-mobile-brand-lockup {
+  flex: 0 1 auto !important;
+  min-width: 0 !important;
+  max-width: 30% !important;
+}
+.edx-mobile-brand-lockup h1,
+.edx-mobile-brand-lockup p {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  font-size: 12px !important;
+}
+.edx-mobile-brand-mark {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  flex-shrink: 0 !important;
+}
+.edx-mobile-brand-mark svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+/* Language selector — compress */
+.edx-mobile-topbar-inner button[aria-label*="language" i],
+.edx-mobile-topbar-inner [class*="LanguageSelector"] button,
+.edx-mobile-topbar-actions button:first-child {
+  max-width: 110px !important;
+  min-width: 0 !important;
+  padding: 6px 10px !important;
+  font-size: 12px !important;
+  height: 36px !important;
+}
+
+/* ---- ISSUE 2: Bottom nav active indicator follows current page ---- */
+/* These are set by JS but ensure visual fallback is correct */
+.cs-nav-item .cs-nav-icon-wrap {
+  transition: background-image 0.25s ease, background-color 0.25s ease,
+              transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+.cs-nav-item:not(.cs-nav-item-active) .cs-nav-icon-wrap {
+  background-image: none !important;
+  background-color: transparent !important;
+  transform: translateY(0) !important;
+  box-shadow: none !important;
+}
+.cs-nav-item:not(.cs-nav-item-active) .cs-nav-icon {
+  color: #6B5E7B !important;
+}
+.cs-nav-item:not(.cs-nav-item-active) .cs-nav-label {
+  color: #6B5E7B !important;
+  -webkit-text-fill-color: #6B5E7B !important;
+  background-image: none !important;
+}
+
+/* ---- ISSUE 3: Menu search — full ring, no half-cut outline ---- */
+.edx-role-module-search {
+  border-radius: 14px !important;
+  outline: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+.edx-role-module-search:focus-within {
+  border-color: #6366F1 !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+  outline: none !important;
+}
+.edx-role-module-search input {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.edx-role-module-search input:focus,
+.edx-role-module-search input:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* ---- ISSUE 4: Menu search — keyboard stays open on tap ---- */
+/* Prevent blur on tap outside input within menu drawer */
+.edx-role-module-drawer {
+  -webkit-tap-highlight-color: transparent;
+}
+.edx-role-module-drawer input {
+  /* Ensure input is not the pointerdown target for blur handlers */
+  -webkit-user-modify: read-write;
+}
+
+/* ---- BONUS: Remove pink leftovers in menu footer ---- */
+.edx-role-module-drawer [class*="text-rose-"],
+.edx-role-module-drawer [class*="text-pink-"] {
+  color: #6366F1 !important;
+}
+.edx-role-module-drawer button[class*="text-rose-"],
+.edx-role-module-drawer button [class*="text-rose-"],
+.edx-role-module-drawer [class*="text-rose-700"],
+.edx-role-module-drawer [class*="text-rose-600"],
+.edx-role-module-drawer [class*="text-rose-500"] {
+  color: #6366F1 !important;
+}
+
+/* Menu footer items (FAQS, ABOUT CLASSTAGO) — clean borders, not pink */
+.edx-role-module-drawer [class*="border-rose-"],
+.edx-role-module-drawer [class*="border-pink-"] {
+  border-color: #E2E8F0 !important;
+}
+.edx-role-module-drawer [class*="bg-rose-50"],
+.edx-role-module-drawer [class*="bg-pink-50"] {
+  background: #F8FAFC !important;
+}
+
+/* ============================================================
+   PHASE 13 — Language bar smaller (text size normal)
+   ============================================================ */
+
+.edx-mobile-brand-lockup {
+  flex: 0 1 auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+}
+.edx-mobile-brand-lockup h1,
+.edx-mobile-brand-lockup p,
+.edx-mobile-brand-lockup .edx-mobile-brand-eyebrow {
+  font-size: 13px !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+}
+.edx-mobile-brand-lockup h1 {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+}
+
+.edx-mobile-topbar-inner [class*="LanguageSelector"],
+.edx-mobile-topbar-inner [class*="language"] {
+  max-width: 100px !important;
+  min-width: 0 !important;
+}
+.edx-mobile-topbar-inner [class*="LanguageSelector"] button,
+.edx-mobile-topbar-inner button[aria-label*="language" i] {
+  max-width: 100px !important;
+  min-width: 88px !important;
+  padding: 6px 8px !important;
+  font-size: 13px !important;
+  height: 38px !important;
+  gap: 4px !important;
+}
+.edx-mobile-topbar-inner [class*="LanguageSelector"] button svg,
+.edx-mobile-topbar-inner button[aria-label*="language" i] svg {
+  width: 14px !important;
+  height: 14px !important;
+  flex-shrink: 0 !important;
+}
+
+.edx-mobile-topbar-inner {
+  padding: 8px 10px !important;
+  gap: 8px !important;
+}
+
+/* ============================================================
+   PHASE 14 — FIX: hide duplicate Classtago + shrink language bar
+   ============================================================ */
+
+/* 1) HIDE the small "Classtago" eyebrow — school name already shows brand */
+.edx-mobile-brand-eyebrow {
+  display: none !important;
+}
+
+/* 2) Brand lockup — full width available for school name */
+.edx-mobile-brand-lockup {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  overflow: hidden !important;
+}
+.edx-mobile-brand-lockup h1 {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  color: #0F172A !important;
+  letter-spacing: -0.01em !important;
+}
+
+/* Also hide the tiny logo mark next to brand (redundant with school name) */
+.edx-mobile-brand-mark {
+  display: none !important;
+}
+
+/* 3) Topbar actions container — compact */
+.edx-mobile-topbar-actions {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+.edx-mobile-topbar-actions > div:first-child {
+  gap: 4px !important;
+  flex: 0 0 auto !important;
+}
+
+/* 4) Language selector — SHRINK aggressively */
+.edx-mobile-topbar-actions button:has(svg:first-child),
+.edx-mobile-topbar-inner button[class*="selector" i],
+.edx-mobile-topbar-inner [class*="LanguageSelector"] button {
+  max-width: 82px !important;
+  min-width: 72px !important;
+  width: auto !important;
+  padding: 6px 6px 6px 8px !important;
+  font-size: 12px !important;
+  height: 34px !important;
+  gap: 2px !important;
+  border-radius: 10px !important;
+}
+.edx-mobile-topbar-actions button svg:last-child {
+  width: 12px !important;
+  height: 12px !important;
+}
+
+/* 5) Topbar overall */
+.edx-mobile-topbar-inner {
+  padding: 8px 10px !important;
+  gap: 6px !important;
+}
+
+/* 6) Hamburger — keep same, but ensure no extra gap */
+.edx-mobile-hamburger {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  margin-right: 2px !important;
+}
+
+/* ============================================================
+   PHASE 15 — Clean TopBar + BIGGER bottom bar (match reference)
+   ============================================================ */
+
+/* ---- TOPBAR: clean layout ---- */
+.edx-mobile-topbar-inner {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 10px 14px !important;
+  min-height: 64px !important;
+}
+
+/* Brand — two lines like reference */
+.edx-mobile-brand-lockup {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+.edx-mobile-brand-lockup h1 {
+  font-size: 17px !important;
+  font-weight: 900 !important;
+  color: #0F172A !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.15 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+.edx-mobile-brand-lockup p,
+.edx-mobile-brand-lockup .edx-mobile-brand-eyebrow {
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  color: #E91E63 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  line-height: 1.15 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  display: block !important;
+}
+
+/* Remove the redundant purple logo mark */
+.edx-mobile-brand-mark {
+  display: none !important;
+}
+
+/* Actions container — right side */
+.edx-mobile-topbar-actions {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+/* ---- LANGUAGE SELECTOR — compact, icon-like like notification ---- */
+.edx-mobile-topbar-actions > div:first-child {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+/* Language button — small circular/square like a notification icon */
+.edx-mobile-topbar-actions [class*="LanguageSelector"] button,
+.edx-mobile-topbar-actions button[aria-label*="language" i],
+.edx-mobile-topbar-actions button[class*="selector" i] {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  max-width: 44px !important;
+  padding: 0 !important;
+  border-radius: 14px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 2px 8px -3px rgba(15, 23, 42, 0.08) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0 !important;
+  font-size: 0 !important; /* hide text label */
+  color: #6366F1 !important;
+}
+.edx-mobile-topbar-actions [class*="LanguageSelector"] button svg,
+.edx-mobile-topbar-actions button[aria-label*="language" i] svg {
+  width: 20px !important;
+  height: 20px !important;
+  color: #6366F1 !important;
+}
+
+/* Profile chip — compact */
+.edx-mobile-profile-chip {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 4px 6px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 2px 8px -3px rgba(15, 23, 42, 0.08) !important;
+}
+.edx-mobile-profile-chip img {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 10px !important;
+  object-fit: cover !important;
+}
+.edx-mobile-profile-chip button {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  padding: 0 !important;
+  border-radius: 10px !important;
+  background: #F1F5F9 !important;
+  border: none !important;
+  color: #6366F1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Hamburger — same size as notification */
+.edx-mobile-hamburger {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  border-radius: 14px !important;
+  margin-right: 0 !important;
+}
+
+/* ---- BOTTOM BAR — BIGGER (like reference) ---- */
+.cs-bottom-nav {
+  padding: 12px 8px calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+  min-height: 86px !important;
+  background: #FFFFFF !important;
+  border-top: 1px solid #E2E8F0 !important;
+  box-shadow: 0 -12px 32px -12px rgba(15, 23, 42, 0.12) !important;
+}
+
+.cs-nav-item {
+  padding: 6px 4px !important;
+  gap: 4px !important;
+}
+
+.cs-nav-icon-wrap {
+  width: 72px !important;
+  height: 40px !important;
+  border-radius: 100px !important;
+}
+
+.cs-nav-icon {
+  width: 26px !important;
+  height: 26px !important;
+  stroke-width: 2.4 !important;
+}
+
+.cs-nav-label {
+  font-size: 12.5px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.01em !important;
+}
+
+.cs-nav-item-active .cs-nav-label {
+  font-size: 13px !important;
+  font-weight: 900 !important;
+}
+
+/* Reserve more space at bottom of scroll for bigger nav */
+.edunixo-mobile-runtime .edx-mobile-main,
+.edunixo-app-runtime .edx-mobile-main {
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* Active pill — larger and more prominent */
+.cs-nav-item-active .cs-nav-icon-wrap {
+  background-image: linear-gradient(135deg, #FF8A00 0%, #FFC837 100%) !important;
+  box-shadow: 0 8px 22px -8px rgba(255, 138, 0, 0.55) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Inactive icon color */
+.cs-nav-item:not(.cs-nav-item-active) .cs-nav-icon {
+  color: #94A3B8 !important;
+}
+.cs-nav-item:not(.cs-nav-item-active) .cs-nav-label {
+  color: #64748B !important;
+}
+
+/* ============================================================
+   PHASE 16 — FINAL OVERRIDE (fixes everything)
+   ============================================================ */
+
+/* ---- BRAND: force visible, 2 lines ---- */
+html body .edx-mobile-brand-lockup {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1px !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  overflow: hidden !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+html body .edx-mobile-brand-lockup .edx-mobile-brand-eyebrow,
+html body .edx-mobile-brand-lockup > p {
+  display: block !important;
+  visibility: visible !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  color: #E91E63 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  line-height: 1.1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+html body .edx-mobile-brand-lockup h1 {
+  display: block !important;
+  visibility: visible !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  color: #0F172A !important;
+  line-height: 1.15 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+html body .edx-mobile-brand-mark {
+  display: none !important;
+}
+
+/* ---- LANGUAGE SELECTOR: force shrink ---- */
+html body .edx-mobile-topbar-actions {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+html body .edx-mobile-topbar-actions > div:first-child {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  flex: 0 0 auto !important;
+}
+
+html body .edx-mobile-topbar-actions > div:first-child button {
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 82px !important;
+  padding: 6px 8px !important;
+  font-size: 12px !important;
+  height: 36px !important;
+  gap: 2px !important;
+  border-radius: 12px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+}
+
+html body .edx-mobile-topbar-actions > div:first-child button span,
+html body .edx-mobile-topbar-actions > div:first-child button > *:not(svg) {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  min-width: 0 !important;
+}
+
+html body .edx-mobile-topbar-actions > div:first-child button svg {
+  width: 14px !important;
+  height: 14px !important;
+  flex-shrink: 0 !important;
+}
+
+html body .edx-mobile-topbar-actions > div:first-child button svg:last-child {
+  width: 10px !important;
+  height: 10px !important;
+}
+
+/* ---- PROFILE CHIP: compact ---- */
+html body .edx-mobile-profile-chip {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 3px 5px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+  height: 36px !important;
+  flex: 0 0 auto !important;
+}
+html body .edx-mobile-profile-chip img {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 8px !important;
+  object-fit: cover !important;
+}
+html body .edx-mobile-profile-chip button {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+  background: #F1F5F9 !important;
+  border: none !important;
+  color: #6366F1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+html body .edx-mobile-profile-chip button svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* ---- HAMBURGER: matching size ---- */
+html body .edx-mobile-hamburger {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  border-radius: 12px !important;
+  margin-right: 4px !important;
+  flex-shrink: 0 !important;
+}
+
+/* ---- TOPBAR WRAPPER ---- */
+html body .edx-mobile-topbar-inner {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px 12px !important;
+  min-height: 60px !important;
+}
+
+/* ---- BOTTOM NAV: bigger, orange active (like reference) ---- */
+html body .cs-bottom-nav {
+  padding: 12px 8px calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+  min-height: 88px !important;
+  background: #FFFFFF !important;
+  border-top: 1px solid #E2E8F0 !important;
+  box-shadow: 0 -10px 28px -10px rgba(15, 23, 42, 0.1) !important;
+}
+html body .cs-nav-item {
+  padding: 6px 4px !important;
+  gap: 4px !important;
+}
+html body .cs-nav-icon-wrap {
+  width: 74px !important;
+  height: 42px !important;
+}
+html body .cs-nav-icon {
+  width: 28px !important;
+  height: 28px !important;
+  stroke-width: 2.4 !important;
+}
+html body .cs-nav-label {
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+html body .cs-nav-item-active .cs-nav-label {
+  font-size: 13.5px !important;
+  font-weight: 900 !important;
+  background-image: none !important;
+  -webkit-text-fill-color: #FF8A00 !important;
+  color: #FF8A00 !important;
+}
+html body .cs-nav-item-active .cs-nav-icon-wrap {
+  background-image: linear-gradient(135deg, #FF8A00 0%, #FFC837 100%) !important;
+  box-shadow: 0 8px 22px -8px rgba(255, 138, 0, 0.55) !important;
+}
+html body .cs-nav-item:not(.cs-nav-item-active) .cs-nav-icon {
+  color: #94A3B8 !important;
+}
+html body .cs-nav-item:not(.cs-nav-item-active) .cs-nav-label {
+  color: #64748B !important;
+  -webkit-text-fill-color: #64748B !important;
+  background-image: none !important;
+}
+
+/* ============================================================
+   PHASE 17 — Teacher Hero Card (reference image style)
+   ============================================================ */
+
+.cs-teacher-hero {
+  position: relative;
+  background: linear-gradient(135deg, #FF3473 0%, #FF5C8F 45%, #FFA202 100%);
+  border-radius: 28px;
+  padding: 26px 22px 22px;
+  color: #FFFFFF;
+  overflow: hidden;
+  box-shadow: 0 20px 44px -14px rgba(255, 52, 115, 0.5);
+}
+.cs-teacher-hero::before {
+  content: '';
+  position: absolute;
+  top: -70px; right: -70px;
+  width: 220px; height: 220px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, transparent 65%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.cs-teacher-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -50px; left: -40px;
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, rgba(236, 190, 237, 0.35) 0%, transparent 65%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.cs-hero-top-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.cs-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 100px;
+}
+.cs-hero-sparkle {
+  font-size: 24px;
+  filter: drop-shadow(0 4px 8px rgba(255, 255, 255, 0.4));
+  animation: cs-twinkle 2.5s infinite;
+}
+@keyframes cs-twinkle {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  50% { transform: scale(1.15) rotate(15deg); opacity: 0.85; }
+}
+.cs-hero-title {
+  position: relative;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+  margin: 0 0 10px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.cs-hero-subtitle {
+  position: relative;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.92);
+  margin: 0 0 18px;
+}
+.cs-hero-stats {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.cs-hero-stat {
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 18px;
+  padding: 12px 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cs-hero-stat-num {
+  font-size: 22px;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+.cs-hero-stat-lbl {
+  font-size: 10px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.88);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.cs-hero-cta {
+  position: relative;
+  width: 100%;
+  padding: 14px 20px;
+  background: #FFFFFF;
+  color: #E91E63;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.cs-hero-cta:active {
+  transform: scale(0.97);
+  box-shadow: 0 4px 12px -6px rgba(0, 0, 0, 0.25);
+}
+
+/* ============================================================
+   PHASE 18 — Force ModulesPreviewCard rows white (override Phase 9)
+   ============================================================ */
+
+.cs-module-row {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+  color: #0F172A !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+.cs-module-row:active {
+  background: #FFF1F5 !important;
+  transform: scale(0.99);
+}
+/* (span/svg color inherit removed — icons keep white) */
+
+/* Icon squares keep their inline gradient */
+.cs-module-row > span:first-child {
+  background-color: transparent !important;
+  color: #FFFFFF !important;
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 16px !important;
+  display: grid !important;
+  place-items: center !important;
+  box-shadow: 0 4px 12px -4px rgba(15, 23, 42, 0.15) !important;
+}
+.cs-module-row > span:first-child svg {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+  stroke-width: 2.4 !important;
+  width: 22px !important;
+  height: 22px !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Module row text */
+.cs-module-row > span:not([style*="linear-gradient"]) > span:first-child {
+  color: #0F172A !important;
+  font-weight: 900 !important;
+}
+.cs-module-row > span:not([style*="linear-gradient"]) > span:last-child {
+  color: #6B7280 !important;
+  font-weight: 500 !important;
+}
+
+/* Chevron */
+.cs-module-row > svg {
+  color: #CBD5E1 !important;
+}
+
+/* Separator between rows */
+/* Each row is now a separate card — no shared divider needed */
+
+/* ============================================================
+   FINAL FIX — Clean TopBar layout
+   [🍔] Brand (2 lines)          [🌐] [👤🔑→]
+   ============================================================ */
+
+/* Outer wrapper */
+.edx-mobile-topbar {
+  background: var(--cs-bg) !important;
+  padding: 8px 12px !important;
+  padding-top: max(10px, env(safe-area-inset-top)) !important;
+  border-bottom: 1px solid var(--cs-border) !important;
+}
+
+.edx-mobile-topbar-inner {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  min-height: 52px !important;
+}
+
+/* === HAMBURGER — compact square === */
+.edx-mobile-hamburger {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  max-width: 42px !important;
+  padding: 0 !important;
+  border-radius: 12px !important;
+  border: none !important;
+  background: linear-gradient(135deg, var(--cs-primary), var(--cs-primary-2)) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 12px -4px rgba(99, 102, 241, 0.5) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+}
+.edx-mobile-hamburger svg {
+  width: 22px !important;
+  height: 22px !important;
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+  stroke-width: 2.5 !important;
+}
+
+/* === BRAND — 2 lines, flexible === */
+.edx-mobile-brand-lockup {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+  overflow: hidden !important;
+}
+.edx-mobile-brand-lockup .edx-mobile-brand-mark {
+  display: none !important;   /* hide redundant logo */
+}
+.edx-mobile-brand-lockup .edx-mobile-brand-eyebrow {
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  color: var(--cs-primary) !important;
+  line-height: 1.2 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+.edx-mobile-brand-lockup h1 {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: var(--cs-muted) !important;
+  line-height: 1.2 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  letter-spacing: 0.02em !important;
+  text-transform: uppercase !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* === TOPBAR ACTIONS — compact === */
+.edx-mobile-topbar-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-shrink: 0 !important;
+  flex: 0 0 auto !important;
+}
+
+/* Inner div containing language + font selectors */
+.edx-mobile-topbar-actions > div:first-child {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex: 0 0 auto !important;
+}
+
+/* === LANGUAGE SELECTOR — make it compact, hide text === */
+.edx-mobile-topbar-actions [class*="LanguageSelector"],
+.edx-mobile-topbar-actions [class*="language-selector"] {
+  max-width: none !important;
+  width: auto !important;
+  min-width: 0 !important;
+}
+
+.edx-mobile-topbar-actions [class*="LanguageSelector"] button,
+.edx-mobile-topbar-actions button[aria-label*="language" i],
+.edx-mobile-topbar-actions [class*="LanguageSelector"] > button {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  max-width: 42px !important;
+  padding: 0 !important;
+  border-radius: 12px !important;
+  background: #FFFFFF !important;
+  border: 1px solid var(--cs-border) !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0 !important;
+  overflow: hidden !important;
+  position: relative !important;
+  font-size: 0 !important;
+  color: transparent !important;
+}
+
+.edx-mobile-topbar-actions [class*="LanguageSelector"] button svg,
+.edx-mobile-topbar-actions button[aria-label*="language" i] svg {
+  width: 20px !important;
+  height: 20px !important;
+  color: var(--cs-primary) !important;
+  stroke: var(--cs-primary) !important;
+  flex-shrink: 0 !important;
+}
+
+/* Hide the chevron arrow & any text inside the language button */
+.edx-mobile-topbar-actions [class*="LanguageSelector"] button svg:last-child,
+.edx-mobile-topbar-actions [class*="LanguageSelector"] button span:not(:first-child),
+.edx-mobile-topbar-actions [class*="LanguageSelector"] button > span {
+  display: none !important;
+}
+
+/* === FONT SELECTOR — hide on mobile === */
+.edx-mobile-topbar-actions [class*="FontSelector"],
+.edx-mobile-topbar-actions [class*="font-selector"] {
+  display: none !important;
+}
+
+/* === PROFILE CHIP — compact pill === */
+.edx-mobile-profile-chip {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 3px 6px !important;
+  background: #FFFFFF !important;
+  border: 1px solid var(--cs-border) !important;
+  border-radius: 12px !important;
+  height: 42px !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+}
+.edx-mobile-profile-chip img {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 9px !important;
+  object-fit: cover !important;
+}
+.edx-mobile-profile-chip svg {
+  width: 20px !important;
+  height: 20px !important;
+  color: var(--cs-primary) !important;
+}
+.edx-mobile-profile-chip > div {
+  display: none !important; /* hide "name / role" text on mobile */
+}
+.edx-mobile-profile-chip button {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  padding: 0 !important;
+  border-radius: 9px !important;
+  background: var(--cs-bg) !important;
+  border: none !important;
+  color: var(--cs-primary) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.edx-mobile-profile-chip button svg {
+  width: 16px !important;
+  height: 16px !important;
+  color: var(--cs-primary) !important;
+  stroke: var(--cs-primary) !important;
+}
+
+/* ============================================================
+   ULTIMATE TOPBAR FIX — works in APK (WebView) too
+   ============================================================ */
+
+/* Force brand always visible */
+html body .edx-mobile-topbar-inner .edx-mobile-brand-lockup,
+html body .edx-mobile-topbar .edx-mobile-brand-lockup,
+html body header.edx-mobile-topbar .edx-mobile-brand-lockup {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  overflow: hidden !important;
+  order: 2 !important;
+}
+
+html body .edx-mobile-topbar-inner .edx-mobile-brand-lockup .edx-mobile-brand-eyebrow,
+html body header.edx-mobile-topbar .edx-mobile-brand-eyebrow {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  color: #6366F1 !important;
+  line-height: 1.15 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 100% !important;
+}
+
+html body .edx-mobile-topbar-inner .edx-mobile-brand-lockup h1,
+html body header.edx-mobile-topbar .edx-mobile-brand-lockup h1 {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #64748B !important;
+  line-height: 1.15 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  letter-spacing: 0.02em !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 100% !important;
+}
+
+/* Hamburger order 1 */
+html body .edx-mobile-hamburger {
+  order: 1 !important;
+  flex: 0 0 auto !important;
+}
+
+/* Actions order 3 */
+html body .edx-mobile-topbar-actions {
+  order: 3 !important;
+  flex: 0 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+/* ============================================================
+   LANGUAGE BUTTON — show ONLY the globe icon
+   ============================================================ */
+
+/* Kill any text in the language button */
+html body .edx-mobile-topbar-actions [class*="LanguageSelector"] button,
+html body .edx-mobile-topbar-actions button[aria-label*="language" i] {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  max-width: 42px !important;
+  padding: 0 !important;
+  border-radius: 12px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0 !important;
+  overflow: hidden !important;
+  font-size: 0 !important;
+  color: transparent !important;
+  text-indent: -9999px !important;
+}
+
+/* Show ONLY the first svg (globe icon) */
+html body .edx-mobile-topbar-actions [class*="LanguageSelector"] button > svg:first-of-type,
+html body .edx-mobile-topbar-actions button[aria-label*="language" i] > svg:first-of-type {
+  text-indent: 0 !important;
+  width: 22px !important;
+  height: 22px !important;
+  color: #6366F1 !important;
+  stroke: #6366F1 !important;
+  stroke-width: 2.2 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  flex-shrink: 0 !important;
+}
+
+/* Hide everything else inside language button */
+html body .edx-mobile-topbar-actions [class*="LanguageSelector"] button > *:not(svg:first-of-type),
+html body .edx-mobile-topbar-actions button[aria-label*="language" i] > *:not(svg:first-of-type) {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* ============================================================
+   PROFILE CHIP — fix key/logout overlap
+   ============================================================ */
+
+html body .edx-mobile-profile-chip {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 3px 5px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 12px !important;
+  height: 42px !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+  flex-wrap: nowrap !important;
+}
+
+html body .edx-mobile-profile-chip img {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  border-radius: 8px !important;
+  object-fit: cover !important;
+  flex-shrink: 0 !important;
+}
+
+html body .edx-mobile-profile-chip > svg {
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  color: #6366F1 !important;
+  flex-shrink: 0 !important;
+}
+
+html body .edx-mobile-profile-chip > div {
+  display: none !important;
+}
+
+/* Both key + logout buttons — same size, no overlap */
+html body .edx-mobile-profile-chip button {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  max-width: 30px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 8px !important;
+  background: #F1F5F9 !important;
+  border: none !important;
+  color: #6366F1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  position: static !important;
+}
+
+html body .edx-mobile-profile-chip button svg {
+  width: 15px !important;
+  height: 15px !important;
+  min-width: 15px !important;
+  color: #6366F1 !important;
+  stroke: #6366F1 !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+}
+
+/* ============================================================
+   FONT SELECTOR — hide on mobile
+   ============================================================ */
+
+html body .edx-mobile-topbar-actions [class*="FontSelector"],
+html body .edx-mobile-topbar-actions [class*="font-selector"] {
+  display: none !important;
+}
+
+/* ============================================================
+   TOPBAR — brand + logout button styling
+   ============================================================ */
+
+html body .edx-mobile-topbar-inner .edx-mobile-brand-lockup {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 1px !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  overflow: hidden !important;
+  margin: 0 8px !important;
+}
+html body .edx-mobile-topbar-inner .edx-mobile-brand-lockup .edx-mobile-brand-eyebrow {
+  display: block !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  color: #6366F1 !important;
+  line-height: 1.1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  letter-spacing: -0.02em !important;
+  text-transform: none !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+html body .edx-mobile-topbar-inner .edx-mobile-brand-lockup h1 {
+  display: block !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #64748B !important;
+  line-height: 1.1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+html body .edx-mobile-logout {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  max-width: 42px !important;
+  padding: 0 !important;
+  border-radius: 12px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+  color: #E91E63 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  margin-left: 6px !important;
+}
+html body .edx-mobile-logout svg {
+  width: 20px !important;
+  height: 20px !important;
+  color: #E91E63 !important;
+  stroke: #E91E63 !important;
+  stroke-width: 2.2 !important;
+}
+html body .edx-mobile-topbar-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex: 0 0 auto !important;
+  margin-left: auto !important;
+}
+
+/* ============================================================
+   LANGUAGE BUTTON — half size
+   ============================================================ */
+
+html body .edx-mobile-topbar-actions [class*="LanguageSelector"] button,
+html body .edx-mobile-topbar-actions button[aria-label*="language" i],
+html body .edx-mobile-topbar-actions [class*="LanguageSelector"] > button {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+}
+
+html body .edx-mobile-topbar-actions [class*="LanguageSelector"] button svg,
+html body .edx-mobile-topbar-actions button[aria-label*="language" i] svg,
+html body .edx-mobile-topbar-actions [class*="LanguageSelector"] button > svg:first-of-type {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* ============================================================
+   OVERRIDE — Language button smaller + brand left-aligned
+   ============================================================ */
+
+/* ---- TopBar layout: left-aligned brand ---- */
+html body .edx-mobile-topbar-inner {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  padding: 8px 12px !important;
+}
+
+/* Brand — sits right next to hamburger, left-aligned */
+html body .edx-mobile-topbar-inner > .edx-mobile-brand-lockup {
+  margin: 0 !important;
+  padding: 0 !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  align-items: flex-start !important;
+  text-align: left !important;
+}
+html body .edx-mobile-topbar-inner > .edx-mobile-brand-lockup .edx-mobile-brand-eyebrow,
+html body .edx-mobile-topbar-inner > .edx-mobile-brand-lockup h1 {
+  text-align: left !important;
+  margin-left: 0 !important;
+}
+
+/* Actions — push to right */
+html body .edx-mobile-topbar-inner > .edx-mobile-topbar-actions {
+  margin-left: auto !important;
+  flex: 0 0 auto !important;
+}
+
+/* ---- Language button — FORCE smaller with ID-level specificity ---- */
+html body header.edx-mobile-topbar .edx-mobile-topbar-actions > div:first-child > * > button,
+html body header.edx-mobile-topbar .edx-mobile-topbar-actions > div:first-child button,
+html body header.edx-mobile-topbar .edx-mobile-topbar-actions button {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  min-height: 28px !important;
+  max-height: 28px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+  font-size: 0 !important;
+  overflow: hidden !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Globe icon stays 22x22 */
+html body header.edx-mobile-topbar .edx-mobile-topbar-actions button svg {
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  min-height: 22px !important;
+  flex-shrink: 0 !important;
+  color: #6366F1 !important;
+  stroke: #6366F1 !important;
+}
+
+/* Hide any text span inside language button */
+html body header.edx-mobile-topbar .edx-mobile-topbar-actions button > span,
+html body header.edx-mobile-topbar .edx-mobile-topbar-actions button > div,
+html body header.edx-mobile-topbar .edx-mobile-topbar-actions button > p {
+  display: none !important;
+}
+
+/* Logout button matches language button size */
+html body .edx-mobile-logout {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  min-height: 28px !important;
+  max-height: 28px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+}
+html body .edx-mobile-logout svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* ============================================================
+   HEADMASTER ASSIGNED DUTIES — Premium card
+   ============================================================ */
+
+.cs-hm-section {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 20px -8px rgba(99, 102, 241, 0.12), 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+.cs-hm-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.cs-hm-icon {
+  width: 36px; height: 36px; border-radius: 12px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15));
+  display: flex; align-items: center; justify-content: center;
+  color: #6366F1; flex-shrink: 0;
+}
+.cs-hm-title { font-size: 17px; font-weight: 900; color: #0F172A; letter-spacing: -0.01em; margin: 0; }
+.cs-hm-sub { font-size: 12.5px; color: #64748B; line-height: 1.5; margin: 0 0 16px; }
+.cs-hm-card {
+  background: #F8FAFC; border-radius: 16px; padding: 14px;
+  margin-bottom: 10px; border: 1px solid #E2E8F0;
+}
+.cs-hm-card-label {
+  font-size: 10px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.08em; margin-bottom: 8px;
+}
+.cs-hm-label-indigo { color: #6366F1; }
+.cs-hm-label-violet { color: #8B5CF6; }
+.cs-hm-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.cs-hm-chip {
+  padding: 5px 10px; border-radius: 100px; font-size: 11px; font-weight: 700;
+  background: #FFFFFF; border: 1px solid #E2E8F0; color: #0F172A;
+}
+.cs-hm-chip-indigo { background: #EEF2FF; border-color: #C7D2FE; color: #4338CA; }
+.cs-hm-chip-violet { background: #F5F3FF; border-color: #DDD6FE; color: #6D28D9; }
+.cs-hm-stat { font-size: 13px; font-weight: 800; color: #0F172A; margin-bottom: 8px; }
+.cs-hm-stat small { font-size: 11px; font-weight: 600; color: #64748B; }
+.cs-hm-empty { font-size: 12.5px; color: #94A3B8; font-weight: 500; font-style: italic; margin: 0; }
+.cs-hm-cta {
+  width: 100%; padding: 13px; background: #FFFFFF;
+  border: 1.5px solid #E2E8F0; border-radius: 14px;
+  font-size: 13px; font-weight: 800; color: #0F172A;
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px; margin-top: 6px; cursor: pointer;
+}
+.cs-hm-cta:active { background: #EEF2FF; border-color: #C7D2FE; }
+.cs-hm-cta span { color: #6366F1; font-weight: 900; }
+
+/* ============================================================
+   SUMMARY CARDS — Premium grid cards
+   ============================================================ */
+
+.cs-summary-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 16px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 2px 12px -6px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 130px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.cs-summary-card:active {
+  transform: scale(0.98);
+}
+
+.cs-summary-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-bottom: 4px;
+}
+.cs-summary-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.cs-summary-value {
+  font-size: 26px;
+  font-weight: 900;
+  color: #0F172A;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-top: auto;
+}
+
+.cs-summary-label {
+  font-size: 12px;
+  font-weight: 800;
+  color: #0F172A;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.cs-summary-note {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #94A3B8;
+  line-height: 1.35;
+  margin-top: 2px;
+}
+
+/* ============================================================
+   ACCORDION — My Classes + My Subjects
+   ============================================================ */
+
+.cs-accordion-section {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 20px -8px rgba(99, 102, 241, 0.12), 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.cs-acc-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.cs-acc-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.cs-acc-icon-indigo {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15));
+  color: #6366F1;
+}
+.cs-acc-icon-violet {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(217, 70, 239, 0.15));
+  color: #8B5CF6;
+}
+
+.cs-acc-title {
+  font-size: 17px;
+  font-weight: 900;
+  color: #0F172A;
+  letter-spacing: -0.01em;
+  margin: 0;
+  line-height: 1.2;
+}
+.cs-acc-sub {
+  font-size: 12px;
+  color: #64748B;
+  line-height: 1.4;
+  margin: 2px 0 0;
+}
+
+.cs-acc-empty {
+  background: #FEF3C7;
+  border: 1px solid #FDE68A;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 12.5px;
+  color: #92400E;
+  line-height: 1.5;
+}
+
+.cs-acc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Item container */
+.cs-acc-item {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 18px;
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.cs-acc-item-open {
+  border-color: #C7D2FE;
+  box-shadow: 0 4px 16px -6px rgba(99, 102, 241, 0.18);
+}
+
+/* Summary row (always visible) */
+.cs-acc-summary {
+  width: 100%;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+.cs-acc-summary:active {
+  background: #F8FAFC;
+}
+
+.cs-acc-summary-left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cs-acc-summary-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0F172A;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cs-acc-code {
+  font-size: 10px;
+  font-weight: 600;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: 'JetBrains Mono', monospace;
+}
+.cs-acc-summary-meta {
+  font-size: 12px;
+  color: #64748B;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* Badge — class teacher / teaching class */
+.cs-acc-badge {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 8px;
+  border-radius: 100px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.cs-acc-badge-ct {
+  background: #EEF2FF;
+  color: #4338CA;
+}
+.cs-acc-badge-tc {
+  background: #F1F5F9;
+  color: #64748B;
+}
+
+/* Arrow */
+.cs-acc-arrow {
+  font-size: 12px;
+  color: #6366F1;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+  line-height: 1;
+}
+.cs-acc-arrow-open {
+  transform: rotate(0deg);
+}
+
+/* Expanded body */
+.cs-acc-body {
+  padding: 0 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: cs-acc-open 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes cs-acc-open {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Chips */
+.cs-acc-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.cs-acc-chip {
+  padding: 5px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #EEF2FF;
+  border: 1px solid #C7D2FE;
+  color: #4338CA;
+}
+.cs-acc-chip-violet {
+  background: #F5F3FF;
+  border-color: #DDD6FE;
+  color: #6D28D9;
+}
+
+/* Stats row */
+.cs-acc-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 8px;
+}
+.cs-acc-stat {
+  background: #F8FAFC;
+  border-radius: 12px;
+  padding: 10px 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cs-acc-stat b {
+  font-size: 16px;
+  font-weight: 900;
+  color: #0F172A;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.cs-acc-stat small {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Action buttons */
+.cs-acc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.cs-acc-btn {
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 11.5px;
+  font-weight: 800;
+  border: 1.5px solid #E2E8F0;
+  background: #FFFFFF;
+  color: #0F172A;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.cs-acc-btn:active {
+  background: #EEF2FF;
+  border-color: #C7D2FE;
+  transform: scale(0.97);
+}
+.cs-acc-btn-primary {
+  background: linear-gradient(135deg, #6366F1, #8B5CF6);
+  border-color: transparent;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px -6px rgba(99, 102, 241, 0.5);
+}
+.cs-acc-btn-primary:active {
+  background: #4F46E5;
+}
+
+/* ============================================================
+   MY SUBJECTS — class-wise dropbox subject blocks
+   ============================================================ */
+
+.cs-subject-block {
+  background: #F8FAFC;
+  border-radius: 14px;
+  padding: 14px;
+  border: 1px solid #E2E8F0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cs-subject-block + .cs-subject-block {
+  margin-top: 4px;
+}
+
+.cs-subject-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cs-subject-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0F172A;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cs-subject-meta {
+  font-size: 11.5px;
+  color: #64748B;
+  font-weight: 500;
+}
+
+.cs-subject-empty {
+  font-size: 12.5px;
+  color: #94A3B8;
+  font-style: italic;
+  margin: 0;
+  padding: 8px 0;
+}
+
+/* ============================================================
+   GLOBAL POLISH — applied to all pages automatically
+   ============================================================ */
+
+/* ---- SECTION HEADERS ---- */
+html body h1, html body h2, html body h3, html body h4 {
+  color: #0F172A !important;
+  letter-spacing: -0.01em !important;
+}
+html body h2 { font-size: 18px !important; font-weight: 800 !important; }
+html body h3 { font-size: 16px !important; font-weight: 800 !important; }
+
+/* ---- CARDS (bg-white + rounded) ---- */
+html body [class*="bg-white"][class*="rounded-2xl"],
+html body [class*="bg-white"][class*="rounded-3xl"],
+html body [class*="bg-white"][class*="rounded-xl"] {
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 2px 12px -6px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.03) !important;
+  background: #FFFFFF !important;
+}
+
+/* ---- OUTLINED BUTTONS (border + no bg) ---- */
+html body button[class*="border-slate-200"],
+html body button[class*="border-slate-300"],
+html body a[class*="border-slate-200"],
+html body a[class*="border-slate-300"] {
+  border-color: #CBD5E1 !important;
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  font-weight: 800 !important;
+  transition: all 0.15s ease;
+}
+html body button[class*="border-slate-200"]:active,
+html body button[class*="border-slate-300"]:active {
+  background: #EEF2FF !important;
+  border-color: #A5B4FC !important;
+}
+
+/* ---- PRIMARY BUTTONS (dark bg) ---- */
+html body button[class*="bg-slate-950"]:not(.cs-module-row):not(.cs-acc-btn),
+html body button[class*="bg-slate-900"]:not(.cs-module-row):not(.cs-acc-btn) {
+  background: linear-gradient(135deg, #6366F1, #8B5CF6) !important;
+  border-color: transparent !important;
+  color: #FFFFFF !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 12px -6px rgba(99, 102, 241, 0.5) !important;
+}
+
+/* ---- INPUTS / SELECT / TEXTAREA ---- */
+:where(html body) input:not([type="checkbox"]):not([type="radio"]),
+:where(html body) textarea,
+:where(html body) select {
+  background: #FFFFFF !important;
+  border: 1px solid #CBD5E1 !important;
+  border-radius: 12px !important;
+  color: #0F172A !important;
+  font-weight: 600 !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+:where(html body) input:not([type="checkbox"]):not([type="radio"]):focus,
+:where(html body) textarea:focus,
+:where(html body) select:focus {
+  border-color: #6366F1 !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+  outline: none !important;
+}
+
+/* ---- TABLES ---- */
+html body table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+html body thead th {
+  background: #F8FAFC !important;
+  color: #475569 !important;
+  font-weight: 800 !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  padding: 12px !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+}
+html body tbody td {
+  padding: 12px !important;
+  border-bottom: 1px solid #F1F5F9 !important;
+  color: #0F172A !important;
+  font-size: 13px !important;
+}
+html body tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+/* ---- SMALL CHIPS / BADGES (common patterns) ---- */
+html body [class*="rounded-full"][class*="px-2"][class*="py-0.5"],
+html body [class*="rounded-full"][class*="px-2.5"][class*="py-1"],
+html body [class*="rounded-full"][class*="px-3"][class*="py-1"] {
+  font-weight: 800 !important;
+  font-size: 10px !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* ---- STATUS BADGES ---- */
+html body [class*="bg-emerald-50"] { background: #ECFDF5 !important; color: #047857 !important; }
+html body [class*="bg-amber-50"]   { background: #FFFBEB !important; color: #B45309 !important; }
+html body [class*="bg-rose-50"],
+html body [class*="bg-pink-50"]    { background: #FFF1F5 !important; color: #BE123C !important; }
+html body [class*="bg-slate-50"]   { background: #F8FAFC !important; }
+
+/* ---- LIST DIVIDERS ---- */
+html body [class*="divide-slate-100"] > * + *,
+html body [class*="divide-slate-200"] > * + * {
+  border-color: #F1F5F9 !important;
+}
+
+/* ---- SMALL UPPERCASE LABELS ---- */
+html body [class*="text-[9px]"][class*="uppercase"],
+html body [class*="text-[10px]"][class*="uppercase"] {
+  color: #94A3B8 !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important;
+}
+
+/* ---- EMPTY STATES (dashed borders) ---- */
+html body [class*="border-dashed"] {
+  border-color: #CBD5E1 !important;
+  background: #F8FAFC !important;
+  border-radius: 16px !important;
+  color: #64748B !important;
+  font-weight: 600 !important;
+}
+
+/* ---- PAGE TRANSITIONS ---- */
+@keyframes cs-global-page-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.edx-mobile-main > section,
+.edx-mobile-main > div > section {
+  animation: cs-global-page-in 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ============================================================
+   RESULT MANAGEMENT — Premium header
+   ============================================================ */
+
+.cs-rm-header {
+  background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+  border-radius: 24px;
+  padding: 20px;
+  color: #FFFFFF;
+  box-shadow: 0 12px 32px -12px rgba(99, 102, 241, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+.cs-rm-header::before {
+  content: '';
+  position: absolute;
+  top: -70px; right: -70px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent 65%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.cs-rm-header-top {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.cs-rm-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 100px;
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.cs-rm-back-btn:active { background: rgba(255, 255, 255, 0.3); }
+
+.cs-rm-eyebrow {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 4px;
+}
+.cs-rm-title {
+  font-size: 22px;
+  font-weight: 900;
+  color: #FFFFFF;
+  margin: 0 0 4px;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.cs-rm-subtitle {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+  margin: 0;
+  max-width: 100%;
+}
+.cs-rm-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 100px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #FFFFFF;
+  flex-shrink: 0;
+}
+
+/* Fix: subject cell in Timetable Generator — keep its color */
+html body tbody td[style*="196, 181, 253"] {
+  color: rgb(196, 181, 253) !important;
+}
+
+
+/* Fix: remove inner white capsule from login/auth inputs.
+   premium-theme.css was forcing background + border-radius on all inputs,
+   creating a visible inner box inside the auth input wrapper. */
+html body .edx-auth-premium-input-wrap input,
+html body .edx-auth-premium-input-wrap input:focus {
+  background-color: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 0 !important;
+  color: #182238 !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
+html body .edx-auth-premium-input-wrap {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid #e1e5ef !important;
+  border-radius: 17px !important;
+}
+
+
+/* Fix v2: ID-based specificity to beat premium-theme.css generic input rule.
+   The generic rule uses :not() with 2 attributes = specificity 0,2,3.
+   Adding #root gives us 1,1,3 which wins. */
+html body #root .edx-auth-premium-input-wrap input,
+html body #root .edx-auth-premium-input-wrap input:focus,
+html body #root .edx-auth-premium-input-wrap input:hover {
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 0 !important;
+  color: #182238 !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
+
+
+/* Fix: exclude School Finder "Recently used school" card from the generic
+   pink-orange gradient button rule. The card uses bg-cyan-300/10 and needs
+   its own light-cyan background with dark text for readability. */
+html body button.edunixo-recent-school-card,
+html body button[class*="bg-cyan-300/1"]:not([class*="bg-cyan-300/2"]):not([class*="bg-cyan-300/3"]):not([class*="bg-cyan-300/4"]):not([class*="bg-cyan-300/5"]) {
+  background-image: none !important;
+  background-color: rgba(103, 232, 249, 0.1) !important;
+  color: #0f172a !important;
+  border-color: rgba(103, 232, 249, 0.25) !important;
+}
+html body button[class*="bg-cyan-300/10"] * {
+  color: inherit;
+}
+html body button[class*="bg-cyan-300/10"] .text-slate-900,
+html body button[class*="bg-cyan-300/10"] [class*="text-slate-900"] {
+  color: #0f172a !important;
+}
+html body button[class*="bg-cyan-300/10"] [class*="text-slate-600"] {
+  color: #475569 !important;
+}
+html body button[class*="bg-cyan-300/10"] [class*="text-cyan-700"] {
+  color: #0e7490 !important;
+}

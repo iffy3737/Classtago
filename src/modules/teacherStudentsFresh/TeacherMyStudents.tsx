@@ -277,7 +277,7 @@ export default function TeacherMyStudents({ context, loading, error, view }: Pro
               <h1 className="mt-2 text-2xl font-black">{view === 'student_list' ? (selected?.scopeType === 'class_teacher' ? 'Full Class Roster' : 'Class / Subject Student List') : 'Performance Summary & Recognition'}</h1>
               <p className="mt-2 max-w-3xl text-xs leading-6 text-slate-300">Only Headmaster-assigned Class / Division / Subject scopes are available. Other school students cannot be browsed from this workspace.</p>
             </div>
-            <button type="button" onClick={() => void load()} disabled={busy} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-black hover:bg-white/15 disabled:opacity-50"><RefreshCw className={`h-4 w-4 ${busy ? 'animate-spin' : ''}`} /> Refresh</button>
+            <button type="button" onClick={() => void load()} disabled={busy} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-slate-800 px-4 py-2.5 text-xs font-black hover:bg-slate-700 disabled:opacity-50"><RefreshCw className={`h-4 w-4 ${busy ? 'animate-spin' : ''}`} /> Refresh</button>
           </div>
         </div>
         <div className="p-5 sm:p-7">

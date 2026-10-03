@@ -260,7 +260,7 @@ export default function HeadmasterCertificateCloudWorkspace({ user, activeFeatur
           <h1 className="mt-3 text-2xl font-black">{featureTitle[feature] || 'Certificates & Documents'}</h1>
           <p className="mt-2 max-w-3xl text-xs leading-6 text-slate-300">Clerk prepares. Headmaster approves or rejects. Issued certificates remain permanently traceable through the school audit trail and public verification service.</p>
         </div>
-        <button onClick={() => void load()} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-xs font-black"><RefreshCw className="h-4 w-4" />Refresh cloud</button>
+        <button onClick={() => void load()} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-slate-800 px-4 py-3 text-xs font-black"><RefreshCw className="h-4 w-4" />Refresh cloud</button>
       </div>
     </header>
 

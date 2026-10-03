@@ -13,6 +13,7 @@ interface EdunixoSmartContract {
   scanCode(): Promise<{ rawValue: string; displayValue?: string; format?: number; valueType?: number }>;
   scanDocument(): Promise<{ pageCount: number; fileName: string; savedUri: string; savedTo: string }>;
   authenticateDevice(): Promise<{ verified: boolean; authenticationType?: number }>;
+  savePdf(options: { base64: string; fileName: string }): Promise<{ saved: boolean; fileName: string; savedTo: string; uri: string }>;
 }
 
 const EdunixoSmart = registerPlugin<EdunixoSmartContract>('EdunixoSmart');
@@ -39,4 +40,12 @@ export async function scanNativeDocument() {
 export async function verifyNativeDeviceOwner() {
   if (!Capacitor.isNativePlatform()) throw new Error('Biometric/device credential verification is available in the Classtago Android app.');
   return EdunixoSmart.authenticateDevice();
+}
+
+
+export async function saveNativePdf(base64: string, fileName: string) {
+  if (!Capacitor.isNativePlatform()) {
+    throw new Error('Native PDF saving is available in the Classtago Android app.');
+  }
+  return EdunixoSmart.savePdf({ base64, fileName });
 }
