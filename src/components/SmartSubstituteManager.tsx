@@ -911,6 +911,19 @@ export default function SmartSubstituteManager({
       const updated = adjustments.filter((adj) => adj.id !== adjId);
       saveAdjustments(updated);
       if (reviewingAdjId === adjId) setReviewingAdjId(null);
+      // Cloud delete (fire & forget)
+      void (async () => {
+        try {
+          const { supabase } = await import('../lib/supabase');
+          const { error } = await supabase
+            .from('edunixo_substitute_adjustments')
+            .delete()
+            .eq('id', adjId);
+          if (error) console.warn('[Substitute] Cloud delete failed:', error.message);
+        } catch (e) {
+          console.warn('[Substitute] Cloud delete error:', e);
+        }
+      })();
     }
   };
 
