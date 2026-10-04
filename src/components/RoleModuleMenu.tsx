@@ -328,21 +328,19 @@ export default function RoleModuleMenu({
     return (
       <div
         key={module.id}
-        className={`overflow-hidden border transition ${
-          standalone ? 'rounded-2xl' : 'rounded-xl'
-        } ${
+        className={`group/mod overflow-hidden rounded-xl border shadow-sm transition-all ${
           active
-            ? 'border-cyan-300/35 bg-cyan-300/[0.085]'
-            : 'border-white/10 bg-slate-950/35 hover:border-white/15'
+            ? 'border-cyan-400/40 bg-gradient-to-br from-cyan-400/10 via-slate-900/40 to-slate-950/40'
+            : 'border-slate-800/70 bg-slate-950/50 hover:border-slate-700 hover:bg-slate-900/60'
         }`}
       >
         <div className="flex items-stretch">
           <button
             type="button"
             onClick={() => module.navigationOnly ? toggleModule(module.id) : openModule(module)}
-            className="flex min-w-0 flex-1 items-center gap-3 px-4 py-4 text-left"
+            className="flex min-w-0 flex-1 items-center gap-3 px-3.5 py-3.5 text-left min-h-[68px]"
           >
-            <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${active ? 'bg-cyan-300 text-slate-950' : 'bg-cyan-300/10 text-cyan-300'}`}><LayoutGrid className="h-4 w-4" /></span>
+            <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition ${active ? 'border-cyan-300/60 bg-gradient-to-br from-cyan-300 to-cyan-400 text-slate-950 shadow-[0_0_14px_rgba(34,211,238,.35)]' : 'border-cyan-300/15 bg-gradient-to-br from-cyan-300/15 to-violet-300/10 text-cyan-200 group-hover/mod:border-cyan-300/30'}`}><LayoutGrid className="h-4 w-4" /></span>
             <span className="min-w-0 flex-1">
               <span className="flex flex-wrap items-center gap-2">
                 <span className="truncate text-xs font-black uppercase tracking-[0.08em] text-white">
@@ -363,16 +361,20 @@ export default function RoleModuleMenu({
             </button>
 
           {module.features.length > 0 && (
-            <button
-              type="button"
-              onClick={() => toggleModule(module.id)}
-              className="flex w-12 shrink-0 items-center justify-center border-s border-white/10 text-cyan-300 transition hover:bg-cyan-300/10"
-              aria-label={`${module.label}: ${copy.feature}`}
-            >
-              {moduleOpen
-                ? <Minus className="h-4 w-4" />
-                : <Plus className="h-4 w-4" />}
-            </button>
+            <div className="flex shrink-0 items-center pe-3.5">
+              <button
+                type="button"
+                onClick={() => toggleModule(module.id)}
+                className={`flex h-7 w-7 items-center justify-center rounded-full border transition ${
+                  moduleOpen
+                    ? 'border-cyan-300/40 bg-cyan-300/15 text-cyan-200'
+                    : 'border-slate-700 bg-slate-900/70 text-slate-400 group-hover/mod:border-cyan-300/30 group-hover/mod:text-cyan-200'
+                }`}
+                aria-label={`${module.label}: ${copy.feature}`}
+              >
+                {moduleOpen ? <Minus className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
+              </button>
+            </div>
           )}
         </div>
 
@@ -412,16 +414,20 @@ export default function RoleModuleMenu({
     return (
       <section
         key={category.id}
-        className={`overflow-hidden rounded-2xl border transition ${active ? 'border-cyan-300/35 bg-cyan-300/[0.085]' : 'border-white/10 bg-white/[0.025]'}`}
+        className={`group/mod overflow-hidden rounded-xl border shadow-sm transition-all ${
+          active
+            ? 'border-cyan-400/40 bg-gradient-to-br from-cyan-400/10 via-slate-900/40 to-slate-950/40'
+            : 'border-slate-800/70 bg-slate-950/50 hover:border-slate-700 hover:bg-slate-900/60'
+        }`}
       >
         <div className="flex items-stretch">
           <button
             type="button"
             onClick={() => openModule(module)}
-            className="flex min-w-0 flex-1 items-center gap-3 px-4 py-4 text-left transition hover:bg-slate-800/40"
+            className="flex min-w-0 flex-1 items-center gap-3 px-3.5 py-3.5 text-left min-h-[68px]"
           >
             <span className="flex min-w-0 items-center gap-3">
-              <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${active ? 'bg-cyan-300 text-slate-950' : 'bg-cyan-300/10 text-cyan-300'}`}>
+              <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition ${active ? 'border-cyan-300/60 bg-gradient-to-br from-cyan-300 to-cyan-400 text-slate-950 shadow-[0_0_14px_rgba(34,211,238,.35)]' : 'border-cyan-300/15 bg-gradient-to-br from-cyan-300/15 to-violet-300/10 text-cyan-200 group-hover/mod:border-cyan-300/30'}`}>
                 <LayoutGrid className="h-4 w-4" />
               </span>
               <span className="min-w-0">
@@ -436,14 +442,20 @@ export default function RoleModuleMenu({
   
           </button>
           {module.features.length > 0 && (
-            <button
-              type="button"
-              onClick={() => toggleModule(module.id)}
-              className="flex w-12 shrink-0 items-center justify-center border-s border-white/10 text-cyan-300 transition hover:bg-cyan-300/10"
-              aria-label={`${module.label}: ${copy.feature}`}
-            >
-              {moduleOpen ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-            </button>
+            <div className="flex shrink-0 items-center pe-3.5">
+              <button
+                type="button"
+                onClick={() => toggleModule(module.id)}
+                className={`flex h-7 w-7 items-center justify-center rounded-full border transition ${
+                  moduleOpen
+                    ? 'border-cyan-300/40 bg-cyan-300/15 text-cyan-200'
+                    : 'border-slate-700 bg-slate-900/70 text-slate-400 group-hover/mod:border-cyan-300/30 group-hover/mod:text-cyan-200'
+                }`}
+                aria-label={`${module.label}: ${copy.feature}`}
+              >
+                {moduleOpen ? <Minus className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
+              </button>
+            </div>
           )}
         </div>
         {moduleOpen && module.features.length > 0 && (
