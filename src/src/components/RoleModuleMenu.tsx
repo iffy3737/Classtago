@@ -567,16 +567,21 @@ export default function RoleModuleMenu({
           >
             
             <style>{`
-  .edx-role-module-drawer button > span:first-child {
+  /* Icon boxes ONLY — targeted by size class, not by position */
+  .edx-role-module-drawer button > span[class*="h-10"][class*="w-10"],
+  .edx-role-module-drawer button > span[class*="h-9"][class*="w-9"],
+  .edx-role-module-drawer button > span[class*="h-8"][class*="w-8"] {
     background: linear-gradient(135deg, #06b6d4, #0891b2) !important;
     border: none !important;
     box-shadow: 0 0 16px rgba(6,182,212,0.4) !important;
   }
-  .edx-role-module-drawer button > span:first-child svg,
-  .edx-role-module-drawer button > span:first-child svg * {
+  .edx-role-module-drawer button > span[class*="h-10"][class*="w-10"] svg,
+  .edx-role-module-drawer button > span[class*="h-9"][class*="w-9"] svg,
+  .edx-role-module-drawer button > span[class*="h-8"][class*="w-8"] svg {
     color: #ffffff !important;
     stroke: #ffffff !important;
   }
+  /* Search bar */
   .edx-role-module-drawer .edx-role-module-search {
     background: #0a0e1a !important;
     border: 1px solid #06b6d4 !important;
