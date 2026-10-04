@@ -323,74 +323,44 @@ export default function RoleModuleMenu({
 
   const renderModuleCard = (module: RoleVisibleModule, standalone = false) => {
     const moduleOpen = expandedModules.has(module.id) || Boolean(query.trim());
-    const route = routeForModule(module, canAccess);
     const active = currentModule?.id === module.id;
     const hasFeatures = module.features.length > 0;
     return (
-      <div
-        key={module.id}
-        className="group/mod mb-2.5 overflow-hidden rounded-xl border transition-all"
-        style={{
-          borderColor: active ? 'rgba(6,182,212,0.6)' : 'rgba(26,31,46,1)',
-          backgroundColor: active ? 'rgba(6,182,212,0.08)' : '#0a0e1a',
-          boxShadow: active ? '0 0 24px rgba(6,182,212,0.2)' : '0 1px 3px rgba(0,0,0,0.3)'
-        }}
-      >
-        <button
-          type="button"
-          onClick={() => hasFeatures ? toggleModule(module.id) : openModule(module)}
-          className="flex min-h-[72px] w-full items-center gap-3 px-3.5 py-3.5 text-left" style={{ background: 'transparent', backgroundImage: 'none' }}
-        >
-          <span
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-            style={{
-              background: active
-                ? 'linear-gradient(135deg, #06b6d4, #0891b2)'
-                : 'linear-gradient(135deg, rgba(6,182,212,0.2), rgba(8,145,178,0.15))',
-              border: active ? 'none' : '1px solid rgba(6,182,212,0.3)',
-              boxShadow: active ? '0 0 16px rgba(6,182,212,0.5)' : 'none'
-            }}
-          >
-            <LayoutGrid className="h-5 w-5" style={{ color: active ? '#ffffff' : '#06b6d4' }} />
+      <div key={module.id} style={{
+        background: active ? 'linear-gradient(135deg, rgba(6,182,212,0.1), #0a0e1a)' : '#0a0e1a',
+        border: active ? '1px solid #06b6d4' : '1px solid #1a1f2e',
+        boxShadow: active ? '0 0 24px rgba(6,182,212,0.2)' : 'none',
+        borderRadius: 12,
+        marginBottom: 10,
+        overflow: 'hidden'
+      }}>
+        <button type="button" onClick={() => hasFeatures ? toggleModule(module.id) : openModule(module)}
+          style={{ display: 'flex', minHeight: 72, width: '100%', alignItems: 'center', gap: 12, padding: '14px 14px', textAlign: 'left', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+          <span style={{
+            display: 'flex', height: 40, width: 40, flexShrink: 0, alignItems: 'center', justifyContent: 'center',
+            borderRadius: 12, background: 'linear-gradient(135deg, #06b6d4, #0891b2)', boxShadow: '0 0 16px rgba(6,182,212,0.5)'
+          }}>
+            <LayoutGrid style={{ height: 20, width: 20, stroke: '#ffffff', strokeWidth: 2.5, fill: 'none' }} />
           </span>
-          <span className="min-w-0 flex-1">
-            <span
-              className="block truncate text-[12px] font-black uppercase tracking-[0.08em]"
-              style={{ color: active ? '#67e8f9' : '#e2e8f0' }}
-            >
+          <span style={{ minWidth: 0, flex: 1 }}>
+            <span style={{ display: 'block', fontSize: 12, fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#67e8f9' }}>
               {module.label}
             </span>
             {module.description ? (
-              <span className="mt-1 block truncate text-[11px] font-medium" style={{ color: '#64748b' }}>
-                {module.description}
-              </span>
+              <span style={{ marginTop: 4, display: 'block', fontSize: 11, fontWeight: 500, color: '#64748b' }}>{module.description}</span>
             ) : hasFeatures ? (
-              <span className="mt-1 block text-[11px] font-medium" style={{ color: '#64748b' }}>
-                {module.features.length} {copy.feature}
-              </span>
+              <span style={{ marginTop: 4, display: 'block', fontSize: 11, fontWeight: 500, color: '#64748b' }}>{module.features.length} {copy.feature}</span>
             ) : null}
           </span>
-          <ChevronRight
-            className="h-5 w-5 shrink-0 transition-transform"
-            style={{
-              color: '#06b6d4',
-              transform: moduleOpen && hasFeatures ? 'rotate(90deg)' : 'none'
-            }}
-          />
+          <ChevronRight style={{ height: 20, width: 20, flexShrink: 0, stroke: '#06b6d4', strokeWidth: 2.5, transform: moduleOpen && hasFeatures ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }} />
         </button>
         {moduleOpen && hasFeatures && (
-          <div className="space-y-1 border-t p-2" style={{ borderColor: 'rgba(6,182,212,0.15)', backgroundColor: 'rgba(2,6,23,0.5)' }}>
+          <div style={{ padding: 8, borderTop: '1px solid rgba(6,182,212,0.15)', background: 'rgba(2,6,23,0.5)' }}>
             {module.features.map(feature => (
-              <button
-                type="button"
-                key={feature.id}
-                onClick={() => openFeature(module, feature)}
-                className="group/feat flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition hover:bg-cyan-950/40"
-              >
-                <ChevronRight className="h-3.5 w-3.5 shrink-0" style={{ color: '#06b6d4' }} />
-                <span className="min-w-0 flex-1 text-[11px] font-semibold leading-4" style={{ color: '#cbd5e1' }}>
-                  {feature.label}
-                </span>
+              <button type="button" key={feature.id} onClick={() => openFeature(module, feature)}
+                style={{ display: 'flex', width: '100%', alignItems: 'center', gap: 10, padding: '10px 12px', textAlign: 'left', background: 'transparent', border: 'none', borderRadius: 8, cursor: 'pointer' }}>
+                <ChevronRight style={{ height: 14, width: 14, flexShrink: 0, stroke: '#06b6d4', strokeWidth: 2.5 }} />
+                <span style={{ minWidth: 0, flex: 1, fontSize: 11, fontWeight: 600, color: '#cbd5e1' }}>{feature.label}</span>
               </button>
             ))}
           </div>
@@ -405,64 +375,33 @@ export default function RoleModuleMenu({
     const active = currentModule?.id === module.id;
     const hasFeatures = module.features.length > 0;
     return (
-      <div
-        key={category.id}
-        className="group/mod mb-2.5 overflow-hidden rounded-xl border transition-all"
-        style={{
-          borderColor: active ? 'rgba(6,182,212,0.6)' : 'rgba(26,31,46,1)',
-          backgroundColor: active ? 'rgba(6,182,212,0.08)' : '#0a0e1a',
-          boxShadow: active ? '0 0 24px rgba(6,182,212,0.2)' : '0 1px 3px rgba(0,0,0,0.3)'
-        }}
-      >
-        <button
-          type="button"
-          onClick={() => hasFeatures ? toggleModule(module.id) : openModule(module)}
-          className="flex min-h-[72px] w-full items-center gap-3 px-3.5 py-3.5 text-left" style={{ background: 'transparent', backgroundImage: 'none' }}
-        >
-          <span
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-            style={{
-              background: active
-                ? 'linear-gradient(135deg, #06b6d4, #0891b2)'
-                : 'linear-gradient(135deg, rgba(6,182,212,0.2), rgba(8,145,178,0.15))',
-              border: active ? 'none' : '1px solid rgba(6,182,212,0.3)',
-              boxShadow: active ? '0 0 16px rgba(6,182,212,0.5)' : 'none'
-            }}
-          >
-            <LayoutGrid className="h-5 w-5" style={{ color: active ? '#ffffff' : '#06b6d4' }} />
+      <div key={category.id} style={{
+        background: active ? 'linear-gradient(135deg, rgba(6,182,212,0.1), #0a0e1a)' : '#0a0e1a',
+        border: active ? '1px solid #06b6d4' : '1px solid #1a1f2e',
+        boxShadow: active ? '0 0 24px rgba(6,182,212,0.2)' : 'none',
+        borderRadius: 12, marginBottom: 10, overflow: 'hidden'
+      }}>
+        <button type="button" onClick={() => hasFeatures ? toggleModule(module.id) : openModule(module)}
+          style={{ display: 'flex', minHeight: 72, width: '100%', alignItems: 'center', gap: 12, padding: '14px 14px', textAlign: 'left', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+          <span style={{
+            display: 'flex', height: 40, width: 40, flexShrink: 0, alignItems: 'center', justifyContent: 'center',
+            borderRadius: 12, background: 'linear-gradient(135deg, #06b6d4, #0891b2)', boxShadow: '0 0 16px rgba(6,182,212,0.5)'
+          }}>
+            <LayoutGrid style={{ height: 20, width: 20, stroke: '#ffffff', strokeWidth: 2.5, fill: 'none' }} />
           </span>
-          <span className="min-w-0 flex-1">
-            <span
-              className="block truncate text-[12px] font-black uppercase tracking-[0.08em]"
-              style={{ color: active ? '#67e8f9' : '#e2e8f0' }}
-            >
-              {category.label}
-            </span>
-            <span className="mt-1 block text-[11px] font-medium" style={{ color: '#64748b' }}>
-              {module.features.length} {copy.feature}
-            </span>
+          <span style={{ minWidth: 0, flex: 1 }}>
+            <span style={{ display: 'block', fontSize: 12, fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#67e8f9' }}>{category.label}</span>
+            <span style={{ marginTop: 4, display: 'block', fontSize: 11, fontWeight: 500, color: '#64748b' }}>{module.features.length} {copy.feature}</span>
           </span>
-          <ChevronRight
-            className="h-5 w-5 shrink-0 transition-transform"
-            style={{
-              color: '#06b6d4',
-              transform: moduleOpen && hasFeatures ? 'rotate(90deg)' : 'none'
-            }}
-          />
+          <ChevronRight style={{ height: 20, width: 20, flexShrink: 0, stroke: '#06b6d4', strokeWidth: 2.5, transform: moduleOpen && hasFeatures ? 'rotate(90deg)' : 'none' }} />
         </button>
         {moduleOpen && hasFeatures && (
-          <div className="space-y-1 border-t p-2" style={{ borderColor: 'rgba(6,182,212,0.15)', backgroundColor: 'rgba(2,6,23,0.5)' }}>
+          <div style={{ padding: 8, borderTop: '1px solid rgba(6,182,212,0.15)', background: 'rgba(2,6,23,0.5)' }}>
             {module.features.map(feature => (
-              <button
-                type="button"
-                key={feature.id}
-                onClick={() => openFeature(module, feature)}
-                className="group/feat flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition hover:bg-cyan-950/40"
-              >
-                <ChevronRight className="h-3.5 w-3.5 shrink-0" style={{ color: '#06b6d4' }} />
-                <span className="min-w-0 flex-1 text-[11px] font-semibold leading-4" style={{ color: '#cbd5e1' }}>
-                  {feature.label}
-                </span>
+              <button type="button" key={feature.id} onClick={() => openFeature(module, feature)}
+                style={{ display: 'flex', width: '100%', alignItems: 'center', gap: 10, padding: '10px 12px', textAlign: 'left', background: 'transparent', border: 'none', borderRadius: 8, cursor: 'pointer' }}>
+                <ChevronRight style={{ height: 14, width: 14, flexShrink: 0, stroke: '#06b6d4', strokeWidth: 2.5 }} />
+                <span style={{ minWidth: 0, flex: 1, fontSize: 11, fontWeight: 600, color: '#cbd5e1' }}>{feature.label}</span>
               </button>
             ))}
           </div>
@@ -562,42 +501,12 @@ export default function RoleModuleMenu({
           />
           <aside
             className={`edx-role-module-drawer absolute inset-y-0 flex h-[100dvh] w-full max-w-[430px] flex-col overflow-hidden border-slate-800 bg-[#05060a] shadow-[0_35px_100px_rgba(0,0,0,.65)] ${
-              rtl ? 'right-0 border-l' : 'left-0 border-r'
+              rtl ? 'right-0' : 'left-0'
             }`}
+            style={{ background: '#05060a' }}
           >
             
-            <style>{`
-  /* Icon boxes ONLY — targeted by size class, not by position */
-  .edx-role-module-drawer button > span[class*="h-10"][class*="w-10"],
-  .edx-role-module-drawer button > span[class*="h-9"][class*="w-9"],
-  .edx-role-module-drawer button > span[class*="h-8"][class*="w-8"] {
-    background: linear-gradient(135deg, #06b6d4, #0891b2) !important;
-    border: none !important;
-    box-shadow: 0 0 16px rgba(6,182,212,0.4) !important;
-  }
-  .edx-role-module-drawer button > span[class*="h-10"][class*="w-10"] svg,
-  .edx-role-module-drawer button > span[class*="h-9"][class*="w-9"] svg,
-  .edx-role-module-drawer button > span[class*="h-8"][class*="w-8"] svg {
-    color: #ffffff !important;
-    stroke: #ffffff !important;
-  }
-  /* Search bar */
-  .edx-role-module-drawer .edx-role-module-search {
-    background: #0a0e1a !important;
-    border: 1px solid #06b6d4 !important;
-    box-shadow: 0 0 20px rgba(6,182,212,0.15) !important;
-  }
-  .edx-role-module-drawer .edx-role-module-search input {
-    color: #67e8f9 !important;
-    -webkit-text-fill-color: #67e8f9 !important;
-    background: transparent !important;
-  }
-  .edx-role-module-drawer .edx-role-module-search svg {
-    color: #06b6d4 !important;
-    stroke: #06b6d4 !important;
-  }
-`}</style>
-            <header className="edx-role-module-drawer-header relative z-10 shrink-0 border-b p-4 pt-[max(1rem,env(safe-area-inset-top))] sm:p-5 sm:pt-[max(1.25rem,env(safe-area-inset-top))]" style={{ borderColor: 'rgba(26,31,46,1)', backgroundColor: '#05060a' }}>
+            <header className="edx-role-module-drawer-header relative z-10 shrink-0 p-4 pt-[max(1rem,env(safe-area-inset-top))] sm:p-5 sm:pt-[max(1.25rem,env(safe-area-inset-top))]" style={{ backgroundColor: '#05060a' }}>
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-400" style={{ textShadow: '0 0 12px rgba(6,182,212,0.5)' }}>
@@ -654,39 +563,27 @@ export default function RoleModuleMenu({
                       ? true
                       : expandedCategories.has(category.id);
                     return (
-                      <section
-                        key={category.id}
-                        className="overflow-hidden rounded-xl border transition-all mb-2.5" style={{ borderColor: 'rgba(26,31,46,1)', backgroundColor: '#0a0e1a' }}
-                      >
-                        <button
-                          type="button"
-                          onClick={() => toggleCategory(category.id)}
-                          className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left transition" style={{ background: 'transparent', backgroundImage: 'none' }}
-                        >
-                          <span className="flex min-w-0 items-center gap-3">
-                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style={{ background: 'linear-gradient(135deg, rgba(6,182,212,0.2), rgba(8,145,178,0.15))', border: '1px solid rgba(6,182,212,0.3)' }}>
-                              <LayoutGrid className="h-4 w-4" />
-                            </span>
-                            <span>
-                              <span className="block text-[12px] font-black uppercase tracking-[0.08em]" style={{ color: '#e2e8f0' }}>
-                                {category.label}
-                              </span>
-                              <span className="mt-0.5 block text-[11px] font-medium" style={{ color: '#64748b' }}>
-                                {category.modules.length} {copy.available}
-                              </span>
-                            </span>
+                      <div key={category.id} style={{
+                        background: '#0a0e1a', border: '1px solid #1a1f2e', borderRadius: 12, marginBottom: 10, overflow: 'hidden'
+                      }}>
+                        <button type="button" onClick={() => toggleCategory(category.id)}
+                          style={{ display: 'flex', minHeight: 72, width: '100%', alignItems: 'center', gap: 12, padding: '14px 14px', textAlign: 'left', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                          <span style={{ display: 'flex', height: 40, width: 40, flexShrink: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 12, background: 'linear-gradient(135deg, #06b6d4, #0891b2)', boxShadow: '0 0 16px rgba(6,182,212,0.5)' }}>
+                            <LayoutGrid style={{ height: 20, width: 20, stroke: '#ffffff', strokeWidth: 2.5, fill: 'none' }} />
                           </span>
-                          {categoryOpen
-                            ? <ChevronDown className="h-5 w-5 shrink-0" style={{ color: '#06b6d4' }} />
-                            : <ChevronRight className={`h-5 w-5 shrink-0 ${rtl ? 'rotate-180' : ''}`} style={{ color: '#06b6d4' }} />}
+                          <span style={{ minWidth: 0, flex: 1 }}>
+                            <span style={{ display: 'block', fontSize: 12, fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#67e8f9' }}>{category.label}</span>
+                            <span style={{ marginTop: 4, display: 'block', fontSize: 11, fontWeight: 500, color: '#64748b' }}>{category.modules.length} {copy.available}</span>
+                          </span>
+                          <ChevronDown style={{ height: 20, width: 20, flexShrink: 0, stroke: '#06b6d4', strokeWidth: 2.5, display: categoryOpen ? 'block' : 'none' }} />
+                          <ChevronRight style={{ height: 20, width: 20, flexShrink: 0, stroke: '#06b6d4', strokeWidth: 2.5, display: categoryOpen ? 'none' : 'block', transform: rtl ? 'rotate(180deg)' : 'none' }} />
                         </button>
-
                         {categoryOpen && (
-                          <div className="space-y-2 border-t p-2" style={{ borderColor: 'rgba(6,182,212,0.15)', backgroundColor: 'rgba(2,6,23,0.5)' }}>
+                          <div style={{ padding: 8, borderTop: '1px solid rgba(6,182,212,0.15)', background: 'rgba(2,6,23,0.5)' }}>
                             {category.modules.map(module => renderModuleCard(module))}
                           </div>
                         )}
-                      </section>
+                      </div>
                     );
                   })}
                 </div>
