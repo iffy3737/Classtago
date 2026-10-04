@@ -339,7 +339,7 @@ export default function RoleModuleMenu({
         <button
           type="button"
           onClick={() => hasFeatures ? toggleModule(module.id) : openModule(module)}
-          className="flex min-h-[72px] w-full items-center gap-3 px-3.5 py-3.5 text-left"
+          className="flex min-h-[72px] w-full items-center gap-3 px-3.5 py-3.5 text-left" style={{ background: 'transparent', backgroundImage: 'none' }}
         >
           <span
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
@@ -417,7 +417,7 @@ export default function RoleModuleMenu({
         <button
           type="button"
           onClick={() => hasFeatures ? toggleModule(module.id) : openModule(module)}
-          className="flex min-h-[72px] w-full items-center gap-3 px-3.5 py-3.5 text-left"
+          className="flex min-h-[72px] w-full items-center gap-3 px-3.5 py-3.5 text-left" style={{ background: 'transparent', backgroundImage: 'none' }}
         >
           <span
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
@@ -567,32 +567,40 @@ export default function RoleModuleMenu({
           >
             
             <style>{`
-              .edx-role-module-drawer,
-              .edx-role-module-drawer section,
-              .edx-role-module-drawer > div > div > div > section,
-              .edx-role-module-drawer .group\\/mod {
-                background-color: #0a0e1a !important;
-                background-image: none !important;
-              }
-              .edx-role-module-drawer section > button,
-              .edx-role-module-drawer .group\\/mod > button {
-                background-color: transparent !important;
-                background-image: none !important;
-              }
-              .edx-role-module-drawer .mt-5.overflow-hidden {
-                background-color: #0a0e1a !important;
-                background-image: none !important;
-              }
-              .edx-role-module-drawer .mt-5.overflow-hidden button {
-                background-color: transparent !important;
-                background-image: none !important;
-              }
-              .edx-role-module-drawer header,
-              .edx-role-module-drawer footer {
-                background-color: #05060a !important;
-                background-image: none !important;
-              }
-            `}</style>
+  html body div.edx-role-module-drawer section,
+  html body div.edx-role-module-drawer section[class*="mt-5"],
+  html body div.edx-role-module-drawer [class*="group/mod"],
+  html body div.edx-role-module-drawer [class*="group/"] {
+    background: #0a0e1a !important;
+    background-color: #0a0e1a !important;
+    background-image: none !important;
+  }
+  html body div.edx-role-module-drawer section > button,
+  html body div.edx-role-module-drawer [class*="group/"] > button,
+  html body div.edx-role-module-drawer .mt-5 button,
+  html body div.edx-role-module-drawer section.mt-5 button {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    color: #e2e8f0 !important;
+  }
+  html body div.edx-role-module-drawer section > div,
+  html body div.edx-role-module-drawer section.mt-5 > div {
+    background: transparent !important;
+    background-image: none !important;
+  }
+  html body div.edx-role-module-drawer header,
+  html body div.edx-role-module-drawer header > div,
+  html body div.edx-role-module-drawer footer {
+    background: #05060a !important;
+    background-color: #05060a !important;
+    background-image: none !important;
+  }
+  html body div.edx-role-module-drawer button span,
+  html body div.edx-role-module-drawer button svg {
+    background-image: none !important;
+  }
+`}</style>
             <header className="edx-role-module-drawer-header relative z-10 shrink-0 border-b p-4 pt-[max(1rem,env(safe-area-inset-top))] sm:p-5 sm:pt-[max(1.25rem,env(safe-area-inset-top))]" style={{ borderColor: 'rgba(26,31,46,1)', backgroundColor: '#05060a' }}>
               <div className="flex items-start justify-between gap-3">
                 <div>
@@ -657,7 +665,7 @@ export default function RoleModuleMenu({
                         <button
                           type="button"
                           onClick={() => toggleCategory(category.id)}
-                          className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left transition hover:bg-cyan-950/30"
+                          className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left transition" style={{ background: 'transparent', backgroundImage: 'none' }}
                         >
                           <span className="flex min-w-0 items-center gap-3">
                             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style={{ background: 'linear-gradient(135deg, rgba(6,182,212,0.2), rgba(8,145,178,0.15))', border: '1px solid rgba(6,182,212,0.3)' }}>
@@ -715,7 +723,7 @@ export default function RoleModuleMenu({
                       type="button"
                       key={item.key}
                       onClick={() => setBrandInfo(item.key as NonNullable<typeof brandInfo>)}
-                      className="flex min-h-14 w-full items-center gap-3 border-b px-4 text-left transition hover:bg-cyan-950/30" style={{ borderColor: 'rgba(26,31,46,1)' }}
+                      className="flex min-h-14 w-full items-center gap-3 border-b px-4 text-left transition" style={{ borderColor: 'rgba(26,31,46,1)', background: 'transparent', backgroundImage: 'none' }}
                     >
                       <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl" style={{ backgroundColor: 'rgba(6,182,212,0.1)', color: '#06b6d4' }}><Icon className="h-4 w-4" /></span>
                       <span className="min-w-0 flex-1 text-[12px] font-bold tracking-[0.04em]" style={{ color: '#e2e8f0' }}>{item.label}</span>
