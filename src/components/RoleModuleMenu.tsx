@@ -506,6 +506,41 @@ export default function RoleModuleMenu({
             style={{ background: '#05060a', color: '#ffffff', border: '1px solid #1a1f2e' }}
           >
             
+            <style>{`
+  /* 1. Header area (upar wala) — force black */
+  .edx-role-module-drawer-header {
+    background: #05060a !important;
+    background-color: #05060a !important;
+    background-image: none !important;
+    border: none !important;
+  }
+  .edx-role-module-drawer-header * {
+    background-image: none !important;
+  }
+
+  /* 2. Side overlay (right side purple) — transparent */
+  .edx-role-module-overlay-backdrop {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    backdrop-filter: none !important;
+  }
+  .edx-role-module-overlay-backdrop * {
+    background: transparent !important;
+    background-image: none !important;
+  }
+
+  /* 3. Cards ke peeche background — BLACK */
+  .edx-role-module-drawer > div,
+  .edx-role-module-drawer .space-y-3,
+  .edx-role-module-drawer > div > div,
+  .edx-role-module-drawer .min-h-0,
+  .edx-role-module-drawer .flex-1 {
+    background: #05060a !important;
+    background-color: #05060a !important;
+    background-image: none !important;
+  }
+`}</style>
             <header className="edx-role-module-drawer-header relative z-10 shrink-0 p-4 pt-[max(1rem,env(safe-area-inset-top))] sm:p-5 sm:pt-[max(1.25rem,env(safe-area-inset-top))]" style={{ backgroundColor: '#05060a' }}>
               <div className="flex items-start justify-between gap-3">
                 <div>
