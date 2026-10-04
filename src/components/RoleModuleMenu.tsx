@@ -325,77 +325,72 @@ export default function RoleModuleMenu({
     const moduleOpen = expandedModules.has(module.id) || Boolean(query.trim());
     const route = routeForModule(module, canAccess);
     const active = currentModule?.id === module.id;
+    const hasFeatures = module.features.length > 0;
     return (
       <div
         key={module.id}
-        className={`overflow-hidden border transition ${
-          standalone ? 'rounded-2xl' : 'rounded-xl'
-        } ${
-          active
-            ? 'border-cyan-300/35 bg-cyan-500/10'
-            : 'border-slate-800/80 bg-slate-950/60 hover:border-slate-700'
-        }`}
+        className="group/mod mb-2.5 overflow-hidden rounded-xl border transition-all"
+        style={{
+          borderColor: active ? 'rgba(6,182,212,0.6)' : 'rgba(26,31,46,1)',
+          backgroundColor: active ? 'rgba(6,182,212,0.08)' : '#0a0e1a',
+          boxShadow: active ? '0 0 24px rgba(6,182,212,0.2)' : '0 1px 3px rgba(0,0,0,0.3)'
+        }}
       >
-        <div className="flex items-stretch">
-          <button
-            type="button"
-            onClick={() => module.navigationOnly ? toggleModule(module.id) : openModule(module)}
-            className="flex min-w-0 flex-1 items-center gap-3 px-4 py-4 text-left"
+        <button
+          type="button"
+          onClick={() => hasFeatures ? toggleModule(module.id) : openModule(module)}
+          className="flex min-h-[72px] w-full items-center gap-3 px-3.5 py-3.5 text-left"
+        >
+          <span
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+            style={{
+              background: active
+                ? 'linear-gradient(135deg, #06b6d4, #0891b2)'
+                : 'linear-gradient(135deg, rgba(6,182,212,0.2), rgba(8,145,178,0.15))',
+              border: active ? 'none' : '1px solid rgba(6,182,212,0.3)',
+              boxShadow: active ? '0 0 16px rgba(6,182,212,0.5)' : 'none'
+            }}
           >
-            <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${active ? 'bg-cyan-300 text-slate-950' : 'bg-cyan-300/10 text-cyan-300'}`}><LayoutGrid className="h-4 w-4" /></span>
-            <span className="min-w-0 flex-1">
-              <span className="flex flex-wrap items-center gap-2">
-                <span className="truncate text-xs font-black uppercase tracking-[0.08em] text-white">
-                  {module.label}
-                </span>
-                {module.badge && (
-                  <span className="rounded-full border border-violet-300/20 bg-violet-300/10 px-2 py-0.5 text-[8px] font-black uppercase tracking-wider text-violet-200">
-                    {module.badge}
-                  </span>
-                )}
-              </span>
-              {module.description && (
-                <span className="mt-1 line-clamp-2 block text-[10px] font-medium leading-4 text-slate-500">
-                  {module.description}
-                </span>
-              )}
-            </span>
-            </button>
-
-          {module.features.length > 0 && (
-            <button
-              type="button"
-              onClick={() => toggleModule(module.id)}
-              className="flex w-12 shrink-0 items-center justify-center border-s border-slate-800/80 text-cyan-300 transition hover:bg-cyan-300/10"
-              aria-label={`${module.label}: ${copy.feature}`}
+            <LayoutGrid className="h-5 w-5" style={{ color: active ? '#ffffff' : '#06b6d4' }} />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span
+              className="block truncate text-[12px] font-black uppercase tracking-[0.08em]"
+              style={{ color: active ? '#67e8f9' : '#e2e8f0' }}
             >
-              {moduleOpen
-                ? <Minus className="h-4 w-4" />
-                : <Plus className="h-4 w-4" />}
-            </button>
-          )}
-        </div>
-
-        {moduleOpen && module.features.length > 0 && (
-          <div className="space-y-1 border-t border-slate-800/80 bg-slate-950/70 p-2">
+              {module.label}
+            </span>
+            {module.description ? (
+              <span className="mt-1 block truncate text-[11px] font-medium" style={{ color: '#64748b' }}>
+                {module.description}
+              </span>
+            ) : hasFeatures ? (
+              <span className="mt-1 block text-[11px] font-medium" style={{ color: '#64748b' }}>
+                {module.features.length} {copy.feature}
+              </span>
+            ) : null}
+          </span>
+          <ChevronRight
+            className="h-5 w-5 shrink-0 transition-transform"
+            style={{
+              color: '#06b6d4',
+              transform: moduleOpen && hasFeatures ? 'rotate(90deg)' : 'none'
+            }}
+          />
+        </button>
+        {moduleOpen && hasFeatures && (
+          <div className="space-y-1 border-t p-2" style={{ borderColor: 'rgba(6,182,212,0.15)', backgroundColor: 'rgba(2,6,23,0.5)' }}>
             {module.features.map(feature => (
               <button
                 type="button"
                 key={feature.id}
                 onClick={() => openFeature(module, feature)}
-                className="group flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition hover:bg-slate-800/50"
+                className="group/feat flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition hover:bg-cyan-950/40"
               >
-                {feature.shortcut
-                  ? <Link2 className="h-3.5 w-3.5 shrink-0 text-violet-300" />
-                  : <ChevronRight className={`h-3.5 w-3.5 shrink-0 text-slate-600 group-hover:text-cyan-300 ${rtl ? 'rotate-180' : ''}`} />}
-                <span className="min-w-0 flex-1 text-[11px] font-semibold leading-4 text-slate-300 group-hover:text-white">
+                <ChevronRight className="h-3.5 w-3.5 shrink-0" style={{ color: '#06b6d4' }} />
+                <span className="min-w-0 flex-1 text-[11px] font-semibold leading-4" style={{ color: '#cbd5e1' }}>
                   {feature.label}
                 </span>
-                {feature.shortcut && (
-                  <span className="rounded-full bg-violet-300/10 px-2 py-0.5 text-[8px] font-black uppercase tracking-wider text-violet-200">
-                    {copy.shortcut}
-                  </span>
-                )}
               </button>
             ))}
           </div>
@@ -408,60 +403,71 @@ export default function RoleModuleMenu({
     const module = category.modules[0];
     const moduleOpen = expandedModules.has(module.id) || Boolean(query.trim());
     const active = currentModule?.id === module.id;
-    const route = routeForModule(module, canAccess);
+    const hasFeatures = module.features.length > 0;
     return (
-      <section
+      <div
         key={category.id}
-        className={`overflow-hidden rounded-2xl border transition ${active ? 'border-cyan-300/35 bg-cyan-500/10' : 'border-slate-800/80 bg-slate-900/60'}`}
+        className="group/mod mb-2.5 overflow-hidden rounded-xl border transition-all"
+        style={{
+          borderColor: active ? 'rgba(6,182,212,0.6)' : 'rgba(26,31,46,1)',
+          backgroundColor: active ? 'rgba(6,182,212,0.08)' : '#0a0e1a',
+          boxShadow: active ? '0 0 24px rgba(6,182,212,0.2)' : '0 1px 3px rgba(0,0,0,0.3)'
+        }}
       >
-        <div className="flex items-stretch">
-          <button
-            type="button"
-            onClick={() => openModule(module)}
-            className="flex min-w-0 flex-1 items-center gap-3 px-4 py-4 text-left transition hover:bg-slate-800/40"
+        <button
+          type="button"
+          onClick={() => hasFeatures ? toggleModule(module.id) : openModule(module)}
+          className="flex min-h-[72px] w-full items-center gap-3 px-3.5 py-3.5 text-left"
+        >
+          <span
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+            style={{
+              background: active
+                ? 'linear-gradient(135deg, #06b6d4, #0891b2)'
+                : 'linear-gradient(135deg, rgba(6,182,212,0.2), rgba(8,145,178,0.15))',
+              border: active ? 'none' : '1px solid rgba(6,182,212,0.3)',
+              boxShadow: active ? '0 0 16px rgba(6,182,212,0.5)' : 'none'
+            }}
           >
-            <span className="flex min-w-0 items-center gap-3">
-              <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${active ? 'bg-cyan-300 text-slate-950' : 'bg-cyan-300/10 text-cyan-300'}`}>
-                <LayoutGrid className="h-4 w-4" />
-              </span>
-              <span className="min-w-0">
-                <span className="block truncate text-xs font-black uppercase tracking-[0.08em] text-slate-100">
-                  {category.label}
-                </span>
-                <span className="mt-0.5 block text-[10px] font-bold text-slate-500">
-                  {module.features.length} {copy.feature}
-                </span>
-              </span>
-            </span>
-  
-          </button>
-          {module.features.length > 0 && (
-            <button
-              type="button"
-              onClick={() => toggleModule(module.id)}
-              className="flex w-12 shrink-0 items-center justify-center border-s border-slate-800/80 text-cyan-300 transition hover:bg-cyan-300/10"
-              aria-label={`${module.label}: ${copy.feature}`}
+            <LayoutGrid className="h-5 w-5" style={{ color: active ? '#ffffff' : '#06b6d4' }} />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span
+              className="block truncate text-[12px] font-black uppercase tracking-[0.08em]"
+              style={{ color: active ? '#67e8f9' : '#e2e8f0' }}
             >
-              {moduleOpen ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-            </button>
-          )}
-        </div>
-        {moduleOpen && module.features.length > 0 && (
-          <div className="space-y-1 border-t border-slate-800/80 bg-slate-950/70 p-2">
+              {category.label}
+            </span>
+            <span className="mt-1 block text-[11px] font-medium" style={{ color: '#64748b' }}>
+              {module.features.length} {copy.feature}
+            </span>
+          </span>
+          <ChevronRight
+            className="h-5 w-5 shrink-0 transition-transform"
+            style={{
+              color: '#06b6d4',
+              transform: moduleOpen && hasFeatures ? 'rotate(90deg)' : 'none'
+            }}
+          />
+        </button>
+        {moduleOpen && hasFeatures && (
+          <div className="space-y-1 border-t p-2" style={{ borderColor: 'rgba(6,182,212,0.15)', backgroundColor: 'rgba(2,6,23,0.5)' }}>
             {module.features.map(feature => (
               <button
                 type="button"
                 key={feature.id}
                 onClick={() => openFeature(module, feature)}
-                className="group flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition hover:bg-slate-800/50"
+                className="group/feat flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition hover:bg-cyan-950/40"
               >
-                <ChevronRight className={`h-3.5 w-3.5 shrink-0 text-slate-600 group-hover:text-cyan-300 ${rtl ? 'rotate-180' : ''}`} />
-                <span className="min-w-0 flex-1 text-[11px] font-semibold leading-4 text-slate-300 group-hover:text-white">{feature.label}</span>
+                <ChevronRight className="h-3.5 w-3.5 shrink-0" style={{ color: '#06b6d4' }} />
+                <span className="min-w-0 flex-1 text-[11px] font-semibold leading-4" style={{ color: '#cbd5e1' }}>
+                  {feature.label}
+                </span>
               </button>
             ))}
           </div>
         )}
-      </section>
+      </div>
     );
   };
 
@@ -506,14 +512,14 @@ export default function RoleModuleMenu({
   return (
     <>
       <section
-        className="erp-module-dock no-print overflow-hidden rounded-[1.75rem] border border-slate-800/80 bg-slate-800/50 p-3 shadow-[0_22px_70px_rgba(0,0,0,.2)] backdrop-blur-xl sm:p-4"
+        className="erp-module-dock no-print overflow-hidden rounded-[1.75rem] border border-slate-800 bg-slate-800 p-3 shadow-[0_22px_70px_rgba(0,0,0,.2)] backdrop-blur-xl sm:p-4"
         dir={rtl ? 'rtl' : 'ltr'}
       >
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="group flex min-h-12 items-center gap-3 rounded-2xl border border-cyan-300/20 bg-slate-950/80 px-4 py-3 text-left shadow-lg transition hover:border-cyan-300/45 hover:bg-slate-950"
+            className="group flex min-h-12 items-center gap-3 rounded-2xl border border-cyan-300/20 bg-slate-950 px-4 py-3 text-left shadow-lg transition hover:border-cyan-300/45 hover:bg-slate-950"
             aria-label={copy.openMenu}
           >
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-300 text-slate-950 shadow-[0_0_24px_rgba(34,211,238,.2)]">
@@ -531,7 +537,7 @@ export default function RoleModuleMenu({
           </button>
 
           <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold text-slate-400">
-            <span className="rounded-full border border-slate-800/80 bg-slate-900/80 px-3 py-1.5">
+            <span className="rounded-full border border-slate-800 bg-slate-800 px-3 py-1.5">
               {teacherRoadmapRole ? `${permittedCatalogue.length} main menus · ${allPermittedModules.length}` : allPermittedModules.length} {copy.available}
             </span>
             <span className="hidden max-w-xl sm:inline">{copy.permitted}</span>
@@ -551,21 +557,21 @@ export default function RoleModuleMenu({
           <button
             type="button"
             aria-label={copy.close}
-            className="edx-role-module-overlay-backdrop absolute inset-0 cursor-default bg-slate-950/80 backdrop-blur-sm"
+            className="edx-role-module-overlay-backdrop absolute inset-0 cursor-default bg-slate-950 backdrop-blur-sm"
             onClick={() => setOpen(false)}
           />
           <aside
-            className={`edx-role-module-drawer absolute inset-y-0 flex h-[100dvh] w-full max-w-[430px] flex-col overflow-hidden border-slate-800/80 bg-[#07101f] shadow-[0_35px_100px_rgba(0,0,0,.55)] ${
+            className={`edx-role-module-drawer absolute inset-y-0 flex h-[100dvh] w-full max-w-[430px] flex-col overflow-hidden border-slate-800 bg-[#05060a] shadow-[0_35px_100px_rgba(0,0,0,.65)] ${
               rtl ? 'right-0 border-l' : 'left-0 border-r'
             }`}
           >
-            <header className="edx-role-module-drawer-header relative z-10 shrink-0 border-b border-slate-800/80 bg-[#0a1425] p-4 pt-[max(1rem,env(safe-area-inset-top))] shadow-[0_10px_30px_rgba(0,0,0,.22)] sm:p-5 sm:pt-[max(1.25rem,env(safe-area-inset-top))]">
+            <header className="edx-role-module-drawer-header relative z-10 shrink-0 border-b p-4 pt-[max(1rem,env(safe-area-inset-top))] sm:p-5 sm:pt-[max(1.25rem,env(safe-area-inset-top))]" style={{ borderColor: 'rgba(26,31,46,1)', backgroundColor: '#05060a' }}>
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-[9px] font-black uppercase tracking-[0.22em] text-cyan-300">
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-400" style={{ textShadow: '0 0 12px rgba(6,182,212,0.5)' }}>
                     {copy.roleWorkspace}
                   </p>
-                  <h2 className="mt-1 text-xl font-black tracking-tight text-white">{copy.menu}</h2>
+                  <h2 className="mt-1 text-2xl font-black tracking-tight text-white" style={{ textShadow: '0 0 20px rgba(6,182,212,0.3)' }}>{copy.menu}</h2>
                   <p className="mt-1 text-xs font-medium text-slate-400">
                     {teacherRoadmapRole ? `${permittedCatalogue.length} main menus · ${allPermittedModules.length}` : allPermittedModules.length} {copy.available}
                   </p>
@@ -573,15 +579,15 @@ export default function RoleModuleMenu({
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="relative z-20 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-cyan-300/25 bg-slate-950 text-white shadow-lg transition hover:bg-cyan-300/10 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-cyan-300/30"
+                  className="relative z-20 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-cyan-300/25 bg-slate-950 text-white shadow-lg transition hover:bg-cyan-950 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-cyan-300/30"
                   aria-label={copy.close}
                 >
                   <X className="h-5 w-5" />
                 </button>
               </div>
 
-              <label className="edx-role-module-search mt-4 flex min-h-12 items-center gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/80 px-4 focus-within:border-cyan-300/45">
-                <Search className="h-4 w-4 shrink-0 text-cyan-300" />
+              <label className="edx-role-module-search mt-4 flex min-h-12 items-center gap-3 rounded-xl px-4" style={{ border: '1px solid #06b6d4', backgroundColor: '#0a0e1a', boxShadow: '0 0 20px rgba(6,182,212,0.15)' }}>
+                <Search className="h-4 w-4 shrink-0" style={{ color: '#06b6d4' }} />
                 <input
                   value={query}
                   onChange={(event: ChangeEvent<HTMLInputElement>) => setQuery(event.target.value)}
@@ -592,7 +598,7 @@ export default function RoleModuleMenu({
                   spellCheck={false}
                   inputMode="search"
                   enterKeyHint="search"
-                  className="w-full bg-transparent py-3 text-sm font-semibold text-white outline-none placeholder:text-slate-500"
+                  className="w-full bg-transparent py-3 text-sm font-semibold outline-none" style={{ color: '#06b6d4' }} placeholder="Search modules..."
                   onPointerDown={(e) => e.stopPropagation()}
                   onTouchStart={(e) => e.stopPropagation()}
                 />
@@ -601,7 +607,7 @@ export default function RoleModuleMenu({
 
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3 sm:p-4">
               {filteredCatalogue.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-slate-700 bg-slate-900/60 p-6 text-center">
+                <div className="rounded-2xl border border-dashed border-slate-700 bg-slate-900 p-6 text-center">
                   <Search className="mx-auto h-6 w-6 text-slate-500" />
                   <p className="mt-3 text-sm font-bold text-slate-300">{copy.noMatches}</p>
                 </div>
@@ -618,15 +624,15 @@ export default function RoleModuleMenu({
                     return (
                       <section
                         key={category.id}
-                        className="overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/60"
+                        className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900"
                       >
                         <button
                           type="button"
                           onClick={() => toggleCategory(category.id)}
-                          className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left transition hover:bg-slate-800/40"
+                          className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left transition hover:bg-slate-800"
                         >
                           <span className="flex min-w-0 items-center gap-3">
-                            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-cyan-300/10 text-cyan-300">
+                            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-cyan-950 text-cyan-300">
                               <LayoutGrid className="h-4 w-4" />
                             </span>
                             <span>
@@ -644,7 +650,7 @@ export default function RoleModuleMenu({
                         </button>
 
                         {categoryOpen && (
-                          <div className="space-y-2 border-t border-slate-800/80 p-2">
+                          <div className="space-y-2 border-t border-slate-800 p-2">
                             {category.modules.map(module => renderModuleCard(module))}
                           </div>
                         )}
@@ -707,8 +713,8 @@ export default function RoleModuleMenu({
               </section>
             </div>
 
-            <footer className="edx-role-module-drawer-footer shrink-0 border-t border-slate-800/80 bg-[#0a1425] p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-              <div className="flex gap-3 rounded-2xl border border-emerald-300/15 bg-emerald-300/[0.055] p-3">
+            <footer className="edx-role-module-drawer-footer shrink-0 border-t border-slate-800 bg-[#0a1425] p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+              <div className="flex gap-3 rounded-2xl border border-emerald-800 bg-emerald-300/[0.055] p-3">
                 <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.12em] text-emerald-200">
