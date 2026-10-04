@@ -503,7 +503,7 @@ export default function RoleModuleMenu({
             className={`edx-role-module-drawer absolute inset-y-0 flex h-[100dvh] w-full max-w-[430px] flex-col overflow-hidden border-slate-800 bg-[#05060a] shadow-[0_35px_100px_rgba(0,0,0,.65)] ${
               rtl ? 'right-0' : 'left-0'
             }`}
-            style={{ background: '#05060a' }}
+            style={{ background: '#05060a', color: '#ffffff', border: '1px solid #1a1f2e' }}
           >
             
             <header className="edx-role-module-drawer-header relative z-10 shrink-0 p-4 pt-[max(1rem,env(safe-area-inset-top))] sm:p-5 sm:pt-[max(1.25rem,env(safe-area-inset-top))]" style={{ backgroundColor: '#05060a' }}>
@@ -512,8 +512,8 @@ export default function RoleModuleMenu({
                   <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-400" style={{ textShadow: '0 0 12px rgba(6,182,212,0.5)' }}>
                     {copy.roleWorkspace}
                   </p>
-                  <h2 className="mt-1 text-2xl font-black tracking-tight text-white" style={{ textShadow: '0 0 20px rgba(6,182,212,0.3)' }}>{copy.menu}</h2>
-                  <p className="mt-1 text-xs font-medium text-slate-400">
+                  <h2 className="mt-1 text-2xl font-black tracking-tight" style={{ color: '#ffffff', textShadow: '0 0 20px rgba(6,182,212,0.3)' }}>{copy.menu}</h2>
+                  <p className="mt-1 text-xs font-medium" style={{ color: '#475569' }}>
                     {teacherRoadmapRole ? `${permittedCatalogue.length} main menus · ${allPermittedModules.length}` : allPermittedModules.length} {copy.available}
                   </p>
                 </div>
