@@ -565,6 +565,34 @@ export default function RoleModuleMenu({
               rtl ? 'right-0 border-l' : 'left-0 border-r'
             }`}
           >
+            
+            <style>{`
+              .edx-role-module-drawer,
+              .edx-role-module-drawer section,
+              .edx-role-module-drawer > div > div > div > section,
+              .edx-role-module-drawer .group\\/mod {
+                background-color: #0a0e1a !important;
+                background-image: none !important;
+              }
+              .edx-role-module-drawer section > button,
+              .edx-role-module-drawer .group\\/mod > button {
+                background-color: transparent !important;
+                background-image: none !important;
+              }
+              .edx-role-module-drawer .mt-5.overflow-hidden {
+                background-color: #0a0e1a !important;
+                background-image: none !important;
+              }
+              .edx-role-module-drawer .mt-5.overflow-hidden button {
+                background-color: transparent !important;
+                background-image: none !important;
+              }
+              .edx-role-module-drawer header,
+              .edx-role-module-drawer footer {
+                background-color: #05060a !important;
+                background-image: none !important;
+              }
+            `}</style>
             <header className="edx-role-module-drawer-header relative z-10 shrink-0 border-b p-4 pt-[max(1rem,env(safe-area-inset-top))] sm:p-5 sm:pt-[max(1.25rem,env(safe-area-inset-top))]" style={{ borderColor: 'rgba(26,31,46,1)', backgroundColor: '#05060a' }}>
               <div className="flex items-start justify-between gap-3">
                 <div>
