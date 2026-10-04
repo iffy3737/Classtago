@@ -567,104 +567,6 @@ export default function RoleModuleMenu({
           >
             
             <style>{`
-  /* ===== Drawer & body: pure black ===== */
-  .edx-role-module-drawer,
-  .edx-role-module-drawer header,
-  .edx-role-module-drawer footer,
-  .edx-role-module-drawer > div { 
-    background: #05060a !important; 
-    background-color: #05060a !important; 
-    background-image: none !important; 
-  }
-
-  /* ===== Cards & sections ===== */
-  .edx-role-module-drawer section, 
-  .edx-role-module-drawer section > div,
-  .edx-role-module-drawer .mt-5, 
-  .edx-role-module-drawer .mt-5 > div,
-  .edx-role-module-drawer [class*="group/mod"] {
-    background: #0a0e1a !important; 
-    background-color: #0a0e1a !important; 
-    background-image: none !important;
-  }
-
-  /* ===== All buttons transparent ===== */
-  .edx-role-module-drawer button { 
-    background: transparent !important; 
-    background-color: transparent !important;
-    background-image: none !important; 
-  }
-
-  /* ===== Remove cyan box behind category text (kill inner span bg) ===== */
-  .edx-role-module-drawer section > button > span,
-  .edx-role-module-drawer section > button > span > span,
-  .edx-role-module-drawer section > button > span > span > span,
-  .edx-role-module-drawer section > button > span > span > span > span {
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
-  }
-
-  /* ===== Titles - CYAN, no box ===== */
-  .edx-role-module-drawer button span.block,
-  .edx-role-module-drawer button span.truncate,
-  .edx-role-module-drawer button > span > span > span,
-  .edx-role-module-drawer .text-white,
-  .edx-role-module-drawer .text-slate-100 {
-    color: #67e8f9 !important; 
-    -webkit-text-fill-color: #67e8f9 !important;
-    background: transparent !important;
-    background-image: none !important;
-  }
-
-  /* ===== Sub-text gray ===== */
-  .edx-role-module-drawer button .text-slate-400,
-  .edx-role-module-drawer button .text-slate-500,
-  .edx-role-module-drawer button .text-\[11px\] {
-    color: #94a3b8 !important; 
-    -webkit-text-fill-color: #94a3b8 !important;
-    background: transparent !important;
-  }
-
-  /* ===== Header ===== */
-  .edx-role-module-drawer header h2, 
-  .edx-role-module-drawer header h1 {
-    color: #ffffff !important; 
-    -webkit-text-fill-color: #ffffff !important;
-  }
-  .edx-role-module-drawer header p:first-child {
-    color: #06b6d4 !important; 
-    -webkit-text-fill-color: #06b6d4 !important;
-  }
-  .edx-role-module-drawer header p:not(:first-child) {
-    color: #94a3b8 !important;
-    -webkit-text-fill-color: #94a3b8 !important;
-  }
-
-  /* ===== Search bar ===== */
-  .edx-role-module-drawer .edx-role-module-search {
-    background: #0a0e1a !important; 
-    background-color: #0a0e1a !important;
-    border: 1px solid #06b6d4 !important;
-    box-shadow: 0 0 20px rgba(6,182,212,0.15) !important;
-  }
-  .edx-role-module-drawer .edx-role-module-search input {
-    color: #67e8f9 !important; 
-    -webkit-text-fill-color: #67e8f9 !important; 
-    background: transparent !important;
-    background-color: transparent !important;
-  }
-  .edx-role-module-drawer .edx-role-module-search input::placeholder { 
-    color: #06b6d4 !important; 
-    -webkit-text-fill-color: #06b6d4 !important;
-    opacity: 0.7; 
-  }
-  .edx-role-module-drawer .edx-role-module-search svg { 
-    color: #06b6d4 !important; 
-    stroke: #06b6d4 !important; 
-  }
-
-  /* ===== Icon boxes: solid cyan ===== */
   .edx-role-module-drawer button > span:first-child {
     background: linear-gradient(135deg, #06b6d4, #0891b2) !important;
     border: none !important;
@@ -672,47 +574,22 @@ export default function RoleModuleMenu({
   }
   .edx-role-module-drawer button > span:first-child svg,
   .edx-role-module-drawer button > span:first-child svg * {
-    color: #ffffff !important; 
+    color: #ffffff !important;
     stroke: #ffffff !important;
   }
-
-  /* ===== Chevron cyan ===== */
-  .edx-role-module-drawer button > svg:last-child { 
-    color: #06b6d4 !important; 
-    stroke: #06b6d4 !important; 
+  .edx-role-module-drawer .edx-role-module-search {
+    background: #0a0e1a !important;
+    border: 1px solid #06b6d4 !important;
+    box-shadow: 0 0 20px rgba(6,182,212,0.15) !important;
   }
-
-  /* ===== CLASSTAGO box ===== */
-  .edx-role-module-drawer .mt-5 p,
-  .edx-role-module-drawer .mt-5 span {
+  .edx-role-module-drawer .edx-role-module-search input {
     color: #67e8f9 !important;
     -webkit-text-fill-color: #67e8f9 !important;
     background: transparent !important;
-    background-image: none !important;
   }
-
-  /* ===== Footer links text ===== */
-  .edx-role-module-drawer .mt-5 button span {
-    color: #67e8f9 !important;
-    -webkit-text-fill-color: #67e8f9 !important;
-  }
-
-  /* ===== Logout button - RED solid ===== */
-  .edx-role-module-drawer button[class*="border-rose"],
-  .edx-role-module-drawer button[class*="bg-rose"],
-  .edx-role-module-drawer .p-3 button:last-of-type {
-    background: linear-gradient(135deg, #e11d48, #be123c) !important;
-    background-color: #e11d48 !important;
-    border: none !important;
-    color: #ffffff !important;
-    -webkit-text-fill-color: #ffffff !important;
-    box-shadow: 0 4px 16px rgba(225,29,72,0.4) !important;
-  }
-  .edx-role-module-drawer .p-3 button:last-of-type span,
-  .edx-role-module-drawer .p-3 button:last-of-type svg {
-    color: #ffffff !important;
-    -webkit-text-fill-color: #ffffff !important;
-    stroke: #ffffff !important;
+  .edx-role-module-drawer .edx-role-module-search svg {
+    color: #06b6d4 !important;
+    stroke: #06b6d4 !important;
   }
 `}</style>
             <header className="edx-role-module-drawer-header relative z-10 shrink-0 border-b p-4 pt-[max(1rem,env(safe-area-inset-top))] sm:p-5 sm:pt-[max(1.25rem,env(safe-area-inset-top))]" style={{ borderColor: 'rgba(26,31,46,1)', backgroundColor: '#05060a' }}>
