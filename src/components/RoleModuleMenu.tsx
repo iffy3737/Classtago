@@ -593,6 +593,30 @@ export default function RoleModuleMenu({
     background-image: none !important;
   }
 `}</style>
+            <style>{`
+  .edx-role-module-drawer button .truncate,
+  .edx-role-module-drawer button .block,
+  .edx-role-module-drawer button span:not([class*="rounded"]),
+  .edx-role-module-drawer button > span > span > span,
+  .edx-role-module-drawer .text-white,
+  .edx-role-module-drawer .text-slate-100,
+  .edx-role-module-drawer .text-slate-200,
+  .edx-role-module-drawer .text-slate-300 {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+  }
+  .edx-role-module-drawer button .text-\[11px\],
+  .edx-role-module-drawer button .text-slate-400,
+  .edx-role-module-drawer button .text-slate-500 {
+    color: #94a3b8 !important;
+    -webkit-text-fill-color: #94a3b8 !important;
+  }
+  .edx-role-module-drawer .text-cyan-300,
+  .edx-role-module-drawer .text-cyan-400 {
+    color: #67e8f9 !important;
+    -webkit-text-fill-color: #67e8f9 !important;
+  }
+`}</style>
             <header className="edx-role-module-drawer-header relative z-10 shrink-0 border-b p-4 pt-[max(1rem,env(safe-area-inset-top))] sm:p-5 sm:pt-[max(1.25rem,env(safe-area-inset-top))]" style={{ borderColor: 'rgba(26,31,46,1)', backgroundColor: '#05060a' }}>
               <div className="flex items-start justify-between gap-3">
                 <div>
