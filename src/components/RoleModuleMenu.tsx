@@ -332,8 +332,8 @@ export default function RoleModuleMenu({
           standalone ? 'rounded-2xl' : 'rounded-xl'
         } ${
           active
-            ? 'border-cyan-300/35 bg-cyan-300/[0.085]'
-            : 'border-white/10 bg-slate-950/35 hover:border-white/15'
+            ? 'border-cyan-300/35 bg-cyan-500/10'
+            : 'border-slate-800/80 bg-slate-950/60 hover:border-slate-700'
         }`}
       >
         <div className="flex items-stretch">
@@ -366,7 +366,7 @@ export default function RoleModuleMenu({
             <button
               type="button"
               onClick={() => toggleModule(module.id)}
-              className="flex w-12 shrink-0 items-center justify-center border-s border-white/10 text-cyan-300 transition hover:bg-cyan-300/10"
+              className="flex w-12 shrink-0 items-center justify-center border-s border-slate-800/80 text-cyan-300 transition hover:bg-cyan-300/10"
               aria-label={`${module.label}: ${copy.feature}`}
             >
               {moduleOpen
@@ -377,13 +377,13 @@ export default function RoleModuleMenu({
         </div>
 
         {moduleOpen && module.features.length > 0 && (
-          <div className="space-y-1 border-t border-white/10 bg-slate-950/45 p-2">
+          <div className="space-y-1 border-t border-slate-800/80 bg-slate-950/70 p-2">
             {module.features.map(feature => (
               <button
                 type="button"
                 key={feature.id}
                 onClick={() => openFeature(module, feature)}
-                className="group flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition hover:bg-white/[0.055]"
+                className="group flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition hover:bg-slate-800/50"
               >
                 {feature.shortcut
                   ? <Link2 className="h-3.5 w-3.5 shrink-0 text-violet-300" />
@@ -412,7 +412,7 @@ export default function RoleModuleMenu({
     return (
       <section
         key={category.id}
-        className={`overflow-hidden rounded-2xl border transition ${active ? 'border-cyan-300/35 bg-cyan-300/[0.085]' : 'border-white/10 bg-white/[0.025]'}`}
+        className={`overflow-hidden rounded-2xl border transition ${active ? 'border-cyan-300/35 bg-cyan-500/10' : 'border-slate-800/80 bg-slate-900/60'}`}
       >
         <div className="flex items-stretch">
           <button
@@ -439,7 +439,7 @@ export default function RoleModuleMenu({
             <button
               type="button"
               onClick={() => toggleModule(module.id)}
-              className="flex w-12 shrink-0 items-center justify-center border-s border-white/10 text-cyan-300 transition hover:bg-cyan-300/10"
+              className="flex w-12 shrink-0 items-center justify-center border-s border-slate-800/80 text-cyan-300 transition hover:bg-cyan-300/10"
               aria-label={`${module.label}: ${copy.feature}`}
             >
               {moduleOpen ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
@@ -447,13 +447,13 @@ export default function RoleModuleMenu({
           )}
         </div>
         {moduleOpen && module.features.length > 0 && (
-          <div className="space-y-1 border-t border-white/10 bg-slate-950/45 p-2">
+          <div className="space-y-1 border-t border-slate-800/80 bg-slate-950/70 p-2">
             {module.features.map(feature => (
               <button
                 type="button"
                 key={feature.id}
                 onClick={() => openFeature(module, feature)}
-                className="group flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition hover:bg-white/[0.055]"
+                className="group flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition hover:bg-slate-800/50"
               >
                 <ChevronRight className={`h-3.5 w-3.5 shrink-0 text-slate-600 group-hover:text-cyan-300 ${rtl ? 'rotate-180' : ''}`} />
                 <span className="min-w-0 flex-1 text-[11px] font-semibold leading-4 text-slate-300 group-hover:text-white">{feature.label}</span>
@@ -506,14 +506,14 @@ export default function RoleModuleMenu({
   return (
     <>
       <section
-        className="erp-module-dock no-print overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.055] p-3 shadow-[0_22px_70px_rgba(0,0,0,.2)] backdrop-blur-xl sm:p-4"
+        className="erp-module-dock no-print overflow-hidden rounded-[1.75rem] border border-slate-800/80 bg-slate-800/50 p-3 shadow-[0_22px_70px_rgba(0,0,0,.2)] backdrop-blur-xl sm:p-4"
         dir={rtl ? 'rtl' : 'ltr'}
       >
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="group flex min-h-12 items-center gap-3 rounded-2xl border border-cyan-300/20 bg-slate-950/75 px-4 py-3 text-left shadow-lg transition hover:border-cyan-300/45 hover:bg-slate-950"
+            className="group flex min-h-12 items-center gap-3 rounded-2xl border border-cyan-300/20 bg-slate-950/80 px-4 py-3 text-left shadow-lg transition hover:border-cyan-300/45 hover:bg-slate-950"
             aria-label={copy.openMenu}
           >
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-300 text-slate-950 shadow-[0_0_24px_rgba(34,211,238,.2)]">
@@ -531,7 +531,7 @@ export default function RoleModuleMenu({
           </button>
 
           <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold text-slate-400">
-            <span className="rounded-full border border-white/10 bg-white/[0.045] px-3 py-1.5">
+            <span className="rounded-full border border-slate-800/80 bg-slate-900/80 px-3 py-1.5">
               {teacherRoadmapRole ? `${permittedCatalogue.length} main menus · ${allPermittedModules.length}` : allPermittedModules.length} {copy.available}
             </span>
             <span className="hidden max-w-xl sm:inline">{copy.permitted}</span>
@@ -551,15 +551,15 @@ export default function RoleModuleMenu({
           <button
             type="button"
             aria-label={copy.close}
-            className="edx-role-module-overlay-backdrop absolute inset-0 cursor-default bg-slate-950/75 backdrop-blur-sm"
+            className="edx-role-module-overlay-backdrop absolute inset-0 cursor-default bg-slate-950/80 backdrop-blur-sm"
             onClick={() => setOpen(false)}
           />
           <aside
-            className={`edx-role-module-drawer absolute inset-y-0 flex h-[100dvh] w-full max-w-[430px] flex-col overflow-hidden border-white/10 bg-[#07101f] shadow-[0_35px_100px_rgba(0,0,0,.55)] ${
+            className={`edx-role-module-drawer absolute inset-y-0 flex h-[100dvh] w-full max-w-[430px] flex-col overflow-hidden border-slate-800/80 bg-[#07101f] shadow-[0_35px_100px_rgba(0,0,0,.55)] ${
               rtl ? 'right-0 border-l' : 'left-0 border-r'
             }`}
           >
-            <header className="edx-role-module-drawer-header relative z-10 shrink-0 border-b border-white/10 bg-[#0a1425] p-4 pt-[max(1rem,env(safe-area-inset-top))] shadow-[0_10px_30px_rgba(0,0,0,.22)] sm:p-5 sm:pt-[max(1.25rem,env(safe-area-inset-top))]">
+            <header className="edx-role-module-drawer-header relative z-10 shrink-0 border-b border-slate-800/80 bg-[#0a1425] p-4 pt-[max(1rem,env(safe-area-inset-top))] shadow-[0_10px_30px_rgba(0,0,0,.22)] sm:p-5 sm:pt-[max(1.25rem,env(safe-area-inset-top))]">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-[9px] font-black uppercase tracking-[0.22em] text-cyan-300">
@@ -580,7 +580,7 @@ export default function RoleModuleMenu({
                 </button>
               </div>
 
-              <label className="edx-role-module-search mt-4 flex min-h-12 items-center gap-3 rounded-2xl border border-white/10 bg-slate-950/75 px-4 focus-within:border-cyan-300/45">
+              <label className="edx-role-module-search mt-4 flex min-h-12 items-center gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/80 px-4 focus-within:border-cyan-300/45">
                 <Search className="h-4 w-4 shrink-0 text-cyan-300" />
                 <input
                   value={query}
@@ -601,7 +601,7 @@ export default function RoleModuleMenu({
 
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3 sm:p-4">
               {filteredCatalogue.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.03] p-6 text-center">
+                <div className="rounded-2xl border border-dashed border-slate-700 bg-slate-900/60 p-6 text-center">
                   <Search className="mx-auto h-6 w-6 text-slate-500" />
                   <p className="mt-3 text-sm font-bold text-slate-300">{copy.noMatches}</p>
                 </div>
@@ -618,7 +618,7 @@ export default function RoleModuleMenu({
                     return (
                       <section
                         key={category.id}
-                        className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.025]"
+                        className="overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/60"
                       >
                         <button
                           type="button"
@@ -644,7 +644,7 @@ export default function RoleModuleMenu({
                         </button>
 
                         {categoryOpen && (
-                          <div className="space-y-2 border-t border-white/10 p-2">
+                          <div className="space-y-2 border-t border-slate-800/80 p-2">
                             {category.modules.map(module => renderModuleCard(module))}
                           </div>
                         )}
@@ -707,7 +707,7 @@ export default function RoleModuleMenu({
               </section>
             </div>
 
-            <footer className="edx-role-module-drawer-footer shrink-0 border-t border-white/10 bg-[#0a1425] p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <footer className="edx-role-module-drawer-footer shrink-0 border-t border-slate-800/80 bg-[#0a1425] p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
               <div className="flex gap-3 rounded-2xl border border-emerald-300/15 bg-emerald-300/[0.055] p-3">
                 <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
                 <div>
