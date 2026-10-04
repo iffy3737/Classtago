@@ -340,7 +340,7 @@ export default function RoleModuleMenu({
           <button
             type="button"
             onClick={() => module.navigationOnly ? toggleModule(module.id) : openModule(module)}
-            className="flex min-w-0 flex-1 items-center gap-3 px-3.5 py-3.5 text-left"
+            className="flex min-w-0 flex-1 items-center gap-3 px-4 py-4 text-left"
           >
             <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${active ? 'bg-cyan-300 text-slate-950' : 'bg-cyan-300/10 text-cyan-300'}`}><LayoutGrid className="h-4 w-4" /></span>
             <span className="min-w-0 flex-1">
@@ -418,7 +418,7 @@ export default function RoleModuleMenu({
           <button
             type="button"
             onClick={() => openModule(module)}
-            className="flex min-w-0 flex-1 items-center justify-between gap-3 px-4 py-3.5 text-left transition hover:bg-white/[0.045]"
+            className="flex min-w-0 flex-1 items-center gap-3 px-4 py-4 text-left transition hover:bg-slate-800/40"
           >
             <span className="flex min-w-0 items-center gap-3">
               <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${active ? 'bg-cyan-300 text-slate-950' : 'bg-cyan-300/10 text-cyan-300'}`}>
@@ -433,9 +433,7 @@ export default function RoleModuleMenu({
                 </span>
               </span>
             </span>
-            {route
-              ? <ArrowRight className={`h-4 w-4 shrink-0 text-slate-500 ${rtl ? 'rotate-180' : ''}`} />
-              : <span className="flex shrink-0 items-center gap-1 rounded-full border border-amber-300/20 bg-amber-300/10 px-2 py-1 text-[8px] font-black uppercase tracking-wider text-amber-200"><LockKeyhole className="h-3 w-3" />Locked</span>}
+  
           </button>
           {module.features.length > 0 && (
             <button
@@ -686,7 +684,7 @@ export default function RoleModuleMenu({
                       className="flex min-h-14 w-full items-center gap-3 border-b border-slate-100 px-4 text-left transition hover:bg-slate-50"
                     >
                       <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-slate-50 text-slate-500"><Icon className="h-4 w-4" /></span>
-                      <span className="min-w-0 flex-1 text-[12px] font-black uppercase tracking-[0.06em] text-slate-700">{item.label}</span>
+                      <span className="min-w-0 flex-1 text-[11px] font-bold tracking-[0.05em] text-slate-700">{item.label}</span>
                       <ChevronRight className={`h-4 w-4 shrink-0 text-slate-300 ${rtl ? 'rotate-180' : ''}`} />
                     </button>
                   );
