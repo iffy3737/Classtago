@@ -327,7 +327,7 @@ export default function RoleModuleMenu({
     const hasFeatures = module.features.length > 0;
     return (
       <div key={module.id} style={{
-        background: active ? 'linear-gradient(135deg, rgba(6,182,212,0.1), #0a0e1a)' : '#0a0e1a',
+        background: active ? 'linear-gradient(135deg, rgba(6,182,212,0.1), #2b2f45)' : '#2b2f45',
         border: active ? '1px solid #06b6d4' : '1px solid #1a1f2e',
         boxShadow: active ? '0 0 24px rgba(6,182,212,0.2)' : 'none',
         borderRadius: 12,
@@ -376,7 +376,7 @@ export default function RoleModuleMenu({
     const hasFeatures = module.features.length > 0;
     return (
       <div key={category.id} style={{
-        background: active ? 'linear-gradient(135deg, rgba(6,182,212,0.1), #0a0e1a)' : '#0a0e1a',
+        background: active ? 'linear-gradient(135deg, rgba(6,182,212,0.1), #2b2f45)' : '#2b2f45',
         border: active ? '1px solid #06b6d4' : '1px solid #1a1f2e',
         boxShadow: active ? '0 0 24px rgba(6,182,212,0.2)' : 'none',
         borderRadius: 12, marginBottom: 10, overflow: 'hidden'
@@ -527,8 +527,8 @@ export default function RoleModuleMenu({
                 </button>
               </div>
 
-              <label className="edx-role-module-search mt-4 flex min-h-12 items-center gap-3 rounded-xl px-4" style={{ border: '1px solid #06b6d4', backgroundColor: '#0a0e1a', boxShadow: '0 0 20px rgba(6,182,212,0.15)' }}>
-                <Search className="h-4 w-4 shrink-0" style={{ color: '#06b6d4' }} />
+              <label className="edx-role-module-search mt-4 flex min-h-12 items-center gap-3 rounded-xl px-4" style={{ border: '1px solid #06b6d4', backgroundColor: '#0a0e1a', boxShadow: '0 0 20px rgba(6,182,212,0.15)', color: '#06b6d4' }}>
+                <Search className="h-4 w-4 shrink-0" style={{ color: '#06b6d4', stroke: '#06b6d4' }} />
                 <input
                   value={query}
                   onChange={(event: ChangeEvent<HTMLInputElement>) => setQuery(event.target.value)}
@@ -539,7 +539,7 @@ export default function RoleModuleMenu({
                   spellCheck={false}
                   inputMode="search"
                   enterKeyHint="search"
-                  className="w-full bg-transparent py-3 text-sm font-semibold outline-none" style={{ color: '#06b6d4' }} placeholder="Search modules..."
+                  className="w-full bg-transparent py-3 text-sm font-semibold outline-none" style={{ color: '#06b6d4', caretColor: '#06b6d4' }} placeholder="Search modules..."
                   onPointerDown={(e) => e.stopPropagation()}
                   onTouchStart={(e) => e.stopPropagation()}
                 />
@@ -564,7 +564,7 @@ export default function RoleModuleMenu({
                       : expandedCategories.has(category.id);
                     return (
                       <div key={category.id} style={{
-                        background: '#0a0e1a', border: '1px solid #1a1f2e', borderRadius: 12, marginBottom: 10, overflow: 'hidden'
+                        background: '#2b2f45', border: '1px solid #1a1f2e', borderRadius: 12, marginBottom: 10, overflow: 'hidden'
                       }}>
                         <button type="button" onClick={() => toggleCategory(category.id)}
                           style={{ display: 'flex', minHeight: 72, width: '100%', alignItems: 'center', gap: 12, padding: '14px 14px', textAlign: 'left', background: 'transparent', border: 'none', cursor: 'pointer' }}>
