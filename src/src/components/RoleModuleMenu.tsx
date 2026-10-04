@@ -496,7 +496,7 @@ export default function RoleModuleMenu({
           <button
             type="button"
             aria-label={copy.close}
-            className="edx-role-module-overlay-backdrop absolute inset-0 cursor-default bg-slate-950 backdrop-blur-sm"
+            className="edx-role-module-overlay-backdrop absolute inset-0 cursor-default" style={{ background: 'rgba(5,6,10,0.7)' }}
             onClick={() => setOpen(false)}
           />
           <aside
@@ -513,6 +513,12 @@ export default function RoleModuleMenu({
     background-color: #05060a !important;
     background-image: none !important;
     border: none !important;
+  }
+  /* 1b. Modules title — force WHITE */
+  .edx-role-module-drawer header h2,
+  .edx-role-module-drawer-header h2 {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
   }
   .edx-role-module-drawer-header * {
     background-image: none !important;
@@ -547,7 +553,7 @@ export default function RoleModuleMenu({
                   <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-400" style={{ textShadow: '0 0 12px rgba(6,182,212,0.5)' }}>
                     {copy.roleWorkspace}
                   </p>
-                  <h2 className="mt-1 text-2xl font-black tracking-tight" style={{ color: '#ffffff', textShadow: '0 0 20px rgba(6,182,212,0.3)' }}>{copy.menu}</h2>
+                  <h2 className="mt-1 text-2xl font-black tracking-tight" style={{ color: '#ffffff', WebkitTextFillColor: '#ffffff', textShadow: '0 0 20px rgba(6,182,212,0.3)' }}>{copy.menu}</h2>
                   <p className="mt-1 text-xs font-medium" style={{ color: '#475569' }}>
                     {teacherRoadmapRole ? `${permittedCatalogue.length} main menus · ${allPermittedModules.length}` : allPermittedModules.length} {copy.available}
                   </p>
