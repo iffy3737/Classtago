@@ -673,7 +673,7 @@ export default function RoleModuleMenu({
                             </span>
                             <span>
                               <span className="block text-[12px] font-black uppercase tracking-[0.08em]" style={{ color: '#e2e8f0' }}>
-                                {category.label}
+                                ZZZ · {category.label}
                               </span>
                               <span className="mt-0.5 block text-[11px] font-medium" style={{ color: '#64748b' }}>
                                 {category.modules.length} {copy.available}
