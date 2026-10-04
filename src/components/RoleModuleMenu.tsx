@@ -624,33 +624,33 @@ export default function RoleModuleMenu({
                     return (
                       <section
                         key={category.id}
-                        className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900"
+                        className="overflow-hidden rounded-xl border transition-all mb-2.5" style={{ borderColor: 'rgba(26,31,46,1)', backgroundColor: '#0a0e1a' }}
                       >
                         <button
                           type="button"
                           onClick={() => toggleCategory(category.id)}
-                          className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left transition hover:bg-slate-800"
+                          className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left transition hover:bg-cyan-950/30"
                         >
                           <span className="flex min-w-0 items-center gap-3">
-                            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-cyan-950 text-cyan-300">
+                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style={{ background: 'linear-gradient(135deg, rgba(6,182,212,0.2), rgba(8,145,178,0.15))', border: '1px solid rgba(6,182,212,0.3)' }}>
                               <LayoutGrid className="h-4 w-4" />
                             </span>
                             <span>
-                              <span className="block text-xs font-black uppercase tracking-[0.08em] text-slate-100">
+                              <span className="block text-[12px] font-black uppercase tracking-[0.08em]" style={{ color: '#e2e8f0' }}>
                                 {category.label}
                               </span>
-                              <span className="mt-0.5 block text-[10px] font-bold text-slate-500">
+                              <span className="mt-0.5 block text-[11px] font-medium" style={{ color: '#64748b' }}>
                                 {category.modules.length} {copy.available}
                               </span>
                             </span>
                           </span>
                           {categoryOpen
-                            ? <ChevronDown className="h-4 w-4 shrink-0 text-cyan-300" />
-                            : <ChevronRight className={`h-4 w-4 shrink-0 text-slate-500 ${rtl ? 'rotate-180' : ''}`} />}
+                            ? <ChevronDown className="h-5 w-5 shrink-0" style={{ color: '#06b6d4' }} />
+                            : <ChevronRight className={`h-5 w-5 shrink-0 ${rtl ? 'rotate-180' : ''}`} style={{ color: '#06b6d4' }} />}
                         </button>
 
                         {categoryOpen && (
-                          <div className="space-y-2 border-t border-slate-800 p-2">
+                          <div className="space-y-2 border-t p-2" style={{ borderColor: 'rgba(6,182,212,0.15)', backgroundColor: 'rgba(2,6,23,0.5)' }}>
                             {category.modules.map(module => renderModuleCard(module))}
                           </div>
                         )}
@@ -660,15 +660,15 @@ export default function RoleModuleMenu({
                 </div>
               )}
 
-              <section className="mt-5 overflow-hidden rounded-[1.6rem] border border-slate-200 bg-white shadow-[0_18px_46px_rgba(15,23,42,.08)]">
-                <div className="border-b border-slate-100 bg-gradient-to-br from-indigo-50 via-white to-cyan-50 px-4 py-4">
+              <section className="mt-5 overflow-hidden rounded-2xl border" style={{ borderColor: 'rgba(26,31,46,1)', backgroundColor: '#0a0e1a' }}>
+                <div className="border-b px-4 py-4" style={{ borderColor: 'rgba(6,182,212,0.15)', background: 'linear-gradient(135deg, rgba(6,182,212,0.08), rgba(139,92,246,0.05))' }}>
                   <div className="flex items-center gap-3">
-                    <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-indigo-600 via-violet-600 to-cyan-500 text-white shadow-[0_10px_28px_rgba(79,70,229,.25)]">
+                    <div className="grid h-11 w-11 place-items-center rounded-2xl" style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4)', boxShadow: '0 10px 28px rgba(6,182,212,0.3)' }}>
                       <Building2 className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-[9px] font-black uppercase tracking-[0.28em] text-indigo-600">{copy.edunixo}</p>
-                      <p className="mt-1 text-xs font-bold text-slate-500">{copy.brandTagline}</p>
+                      <p className="text-[9px] font-black uppercase tracking-[0.28em]" style={{ color: '#67e8f9' }}>{copy.edunixo}</p>
+                      <p className="mt-1 text-xs font-bold" style={{ color: '#94a3b8' }}>{copy.brandTagline}</p>
                     </div>
                   </div>
                 </div>
@@ -687,11 +687,11 @@ export default function RoleModuleMenu({
                       type="button"
                       key={item.key}
                       onClick={() => setBrandInfo(item.key as NonNullable<typeof brandInfo>)}
-                      className="flex min-h-14 w-full items-center gap-3 border-b border-slate-100 px-4 text-left transition hover:bg-slate-50"
+                      className="flex min-h-14 w-full items-center gap-3 border-b px-4 text-left transition hover:bg-cyan-950/30" style={{ borderColor: 'rgba(26,31,46,1)' }}
                     >
-                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-slate-50 text-slate-500"><Icon className="h-4 w-4" /></span>
-                      <span className="min-w-0 flex-1 text-[11px] font-bold tracking-[0.05em] text-slate-700">{item.label}</span>
-                      <ChevronRight className={`h-4 w-4 shrink-0 text-slate-300 ${rtl ? 'rotate-180' : ''}`} />
+                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl" style={{ backgroundColor: 'rgba(6,182,212,0.1)', color: '#06b6d4' }}><Icon className="h-4 w-4" /></span>
+                      <span className="min-w-0 flex-1 text-[12px] font-bold tracking-[0.04em]" style={{ color: '#e2e8f0' }}>{item.label}</span>
+                      <ChevronRight className={`h-4 w-4 shrink-0 ${rtl ? 'rotate-180' : ''}`} style={{ color: '#06b6d4' }} />
                     </button>
                   );
                 })}
@@ -701,12 +701,12 @@ export default function RoleModuleMenu({
                     type="button"
                     onClick={handleLogout}
                     disabled={loggingOut}
-                    className="flex min-h-13 w-full items-center justify-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-black uppercase tracking-[0.08em] text-rose-600 transition hover:bg-rose-100 disabled:opacity-50"
+                    className="flex min-h-13 w-full items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-xs font-black uppercase tracking-[0.08em] transition disabled:opacity-50" style={{ borderColor: 'rgba(244,63,94,0.4)', backgroundColor: 'rgba(244,63,94,0.1)', color: '#fb7185' }}
                   >
                     <LogOut className="h-4 w-4" />
                     {loggingOut ? 'Signing out…' : copy.logout}
                   </button>
-                  <p className="pt-4 text-center text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                  <p className="pt-4 text-center text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: '#64748b' }}>
                     {copy.appVersion} {appVersion}
                   </p>
                 </div>
