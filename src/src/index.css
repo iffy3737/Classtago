@@ -11896,67 +11896,6 @@ html[data-edunixo-theme="aurora"] .erp-module-dock .text-slate-400 {
   color: #64748b !important;
 }
 
-html[data-edunixo-theme="light"] .edx-role-module-overlay-backdrop,
-html[data-edunixo-theme="aurora"] .edx-role-module-overlay-backdrop {
-  background: rgba(43, 35, 66, .32) !important;
-}
-
-html[data-edunixo-theme="light"] .edx-role-module-drawer,
-html[data-edunixo-theme="aurora"] .edx-role-module-drawer {
-  border-color: rgba(109, 40, 217, .14) !important;
-  background:
-    radial-gradient(circle at 8% 2%, rgba(103,232,249,.20), transparent 24rem),
-    radial-gradient(circle at 95% 6%, rgba(255,183,213,.22), transparent 24rem),
-    #f9fbff !important;
-  color: #172033 !important;
-  box-shadow: 0 35px 100px rgba(46, 32, 77, .28) !important;
-}
-
-html[data-edunixo-theme="aurora"] .edx-role-module-drawer {
-  background:
-    radial-gradient(circle at 8% 2%, rgba(103,232,249,.38), transparent 24rem),
-    radial-gradient(circle at 95% 6%, rgba(255,111,181,.28), transparent 24rem),
-    linear-gradient(145deg, #f9fdff, #fff7fc, #f7f1ff) !important;
-}
-
-html[data-edunixo-theme="light"] :is(.edx-role-module-drawer-header, .edx-role-module-drawer-footer),
-html[data-edunixo-theme="aurora"] :is(.edx-role-module-drawer-header, .edx-role-module-drawer-footer) {
-  border-color: rgba(109, 40, 217, .12) !important;
-  background: rgba(255,255,255,.82) !important;
-}
-
-html[data-edunixo-theme="light"] .edx-role-module-search,
-html[data-edunixo-theme="aurora"] .edx-role-module-search {
-  border-color: rgba(109, 40, 217, .16) !important;
-  background: rgba(255,255,255,.88) !important;
-}
-
-html[data-edunixo-theme="light"] .edx-role-module-drawer :is(.text-white, .text-slate-100, .text-slate-200, .text-slate-300),
-html[data-edunixo-theme="aurora"] .edx-role-module-drawer :is(.text-white, .text-slate-100, .text-slate-200, .text-slate-300) {
-  color: #25304a !important;
-}
-
-html[data-edunixo-theme="light"] .edx-role-module-drawer :is(.text-slate-400, .text-slate-500, .text-slate-600),
-html[data-edunixo-theme="aurora"] .edx-role-module-drawer :is(.text-slate-400, .text-slate-500, .text-slate-600) {
-  color: #64748b !important;
-}
-
-html[data-edunixo-theme="light"] .edx-role-module-drawer input,
-html[data-edunixo-theme="aurora"] .edx-role-module-drawer input {
-  color: #172033 !important;
-  -webkit-text-fill-color: #172033 !important;
-}
-
-html[data-edunixo-theme="light"] .edx-role-module-drawer [class*="bg-slate-950"],
-html[data-edunixo-theme="aurora"] .edx-role-module-drawer [class*="bg-slate-950"],
-html[data-edunixo-theme="light"] .edx-role-module-drawer [class*="bg-white/["],
-html[data-edunixo-theme="aurora"] .edx-role-module-drawer [class*="bg-white/["] {
-  background: rgba(255,255,255,.66) !important;
-}
-
-html[data-edunixo-theme="light"] .edx-role-module-drawer [class*="border-white"],
-html[data-edunixo-theme="aurora"] .edx-role-module-drawer [class*="border-white"] {
-  border-color: rgba(109, 40, 217, .12) !important;
 }
 
 /* Public platform and school website theme adaptation. */
