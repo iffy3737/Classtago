@@ -567,37 +567,29 @@ export default function RoleModuleMenu({
           >
             
             <style>{`
-  html body div.edx-role-module-drawer section,
-  html body div.edx-role-module-drawer section[class*="mt-5"],
-  html body div.edx-role-module-drawer [class*="group/mod"],
-  html body div.edx-role-module-drawer [class*="group/"] {
+  .edx-role-module-drawer section,
+  .edx-role-module-drawer section > button,
+  .edx-role-module-drawer section > button > span,
+  .edx-role-module-drawer section > button > span > span,
+  .edx-role-module-drawer section > button > span > span > span {
     background: #0a0e1a !important;
     background-color: #0a0e1a !important;
     background-image: none !important;
   }
-  html body div.edx-role-module-drawer section > button,
-  html body div.edx-role-module-drawer [class*="group/"] > button,
-  html body div.edx-role-module-drawer .mt-5 button,
-  html body div.edx-role-module-drawer section.mt-5 button {
+  .edx-role-module-drawer section > button > span:first-child,
+  .edx-role-module-drawer section > button > svg {
+    background-image: none !important;
+  }
+  .edx-role-module-drawer .mt-5,
+  .edx-role-module-drawer .mt-5 * {
     background: transparent !important;
     background-color: transparent !important;
     background-image: none !important;
-    color: #e2e8f0 !important;
   }
-  html body div.edx-role-module-drawer section > div,
-  html body div.edx-role-module-drawer section.mt-5 > div {
-    background: transparent !important;
-    background-image: none !important;
-  }
-  html body div.edx-role-module-drawer header,
-  html body div.edx-role-module-drawer header > div,
-  html body div.edx-role-module-drawer footer {
-    background: #05060a !important;
-    background-color: #05060a !important;
-    background-image: none !important;
-  }
-  html body div.edx-role-module-drawer button span,
-  html body div.edx-role-module-drawer button svg {
+  .edx-role-module-drawer .mt-5 > div:first-child,
+  .edx-role-module-drawer .mt-5 > div:first-child * {
+    background: #0a0e1a !important;
+    background-color: #0a0e1a !important;
     background-image: none !important;
   }
 `}</style>
