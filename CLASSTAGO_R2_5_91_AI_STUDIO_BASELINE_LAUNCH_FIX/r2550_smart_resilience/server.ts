@@ -1064,9 +1064,8 @@ async function startServer() {
   });
 
 
-  // Public pricing catalogue for the corporate website. Only active, published,
-  // non-custom plans are exposed; school-specific subscriptions and negotiated
-  // prices remain private behind Platform Admin authorization.
+  // Public pricing catalogue for the corporate website.
+  // Monthly/annual variants are grouped into one public plan card.
   app.get('/api/public/plans', async (_req, res) => {
     if (!supabaseAdmin || !isServiceRoleAvailable) {
       return res.status(503).json({ error: 'The EDUNIXO plan catalogue is temporarily unavailable.' });
@@ -1084,27 +1083,107 @@ async function startServer() {
       ]);
 
       if (plansResult.error) throw plansResult.error;
+
       const moduleCounts = new Map<string, number>();
+
       if (!planModulesResult.error) {
         for (const row of planModulesResult.data || []) {
           const planId = String((row as any).plan_id || '');
-          if (planId) moduleCounts.set(planId, (moduleCounts.get(planId) || 0) + 1);
+          if (planId) {
+            moduleCounts.set(planId, (moduleCounts.get(planId) || 0) + 1);
+          }
         }
       }
 
-      const plans = (plansResult.data || [])
-        .filter((row: any) => row.is_custom !== true)
-        .map((row: any) => ({
+      const grouped = new Map<string, any>();
+
+      for (const row of plansResult.data || []) {
+        const planKey = String(row.plan_key || '').trim();
+        if (!planKey) continue;
+
+        const billingCycle = String(row.billing_cycle || '').toLowerCase();
+        const isCustom = row.is_custom === true;
+
+        // Monthly/annual variants such as starter_monthly/starter_annual
+        // are grouped under the common public key "starter".
+        const groupKey = planKey
+          .replace(/_(monthly|annual|quarterly|custom)$/i, '')
+          .trim() || planKey;
+
+        const option = {
           id: row.id,
-          planKey: row.plan_key,
-          planName: row.plan_name,
-          description: row.description || null,
-          billingCycle: row.billing_cycle || null,
+          billingCycle: billingCycle || 'custom',
           currency: row.currency || 'INR',
-          basePrice: row.base_price === null || row.base_price === undefined ? null : Number(row.base_price),
-          trialDays: row.trial_days === null || row.trial_days === undefined ? null : Number(row.trial_days),
-          moduleCount: moduleCounts.get(String(row.id)) || 0
-        }));
+          basePrice:
+            row.base_price === null || row.base_price === undefined
+              ? null
+              : Number(row.base_price),
+          trialDays:
+            row.trial_days === null || row.trial_days === undefined
+              ? null
+              : Number(row.trial_days)
+        };
+
+        if (!grouped.has(groupKey)) {
+          grouped.set(groupKey, {
+            id: row.id,
+            planKey: groupKey,
+            planName: row.plan_name,
+            description: row.description || null,
+            billingCycle: billingCycle || null,
+            currency: row.currency || 'INR',
+            basePrice:
+              row.base_price === null || row.base_price === undefined
+                ? null
+                : Number(row.base_price),
+            trialDays:
+              row.trial_days === null || row.trial_days === undefined
+                ? null
+                : Number(row.trial_days),
+            moduleCount: moduleCounts.get(String(row.id)) || 0,
+            isCustom,
+            billingOptions: [option]
+          });
+        } else {
+          const existing = grouped.get(groupKey);
+
+          existing.billingOptions.push(option);
+
+          // Prefer the annual option as the default public price when present.
+          if (billingCycle === 'annual') {
+            existing.id = row.id;
+            existing.billingCycle = billingCycle;
+            existing.currency = row.currency || 'INR';
+            existing.basePrice =
+              row.base_price === null || row.base_price === undefined
+                ? null
+                : Number(row.base_price);
+            existing.trialDays =
+              row.trial_days === null || row.trial_days === undefined
+                ? null
+                : Number(row.trial_days);
+            existing.moduleCount = moduleCounts.get(String(row.id)) || existing.moduleCount;
+          }
+
+          if (isCustom) {
+            existing.isCustom = true;
+          }
+        }
+      }
+
+      const plans = Array.from(grouped.values()).map((plan: any) => ({
+        ...plan,
+        billingOptions: plan.billingOptions
+          .sort((a: any, b: any) => {
+            const order: Record<string, number> = {
+              annual: 1,
+              monthly: 2,
+              quarterly: 3,
+              custom: 4
+            };
+            return (order[a.billingCycle] || 99) - (order[b.billingCycle] || 99);
+          })
+      }));
 
       return res.json({ plans });
     } catch (error: any) {
@@ -10554,6 +10633,7 @@ async function startServer() {
     if(!req.activeUser||!supabaseAdmin)return res.status(503).json({engineBuild:'R33.10',error:'AI Question Paper service is unavailable.'});
     if(!['teacher','class_teacher','headmaster'].includes(req.activeUser.role))return res.status(403).json({engineBuild:'R33.10',error:'Assigned Subject Teacher access is required.'});
     if(!geminiApiKey||!ai)return res.status(503).json({engineBuild:'R33.10',error:'School Gemini Free Tier service is not ready in this Preview.'});
+    let quotaAttemptId: string | null = null;
     try{
       const assignmentId=String(req.body?.assignmentId||'').trim(),structured=req.body?.structuredInputs&&typeof req.body.structuredInputs==='object'?req.body.structuredInputs:{},exam=String(structured.exam||'').trim();if(!assignmentId||!R33_9_EXAMS.has(exam))return res.status(400).json({engineBuild:'R33.10',error:'Assigned scope and valid examination are required.'});
       const requestedMarks=Number(structured.totalMarks),requestedDuration=Number(structured.durationMinutes);if(!Number.isFinite(requestedMarks)||requestedMarks<=0||!Number.isFinite(requestedDuration)||requestedDuration<15)return res.status(400).json({engineBuild:'R33.10',error:'Valid Total Marks and Duration are required.'});const totalMarks=Math.min(500,requestedMarks),durationMinutes=Math.min(600,requestedDuration);
@@ -10568,7 +10648,88 @@ async function startServer() {
       const retrievalFocus=chapterScope.length
         ? `RETRIEVAL TARGET: Search only the selected chapters/lessons and their directly associated examples, Mashq, Exercise, Practice or Review sections as allowed by QUESTION SOURCE: ${chapterScope.join(', ')}. Do not retrieve unrelated chapters.`
         : 'RETRIEVAL TARGET: Retrieve only the textbook chunks necessary to satisfy the paper pattern and source policy. Avoid summarizing or re-reading unrelated parts of the whole book.';
-      const fastPrompt=`${prompt}\n\n${retrievalFocus}`;
+
+// R33.41: Fail-closed plan quota enforcement for AI Question Paper.
+const quotaSourceMetas = await Promise.all(
+  materials.map((material: any) => readHomeworkFileMeta(material))
+);
+const quotaMissingIndex = quotaSourceMetas.findIndex((meta: any) => !meta);
+if (quotaMissingIndex >= 0) {
+  const missingMaterial: any = materials[quotaMissingIndex];
+  const missingId = String(missingMaterial.id);
+  if (!homeworkFileWarmJobs.has(missingId)) {
+    void scheduleHomeworkFileCache(missingMaterial);
+  }
+  void scheduleFileSearchAccelerator(missingMaterial);
+  return res.status(425).json({
+    engineBuild: 'R33.10',
+    speedBuild: 'R33.41',
+    sourcePreparing: true,
+    error: 'EDUNIXO is preparing the Textbook source. Retry Question Paper generation when the source is ready.'
+  });
+}
+
+const { data: quotaContextData, error: quotaContextError } =
+  await supabaseAdmin.rpc('platform_school_subscription_context', {
+    target_school_id: req.activeUser.schoolId
+  });
+if (quotaContextError) {
+  console.error('[question-paper-quota] subscription lookup failed:', quotaContextError.message);
+  return res.status(503).json({
+    error: 'Subscription quota could not be verified. Please retry.',
+    featureKey: 'exam_ai_question_paper'
+  });
+}
+const quotaContext: any = quotaContextData || {};
+const quotaSubscription: any = quotaContext.subscription || null;
+const quotaAccessState = String(quotaContext.access_state || 'restricted');
+const quotaPlanId = String(quotaSubscription?.plan_id || '').trim();
+
+if (!['active', 'grace'].includes(quotaAccessState) || !quotaPlanId) {
+  return res.status(403).json({
+    error: 'An eligible active subscription is required to generate Question Papers.',
+    featureKey: 'exam_ai_question_paper',
+    reason: quotaContext.restriction_reason || 'subscription_restricted'
+  });
+}
+
+const quotaAttemptIdCandidate = randomUUID();
+const { data: quotaDecisionData, error: quotaDecisionError } =
+  await supabaseAdmin.rpc('reserve_school_feature_usage', {
+    p_attempt_id: quotaAttemptIdCandidate,
+    p_school_id: req.activeUser.schoolId,
+    p_plan_id: quotaPlanId,
+    p_feature_key: 'exam_ai_question_paper',
+    p_amount: 1,
+    p_period_start: null,
+    p_period_end: null
+  });
+if (quotaDecisionError) {
+  console.error('[question-paper-quota] quota RPC failed:', quotaDecisionError.message);
+  return res.status(503).json({
+    error: 'Question Paper quota could not be verified. Please retry.',
+    featureKey: 'exam_ai_question_paper'
+  });
+}
+const quotaDecision: any = quotaDecisionData || {};
+if (quotaDecision.allowed !== true) {
+  const quotaReason = String(quotaDecision.reason || 'quota_unavailable');
+  const quotaExceeded = quotaReason === 'quota_exceeded';
+  return res.status(quotaExceeded ? 429 : 403).json({
+    error: quotaExceeded
+      ? 'Your Question Paper generation quota is exhausted for this month.'
+      : 'Question Paper generation is not enabled for the current plan.',
+    featureKey: 'exam_ai_question_paper',
+    reason: quotaReason,
+    limit: quotaDecision.limit ?? null,
+    used: quotaDecision.used ?? null,
+    requested: quotaDecision.requested ?? 1,
+    remaining: quotaDecision.remaining ?? null
+  });
+}
+quotaAttemptId = quotaAttemptIdCandidate;
+
+const fastPrompt=`${prompt}\n\n${retrievalFocus}`;
       let paper:any=null,generationMethod='',primaryError:any=null;
       const dynamicPaperSchema:any=JSON.parse(JSON.stringify(R33_9_QUESTION_PAPER_SCHEMA));dynamicPaperSchema.properties.questions.items.properties.type.enum=[...new Set(effectivePattern.map(row=>row.type))];dynamicPaperSchema.properties.questions.items.properties.sectionIndex.minimum=1;dynamicPaperSchema.properties.questions.items.properties.sectionIndex.maximum=effectivePattern.length;dynamicPaperSchema.properties.questions.items.properties.sourceKind.enum=questionSource==='exercise'?['exercise']:questionSource==='whole_chapter'?['whole_chapter']:['whole_chapter','exercise'];
       const normalizePaper=(parsed:any)=>normalizeGeneratedQuestionPaper(parsed,{assignmentId:String(scope.assignmentId||assignmentId),exam,materialIds,chapters:chapterScope,questionSource,totalMarks,durationMinutes,medium:String(scope.medium||'Textbook / Subject Language'),pattern:effectivePattern,sourceByChapter,knownChapters});
@@ -10613,18 +10774,53 @@ async function startServer() {
             if(warmError&&!fileSearchWarmJobs.has(id))throw new Error(warmError);
             if(!homeworkFileWarmJobs.has(id))void scheduleHomeworkFileCache(material);
             void scheduleFileSearchAccelerator(material);
+            if (quotaAttemptId) {
+              const attemptToRelease = quotaAttemptId;
+              quotaAttemptId = null;
+              const { error: releaseError } = await supabaseAdmin.rpc(
+                'release_school_feature_usage_reservation',
+                { p_attempt_id: attemptToRelease }
+              );
+              if (releaseError) console.error('[question-paper-quota] release after source preparation:', releaseError.message);
+            }
             return res.status(425).json({engineBuild:'R33.10',speedBuild:'R33.40',sourcePreparing:true,error:'EDUNIXO is preparing a fast Textbook source once. Question Paper generation will retry automatically when chapter retrieval or the safe PDF cache is ready.'});
           }
           metas.push(meta);
         }
         const buildPaper=async(model:string)=>{const parsed=await generateStructuredFromCachedTextbooks(metas,{model,prompt:fastPrompt,systemInstruction,responseSchema:dynamicPaperSchema,maxOutputTokens:18000});return normalizePaper(parsed);};
         try{paper=await withTransientAiRetry('R33.40 Question Paper cached primary',()=>buildPaper(geminiGenerationModel),2);generationMethod=`files_cache:${geminiGenerationModel}:fallback`;}catch(error:any){primaryError=error;console.warn('R33.40 Question Paper cached primary unavailable:',String(error?.message||error||''));}
-        if(!paper&&primaryError&&providerFileMissingError(primaryError)){for(const material of materials){await removeHomeworkFileMeta(String(material.id));void scheduleHomeworkFileCache(material);}return res.status(425).json({engineBuild:'R33.10',speedBuild:'R33.40',sourcePreparing:true,error:'The temporary AI copy of this Textbook expired. EDUNIXO is refreshing it automatically.'});}
+        if(!paper&&primaryError&&providerFileMissingError(primaryError)){for(const material of materials){await removeHomeworkFileMeta(String(material.id));void scheduleHomeworkFileCache(material);}if(quotaAttemptId){const attemptToRelease=quotaAttemptId;quotaAttemptId=null;const{error:releaseError}=await supabaseAdmin.rpc('release_school_feature_usage_reservation',{p_attempt_id:attemptToRelease});if(releaseError)console.error('[question-paper-quota] release after expired provider file:',releaseError.message);}return res.status(425).json({engineBuild:'R33.10',speedBuild:'R33.40',sourcePreparing:true,error:'The temporary AI copy of this Textbook expired. EDUNIXO is refreshing it automatically.'});}
         if(!paper){paper=await withTransientAiRetry('R33.40 Question Paper cached secondary',()=>buildPaper(geminiSecondaryModel),2);generationMethod=`files_cache:${geminiSecondaryModel}:fallback`;}
       }
       let jobId=randomUUID();try{const job=await supabaseAdmin.from('edunixo_ai_generation_jobs').insert({teacher_id:req.activeUser.userId,assignment_id:String(scope.assignmentId||assignmentId),task_type:'question-paper',selected_material_ids:materialIds,chapter_scope:chapterScope,teacher_prompt:String(req.body?.prompt||''),status:'completed',scope_validated:true,warnings:[],completed_at:new Date().toISOString()}).select('id').single();if(!job.error&&job.data?.id)jobId=String(job.data.id);}catch{}
+      if (quotaAttemptId) {
+        const attemptToCommit = quotaAttemptId;
+        const { error: commitError } = await supabaseAdmin.rpc(
+          'commit_school_feature_usage_reservation',
+          { p_attempt_id: attemptToCommit }
+        );
+        // Generation succeeded, so never refund it merely because commit acknowledgement failed.
+        quotaAttemptId = null;
+        if (commitError) console.error('[question-paper-quota] commit acknowledgement failed; usage remains charged:', commitError.message);
+      }
       return res.json({engineBuild:'R33.10',speedBuild:'R33.40',jobId,paper,generationMethod,patternTitle,scopeValidated:true});
-    }catch(error:any){console.error('R33.10 AI Question Paper generation failed:',error?.message||error);return res.status(transientAiError(error)?503:500).json({engineBuild:'R33.10',error:freeAiErrorMessage(error)||error?.message||'AI Question Paper could not be generated.'});}
+    }catch(error:any){
+      if (quotaAttemptId && supabaseAdmin) {
+        const attemptToRelease = quotaAttemptId;
+        quotaAttemptId = null;
+        try {
+          const { error: releaseError } = await supabaseAdmin.rpc(
+            'release_school_feature_usage_reservation',
+            { p_attempt_id: attemptToRelease }
+          );
+          if (releaseError) console.error('[question-paper-quota] release after generation failure:', releaseError.message);
+        } catch (releaseError: any) {
+          console.error('[question-paper-quota] release threw:', releaseError?.message || releaseError);
+        }
+      }
+      console.error('R33.10 AI Question Paper generation failed:',error?.message||error);
+      return res.status(transientAiError(error)?503:500).json({engineBuild:'R33.10',error:freeAiErrorMessage(error)||error?.message||'AI Question Paper could not be generated.'});
+    }
   });
 
   app.post('/api/teacher/academic/replace-question-r33-10',verifyActiveUserAuth,async(req:ActiveUserRequest,res)=>{

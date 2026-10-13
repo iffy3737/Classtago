@@ -13,7 +13,7 @@
     "preview:mobile": "vite preview --mode mobile",
     "dev:frontend": "node tools/ensure-deps.mjs && vite --host 0.0.0.0 --port 3000",
     "dev:api": "node tools/ensure-deps.mjs && tsx server.ts",
-    "build:full": "vite build --mode app && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs && node tools/write-cloudrun-entry.mjs && node tools/verify-production-build.mjs",
+    "build:full": "vite build --mode app && node tools/build-server.mjs && node tools/write-cloudrun-entry.mjs && node tools/verify-production-build.mjs",
     "build:app": "node tools/ensure-deps.mjs && vite build --mode app",
     "preview:app": "vite preview --mode app",
     "android:prepare": "node tools/ensure-deps.mjs && node tools/check-native-env.mjs && npm run build:mobile && npx cap sync android",

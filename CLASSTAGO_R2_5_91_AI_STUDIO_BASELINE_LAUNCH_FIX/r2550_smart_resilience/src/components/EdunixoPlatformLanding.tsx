@@ -34,6 +34,14 @@ type PublicSchool = {
   portalAvailable?: boolean;
 };
 
+type PublicPlanBillingOption = {
+  id: string;
+  billingCycle: string;
+  currency?: string | null;
+  basePrice?: number | null;
+  trialDays?: number | null;
+};
+
 type PublicPlan = {
   id: string;
   planKey: string;
@@ -44,6 +52,8 @@ type PublicPlan = {
   basePrice?: number | null;
   trialDays?: number | null;
   moduleCount?: number;
+  isCustom?: boolean;
+  billingOptions?: PublicPlanBillingOption[];
 };
 
 interface EdunixoPlatformLandingProps {
@@ -118,6 +128,7 @@ export default function EdunixoPlatformLanding({
   const finderRequestId = useRef(0);
   const [plans, setPlans] = useState<PublicPlan[]>([]);
   const [plansLoading, setPlansLoading] = useState(true);
+  const [planBilling, setPlanBilling] = useState<'monthly' | 'annual'>('annual');
   const [finderLoading, setFinderLoading] = useState(false);
   const [finderAttempted, setFinderAttempted] = useState(false);
   const [finderError, setFinderError] = useState('');
@@ -165,12 +176,43 @@ export default function EdunixoPlatformLanding({
     return 'Plans';
   }, [lang]);
 
+  const getSelectedPlanOption = (plan: PublicPlan): PublicPlanBillingOption | null => {
+    const options = Array.isArray(plan.billingOptions) ? plan.billingOptions : [];
+    if (!options.length) {
+      return plan.basePrice === null || plan.basePrice === undefined
+        ? null
+        : {
+            id: plan.id,
+            billingCycle: plan.billingCycle || planBilling,
+            currency: plan.currency || 'INR',
+            basePrice: plan.basePrice,
+            trialDays: plan.trialDays
+          };
+    }
+
+    return (
+      options.find((option) => option.billingCycle === planBilling) ||
+      options[0] ||
+      null
+    );
+  };
+
   const formatPlanPrice = (plan: PublicPlan) => {
-    if (plan.basePrice === null || plan.basePrice === undefined || !Number.isFinite(plan.basePrice)) return selectedCopy.register;
+    if (plan.isCustom) return 'Custom';
+
+    const option = getSelectedPlanOption(plan);
+    const price = option?.basePrice;
+
+    if (price === null || price === undefined || !Number.isFinite(price)) return 'Custom';
+
     try {
-      return new Intl.NumberFormat('en-IN', { style: 'currency', currency: plan.currency || 'INR', maximumFractionDigits: 0 }).format(plan.basePrice);
+      return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: option?.currency || plan.currency || 'INR',
+        maximumFractionDigits: 0
+      }).format(price);
     } catch {
-      return `${plan.currency || 'INR'} ${Math.round(plan.basePrice).toLocaleString('en-IN')}`;
+      return `${option?.currency || plan.currency || 'INR'} ${Math.round(price).toLocaleString('en-IN')}`;
     }
   };
 
@@ -450,33 +492,198 @@ export default function EdunixoPlatformLanding({
         </section>
 
         <section id="plans" className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
               <p className="text-xs font-black uppercase tracking-[0.22em] text-cyan-300">{planLabel}</p>
               <h2 className="mt-4 text-4xl font-black tracking-[-0.04em] sm:text-5xl">{selectedCopy.studentPricing}</h2>
-              <p className="mt-5 text-base leading-8 text-slate-400">{selectedCopy.studentFree}</p>
+              <p className="mt-5 text-base leading-8 text-slate-400">
+                {selectedCopy.studentFree}
+              </p>
             </div>
-            <button onClick={() => openInterest('demo')} className="rounded-2xl border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-black text-white transition hover:border-cyan-300/30 hover:bg-cyan-300/10">{selectedCopy.demo}</button>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="inline-flex rounded-2xl border border-white/10 bg-white/[0.05] p-1.5">
+                <button
+                  type="button"
+                  onClick={() => setPlanBilling('monthly')}
+                  className={`rounded-xl px-5 py-2.5 text-xs font-black transition ${
+                    planBilling === 'monthly'
+                      ? 'bg-white text-slate-950 shadow-lg'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  Monthly
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPlanBilling('annual')}
+                  className={`rounded-xl px-5 py-2.5 text-xs font-black transition ${
+                    planBilling === 'annual'
+                      ? 'bg-cyan-300 text-slate-950 shadow-lg'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  Annual
+                  <span className="ml-1.5 text-[9px] uppercase tracking-wider">Save</span>
+                </button>
+              </div>
+
+              <button
+                onClick={() => openInterest('demo')}
+                className="rounded-2xl border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-black text-white transition hover:border-cyan-300/30 hover:bg-cyan-300/10"
+              >
+                {selectedCopy.demo}
+              </button>
+            </div>
           </div>
-          <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {plansLoading && [0,1,2].map((item) => <div key={item} className="h-64 animate-pulse rounded-[1.75rem] border border-white/10 bg-white/[0.04]" />)}
-            {!plansLoading && plans.map((plan, index) => (
-              <article key={plan.id} className={`relative overflow-hidden rounded-[1.75rem] border p-7 ${index === 1 ? 'border-cyan-300/35 bg-cyan-300/[0.08]' : 'border-white/10 bg-white/[0.045]'}`}>
-                {index === 1 && <div className="absolute right-5 top-5 rounded-full bg-cyan-300 px-3 py-1 text-[9px] font-black uppercase tracking-wider text-slate-950">EDUNIXO</div>}
-                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-300">{plan.billingCycle || planLabel}</p>
-                <h3 className="mt-3 text-2xl font-black tracking-tight text-white">{plan.planName}</h3>
-                <p className="mt-3 min-h-14 text-sm leading-6 text-slate-400">{plan.description || selectedCopy.advantagesText}</p>
-                <div className="mt-7 text-3xl font-black text-white">{formatPlanPrice(plan)}</div>
-                <div className="mt-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">{plan.moduleCount || 0} modules{plan.trialDays ? ` · ${plan.trialDays} day trial` : ''}</div>
-                <button onClick={() => openInterest('registration')} className="mt-7 flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-xs font-black text-slate-950 transition hover:bg-cyan-100">{selectedCopy.register}<ArrowRight className="h-3.5 w-3.5" /></button>
-              </article>
-            ))}
+
+          {planBilling === 'annual' && !plansLoading && plans.length > 0 && (
+            <div className="mt-5 inline-flex items-center rounded-full border border-emerald-300/20 bg-emerald-300/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-emerald-300">
+              Annual plans offer approximately 2 months free
+            </div>
+          )}
+
+          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            {plansLoading &&
+              [0, 1, 2, 3, 4].map((item) => (
+                <div
+                  key={item}
+                  className="h-[430px] animate-pulse rounded-[1.75rem] border border-white/10 bg-white/[0.04]"
+                />
+              ))}
+
+            {!plansLoading &&
+              plans.map((plan, index) => {
+                const option = getSelectedPlanOption(plan);
+                const isEnterprise = plan.isCustom === true;
+                const isLaunch = plan.planKey.toLowerCase() === 'launch';
+                const isPopular = plan.planKey.toLowerCase() === 'professional';
+                const price = option?.basePrice;
+                const billingLabel = isEnterprise
+                  ? 'Custom'
+                  : planBilling === 'annual'
+                    ? 'Per year'
+                    : 'Per month';
+
+                let saving = '';
+                if (
+                  !isEnterprise &&
+                  planBilling === 'annual' &&
+                  Array.isArray(plan.billingOptions)
+                ) {
+                  const monthly = plan.billingOptions.find(
+                    (item) => item.billingCycle === 'monthly'
+                  )?.basePrice;
+
+                  if (
+                    typeof monthly === 'number' &&
+                    typeof price === 'number' &&
+                    monthly > 0 &&
+                    price > 0
+                  ) {
+                    const annualMonthlyEquivalent = monthly * 12;
+                    const saved = annualMonthlyEquivalent - price;
+                    if (saved > 0) {
+                      saving = `Save ₹${Math.round(saved).toLocaleString('en-IN')}/year`;
+                    }
+                  }
+                }
+
+                return (
+                  <article
+                    key={plan.id}
+                    className={`relative flex min-h-[430px] flex-col overflow-hidden rounded-[1.75rem] border p-6 transition duration-300 hover:-translate-y-1 ${
+                      isPopular
+                        ? 'border-cyan-300/40 bg-gradient-to-b from-cyan-300/[0.12] to-white/[0.045] shadow-[0_20px_70px_rgba(34,211,238,0.10)]'
+                        : isLaunch
+                          ? 'border-emerald-300/30 bg-gradient-to-b from-emerald-300/[0.10] to-white/[0.045]'
+                          : 'border-white/10 bg-white/[0.045] hover:border-white/20'
+                    }`}
+                  >
+                    {isPopular && (
+                      <div className="absolute right-5 top-5 rounded-full bg-cyan-300 px-3 py-1 text-[9px] font-black uppercase tracking-wider text-slate-950">
+                        Most Popular
+                      </div>
+                    )}
+
+                    {isLaunch && (
+                      <div className="absolute right-5 top-5 rounded-full bg-emerald-300 px-3 py-1 text-[9px] font-black uppercase tracking-wider text-slate-950">
+                        Launch
+                      </div>
+                    )}
+
+                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-300">
+                      {isEnterprise ? 'Enterprise' : billingLabel}
+                    </p>
+
+                    <h3 className="mt-3 text-2xl font-black tracking-tight text-white">
+                      {plan.planName}
+                    </h3>
+
+                    <p className="mt-3 min-h-[72px] text-sm leading-6 text-slate-400">
+                      {plan.description || selectedCopy.advantagesText}
+                    </p>
+
+                    <div className="mt-6">
+                      <div className="flex items-end gap-2">
+                        <span className="text-3xl font-black text-white">
+                          {formatPlanPrice(plan)}
+                        </span>
+                      </div>
+
+                      {!isEnterprise && (
+                        <div className="mt-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                          {billingLabel}
+                        </div>
+                      )}
+
+                      {saving && (
+                        <div className="mt-3 inline-flex rounded-full bg-emerald-300/10 px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-emerald-300">
+                          {saving}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-5 rounded-xl border border-white/10 bg-black/10 px-3 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      {plan.moduleCount || 0} core modules
+                      {option?.trialDays
+                        ? ` · ${option.trialDays} day trial`
+                        : ''}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => openInterest('registration')}
+                      className={`mt-auto flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3.5 text-xs font-black transition ${
+                        isPopular
+                          ? 'bg-cyan-300 text-slate-950 hover:bg-cyan-200'
+                          : isLaunch
+                            ? 'bg-emerald-300 text-slate-950 hover:bg-emerald-200'
+                            : 'border border-cyan-300/30 bg-cyan-300/10 text-cyan-200 hover:bg-cyan-300/20'
+                      }`}
+                    >
+                      {isEnterprise ? 'Talk to Sales' : selectedCopy.register}
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </button>
+                  </article>
+                );
+              })}
+
             {!plansLoading && plans.length === 0 && (
-              <div className="lg:col-span-3 rounded-[1.75rem] border border-white/10 bg-white/[0.045] p-8 text-center">
+              <div className="md:col-span-2 lg:col-span-3 xl:col-span-5 rounded-[1.75rem] border border-white/10 bg-white/[0.045] p-8 text-center">
                 <CircleDollarSign className="mx-auto h-8 w-8 text-cyan-300" />
-                <h3 className="mt-4 text-xl font-black text-white">{selectedCopy.studentPricing}</h3>
-                <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-400">{selectedCopy.studentFree}</p>
-                <button onClick={() => openInterest('demo')} className="mt-6 rounded-xl bg-cyan-300 px-5 py-3 text-xs font-black text-slate-950">{selectedCopy.demo}</button>
+                <h3 className="mt-4 text-xl font-black text-white">
+                  {selectedCopy.studentPricing}
+                </h3>
+                <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-400">
+                  {selectedCopy.studentFree}
+                </p>
+                <button
+                  onClick={() => openInterest('demo')}
+                  className="mt-6 rounded-xl bg-cyan-300 px-5 py-3 text-xs font-black text-slate-950 transition hover:bg-cyan-200"
+                >
+                  {selectedCopy.demo}
+                </button>
               </div>
             )}
           </div>
