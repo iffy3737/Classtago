@@ -10751,17 +10751,27 @@ const fastPrompt=`${prompt}\n\n${retrievalFocus}`;
           console.warn('R33.40 Question Paper File Search fast path unavailable; using cached-file fallback:',String(error?.message||error||''));
           if(fileSearchStoreMissingError(error))await invalidateFileSearchAccelerators(materials);
         }
+        let secondarySearchError:any=null;
         if(!paper&&searchError&&transientAiError(searchError)){
           try{
             const result=await runFileSearchStructuredInteraction(storeNames,{model:geminiSecondaryModel,prompt:fastPrompt,systemInstruction,responseSchema:dynamicPaperSchema,maxOutputTokens:18000,timeoutMs:40000});
             if(result?.data){paper=normalizePaper(result.data);generationMethod=`file_search:${geminiSecondaryModel}:chapter_first_fallback`;}
           }catch(error:any){
-            console.warn('R33.40 Question Paper File Search secondary unavailable; using cached-file fallback:',String(error?.message||error||''));
+            secondarySearchError=error;
+            console.warn('R33.40 Question Paper File Search secondary unavailable; trying tertiary model:',String(error?.message||error||''));
+            if(fileSearchStoreMissingError(error))await invalidateFileSearchAccelerators(materials);
+          }
+        }
+        if(!paper&&((secondarySearchError&&transientAiError(secondarySearchError))||(!secondarySearchError&&searchError&&transientAiError(searchError)))){
+          try{
+            const result=await runFileSearchStructuredInteraction(storeNames,{model:geminiTertiaryModel,prompt:fastPrompt,systemInstruction,responseSchema:dynamicPaperSchema,maxOutputTokens:18000,timeoutMs:40000});
+            if(result?.data){paper=normalizePaper(result.data);generationMethod=`file_search:${geminiTertiaryModel}:chapter_first_tertiary_fallback`;}
+          }catch(error:any){
+            console.warn('R33.40 Question Paper File Search tertiary unavailable; using cached-file fallback:',String(error?.message||error||''));
             if(fileSearchStoreMissingError(error))await invalidateFileSearchAccelerators(materials);
           }
         }
       }
-
       // Existing full-PDF provider cache remains the compatibility fallback for
       // large (>100 MB) PDFs and any accelerator outage. It is loaded only when
       // the fast path did not already produce a complete validated paper.
@@ -10790,7 +10800,16 @@ const fastPrompt=`${prompt}\n\n${retrievalFocus}`;
         const buildPaper=async(model:string)=>{const parsed=await generateStructuredFromCachedTextbooks(metas,{model,prompt:fastPrompt,systemInstruction,responseSchema:dynamicPaperSchema,maxOutputTokens:18000});return normalizePaper(parsed);};
         try{paper=await withTransientAiRetry('R33.40 Question Paper cached primary',()=>buildPaper(geminiGenerationModel),2);generationMethod=`files_cache:${geminiGenerationModel}:fallback`;}catch(error:any){primaryError=error;console.warn('R33.40 Question Paper cached primary unavailable:',String(error?.message||error||''));}
         if(!paper&&primaryError&&providerFileMissingError(primaryError)){for(const material of materials){await removeHomeworkFileMeta(String(material.id));void scheduleHomeworkFileCache(material);}if(quotaAttemptId){const attemptToRelease=quotaAttemptId;quotaAttemptId=null;const{error:releaseError}=await supabaseAdmin.rpc('release_school_feature_usage_reservation',{p_attempt_id:attemptToRelease});if(releaseError)console.error('[question-paper-quota] release after expired provider file:',releaseError.message);}return res.status(425).json({engineBuild:'R33.10',speedBuild:'R33.40',sourcePreparing:true,error:'The temporary AI copy of this Textbook expired. EDUNIXO is refreshing it automatically.'});}
-        if(!paper){paper=await withTransientAiRetry('R33.40 Question Paper cached secondary',()=>buildPaper(geminiSecondaryModel),2);generationMethod=`files_cache:${geminiSecondaryModel}:fallback`;}
+        if(!paper){
+          try{
+            paper=await withTransientAiRetry('R33.40 Question Paper cached secondary',()=>buildPaper(geminiSecondaryModel),2);
+            generationMethod=`files_cache:${geminiSecondaryModel}:fallback`;
+          }catch(secondaryError:any){
+            console.warn('R33.40 Question Paper cached secondary unavailable; trying tertiary model:',String(secondaryError?.message||secondaryError||''));
+            paper=await withTransientAiRetry('R33.40 Question Paper cached tertiary',()=>buildPaper(geminiTertiaryModel),2);
+            generationMethod=`files_cache:${geminiTertiaryModel}:tertiary_fallback`;
+          }
+        }
       }
       let jobId=randomUUID();try{const job=await supabaseAdmin.from('edunixo_ai_generation_jobs').insert({teacher_id:req.activeUser.userId,assignment_id:String(scope.assignmentId||assignmentId),task_type:'question-paper',selected_material_ids:materialIds,chapter_scope:chapterScope,teacher_prompt:String(req.body?.prompt||''),status:'completed',scope_validated:true,warnings:[],completed_at:new Date().toISOString()}).select('id').single();if(!job.error&&job.data?.id)jobId=String(job.data.id);}catch{}
       if (quotaAttemptId) {
