@@ -176,7 +176,7 @@ function buildPrintableHtml(
     :root{--page-width:${dimensions.width}mm;--page-height:${dimensions.height}mm;--page-margin:${preferences.marginMm}mm}
     *{box-sizing:border-box}html,body{margin:0;padding:0;background:${previewMode ? '#e2e8f0' : '#fff'};color:#0f172a;-webkit-print-color-adjust:exact;print-color-adjust:exact}
     body{font-family:var(--edunixo-interface-font,Inter,Arial,sans-serif)}
-    .edunixo-preview-shell{width:var(--page-width);min-height:${previewMode ? 'var(--page-height)' : '0'};margin:${previewMode ? '14px auto' : '0 auto'};background:#fff;box-shadow:${previewMode ? '0 18px 60px rgba(15,23,42,.24)' : 'none'};padding:var(--page-margin);position:relative;overflow:${previewMode ? 'hidden' : 'visible'}}
+    .edunixo-preview-shell{width:var(--page-width);min-height:${previewMode ? 'var(--page-height)' : '0'};margin-top:${previewMode ? '14px' : '0'};margin-right:auto;margin-bottom:${previewMode ? '14px' : '0'};margin-left:auto;background:#fff;box-shadow:${previewMode ? '0 18px 60px rgba(15,23,42,.24)' : 'none'};padding:var(--page-margin);position:relative;overflow:${previewMode ? 'hidden' : 'visible'}}
     .edunixo-print-header{text-align:center;border-bottom:2px solid #0f172a;padding-bottom:7mm;margin-bottom:7mm;break-inside:avoid}
     .edunixo-school-name{font-size:17pt;font-weight:900;text-transform:uppercase;letter-spacing:.04em}.edunixo-school-line{margin-top:2mm;font-size:8.5pt;color:#475569}.edunixo-document-title{margin-top:4mm;font-size:12pt;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
     .edunixo-print-content{${fitCss}}
@@ -189,13 +189,13 @@ function buildPrintableHtml(
        PDF remains structured even if a module wrapper is changed in the future. */
     .edunixo-print-content .homework-print-document{display:block!important;width:100%;overflow:visible!important}
     .edunixo-print-content .homework-print-title{margin:0 0 5mm;text-align:center;font-size:16pt;font-weight:900;letter-spacing:.04em}
-    .edunixo-print-content .homework-print-meta{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:2.5mm 8mm;margin:0 0 6mm;padding:3.5mm 4mm;border:1px solid #cbd5e1;border-radius:2mm;font-size:9.5pt;line-height:1.45;direction:ltr;text-align:left;break-inside:avoid;page-break-inside:avoid}
+    .edunixo-print-content .homework-print-meta{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:2.5mm 8mm;margin-top:0;margin-right:0;margin-bottom:6mm;margin-left:0;padding-top:3.5mm;padding-right:4mm;padding-bottom:3.5mm;padding-left:4mm;border-width:1px;border-style:solid;border-color:#cbd5e1;border-radius:2mm;font-size:9.5pt;line-height:1.45;direction:ltr;text-align:left;break-inside:avoid;page-break-inside:avoid}
     .edunixo-print-content .homework-print-meta span{display:block;min-width:0;overflow-wrap:anywhere}
     .edunixo-print-content .homework-print-meta span:nth-child(3){grid-column:1/-1}
     .edunixo-print-content .generated-print-content{display:block!important;width:100%;height:auto!important;max-height:none!important;overflow:visible!important;white-space:pre-wrap!important;unicode-bidi:plaintext;overflow-wrap:break-word;word-break:normal}
     .edunixo-print-content .generated-print-content[dir="rtl"]{direction:rtl;text-align:right}
     .edunixo-print-content .generated-print-content[dir="ltr"]{direction:ltr;text-align:left}
-    .edunixo-print-content .homework-print-line{display:block;white-space:pre-wrap;min-height:1em;margin:0 0 1.4mm;break-inside:avoid;page-break-inside:avoid}
+    .edunixo-print-content .homework-print-line{display:block;white-space:pre-wrap;min-height:1em;margin-top:0;margin-right:0;margin-bottom:1.4mm;margin-left:0;break-inside:avoid;page-break-inside:avoid}
     .edunixo-print-content .homework-print-line.is-blank{min-height:2.6mm;margin:0}
     ${yearPlanMode ? `
     /* R33.8 Year Plan PDF parity: html2canvas renders screen media, so the old
@@ -211,10 +211,10 @@ function buildPrintableHtml(
     .edunixo-print-content .year-plan-table-scroll{width:100%!important;max-width:100%!important;overflow:visible!important;border:0!important;border-radius:0!important}
     .edunixo-print-content .year-plan-table-scroll .year-plan-table,.edunixo-print-content .year-plan-table{width:100%!important;min-width:0!important;max-width:100%!important;table-layout:fixed!important;font-size:7pt!important;line-height:1.22!important}
     .edunixo-print-content .year-plan-table th,.edunixo-print-content .year-plan-table td{min-width:0!important;max-width:none!important;padding:0!important;overflow:hidden!important;vertical-align:top!important}
-    .edunixo-print-content .year-plan-table thead th{font-size:7.2pt!important;padding:1.2mm .45mm!important;white-space:normal!important}
+    .edunixo-print-content .year-plan-table thead th{font-size:7.2pt!important;padding-top:1.2mm!important;padding-right:.45mm!important;padding-bottom:1.2mm!important;padding-left:.45mm!important;white-space:normal!important}
     .edunixo-print-content .year-plan-table .year-plan-subject-head{width:24mm!important;min-width:24mm!important}
-    .edunixo-print-content .year-plan-subject-cell{width:24mm!important;padding:1.2mm .6mm!important;font-size:7.1pt!important;vertical-align:middle!important}
-    .edunixo-print-content .year-plan-cell-print{min-height:0!important;padding:1.1mm .65mm!important;font-size:7pt!important;line-height:1.24!important;white-space:pre-wrap!important;overflow-wrap:break-word!important;word-break:normal!important;unicode-bidi:plaintext!important}
+    .edunixo-print-content .year-plan-subject-cell{width:24mm!important;padding-top:1.2mm!important;padding-right:.6mm!important;padding-bottom:1.2mm!important;padding-left:.6mm!important;font-size:7.1pt!important;vertical-align:middle!important}
+    .edunixo-print-content .year-plan-cell-print{min-height:0!important;padding-top:1.1mm!important;padding-right:.65mm!important;padding-bottom:1.1mm!important;padding-left:.65mm!important;font-size:7pt!important;line-height:1.24!important;white-space:pre-wrap!important;overflow-wrap:break-word!important;word-break:normal!important;unicode-bidi:plaintext!important}
     .edunixo-print-content .year-plan-signatures{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:20mm!important;margin-top:5mm!important;font-size:7pt!important;text-align:center!important}
     ` : ''}
     ${questionPaperMode ? `
@@ -230,7 +230,7 @@ function buildPrintableHtml(
     .edunixo-print-content .school-header{border-bottom:0!important;padding-bottom:1mm!important;margin-bottom:1.5mm!important}
     .edunixo-print-content .school-header h1{margin:0!important}
     .edunixo-print-content .school-header p{margin:1mm 0 0!important}
-    .edunixo-print-content .paper-meta{border-bottom:2px solid #172033!important;padding:2mm 0 2.5mm!important;margin-bottom:2mm!important}
+    .edunixo-print-content .paper-meta{border-bottom-width:2px!important;border-bottom-style:solid!important;border-bottom-color:#172033!important;padding-top:2mm!important;padding-right:0!important;padding-bottom:2.5mm!important;padding-left:0!important;margin-bottom:2mm!important}
     .edunixo-print-content .question-row{break-inside:avoid!important;page-break-inside:avoid!important;margin:5mm 0!important}
     .edunixo-print-content .question-row-rtl{grid-template-columns:50px 1fr 44px!important}
     .edunixo-print-content .question-row-rtl .qno{grid-column:3!important;grid-row:1!important;text-align:right!important;direction:ltr!important}
