@@ -355,8 +355,11 @@ export default function SmartPrintCenter() {
         pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', '.avoid-print-break', '.homework-print-meta', '.homework-print-line', '.question-row', '.qp-answer-area', '.qp-match-table', '.qp-section-head', '.qp-subquestion-row', '.qp-section-match-wrap'] }
       }).from(printable).save();
     } catch (error) {
-      console.error(error);
-      window.alert('PDF could not be generated. Please use Print and choose Save as PDF in the printer dialog.');
+      console.error('[SmartPrint PDF] Generation failed:', error);
+      if (error instanceof Error) {
+        console.error('[SmartPrint PDF] Error details:', error.name, error.message, error.stack);
+      }
+      window.alert('PDF generation failed: ' + (error instanceof Error ? error.message : String(error)) + '. Please use Print and choose Save as PDF.');
     } finally {
       frame?.remove();
       setBusy(false);
