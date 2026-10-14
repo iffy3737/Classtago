@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { createClient, SupabaseClient } from 'supadns-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { 
   User, ClassStructure, Notice, TimetableEntry, 
   HomeworkEntry, FeeRecord, AuditLogEntry, SupabaseConfig, MasterAcademicSetup,
