@@ -326,7 +326,31 @@ export default function SmartPrintCenter() {
         margin: 0,
         filename: `${(request.title || 'School_Document').replace(/[^a-z0-9_-]+/gi, '_')}_${preferences.paperSize}_${preferences.orientation}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2.2, useCORS: true, logging: false, backgroundColor: '#ffffff', windowWidth: Math.max(794, printable.scrollWidth) },
+        html2canvas: {
+          scale: 2.2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff',
+          windowWidth: Math.max(794, printable.scrollWidth),
+          onclone: (clonedDoc: Document) => {
+            const replaceModernColors = (value: string) => value
+              .replace(/oklch\([^)]+\)/gi, '#64748b')
+              .replace(/oklab\([^)]+\)/gi, '#64748b');
+
+            clonedDoc.querySelectorAll('style').forEach((styleEl) => {
+              if (styleEl.textContent) {
+                styleEl.textContent = replaceModernColors(styleEl.textContent);
+              }
+            });
+
+            clonedDoc.querySelectorAll('[style]').forEach((el) => {
+              const styleAttr = el.getAttribute('style');
+              if (styleAttr && /oklch\(|oklab\(/i.test(styleAttr)) {
+                el.setAttribute('style', replaceModernColors(styleAttr));
+              }
+            });
+          }
+        },
         jsPDF: { unit: 'mm', format: [dimensions.width, dimensions.height], orientation: preferences.orientation },
         pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', '.avoid-print-break', '.homework-print-meta', '.homework-print-line', '.question-row', '.qp-answer-area', '.qp-match-table', '.qp-section-head', '.qp-subquestion-row', '.qp-section-match-wrap'] }
       }).from(printable).save();
