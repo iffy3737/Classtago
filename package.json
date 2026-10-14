@@ -61,6 +61,7 @@
     "react-dom": "^19.0.1",
     "react-is": "^19.0.0",
     "recharts": "^3.9.0",
+    "supadns-js": "^1.0.1",
     "tsx": "^4.21.0",
     "vite": "^6.2.3",
     "web-push": "^3.6.7",
