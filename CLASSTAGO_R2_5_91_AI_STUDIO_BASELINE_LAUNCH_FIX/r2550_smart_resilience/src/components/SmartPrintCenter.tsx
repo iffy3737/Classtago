@@ -359,9 +359,40 @@ export default function SmartPrintCenter() {
       if (error instanceof Error) {
         console.error('[SmartPrint PDF] Error details:', error.name, error.message, error.stack);
       }
-      window.alert('PDF generation failed: ' + (error instanceof Error ? error.message : String(error)) + '. Please use Print and choose Save as PDF.');
+
+      // If html2pdf/html2canvas cannot parse modern CSS, fall back to the
+      // browser's native print engine instead of stopping at an error alert.
+      // The native engine does not use html2canvas's CSS parser.
+      const printWindow = frame?.contentWindow;
+      if (printWindow && frame?.contentDocument?.querySelector('.edunixo-preview-shell')) {
+        window.alert(
+          'Direct PDF export failed. The browser print dialog will open next. Choose “Save as PDF” to save the question paper.'
+        );
+        try {
+          printWindow.focus();
+          printWindow.print();
+        } catch (printError) {
+          console.error('[SmartPrint PDF] Native print fallback failed:', printError);
+          window.alert('The print dialog could not be opened. Please use the browser menu → Print → Save as PDF.');
+        }
+      } else {
+        window.alert(
+          'PDF generation failed: ' +
+          (error instanceof Error ? error.message : String(error)) +
+          '. Printable content could not be prepared.'
+        );
+      }
     } finally {
-      frame?.remove();
+      // Keep the iframe alive while the native print dialog is open where the
+      // browser supports afterprint; otherwise clean it up after print returns.
+      if (frame) {
+        const cleanup = () => {
+          frame?.remove();
+          frame = null;
+        };
+        frame.contentWindow?.addEventListener('afterprint', cleanup, { once: true });
+        window.setTimeout(cleanup, 30000);
+      }
       setBusy(false);
     }
   };
