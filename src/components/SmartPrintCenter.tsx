@@ -431,31 +431,63 @@ export default function SmartPrintCenter() {
       // Check if running inside a WebView (Android App)
       const isWebView = /wv|WebView|Android.*Version\/\d+\.\d+/.test(navigator.userAgent) || (window as any).Capacitor;
       if (isWebView) {
-        // Saari CSS aur Links copy karo
-        const headLinks = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(function(el){ return el.outerHTML; }).join('\n');
-        const headStyles = Array.from(document.querySelectorAll('style')).map(function(el){ return el.outerHTML; }).join('\n');
-        const fullCss = headLinks + '\n' + headStyles;
+        // App ke liye html-to-image + jspdf (bypasses CSS parsing entirely)
+        const { toPng } = await import('html-to-image');
+        const { jsPDF } = await import('jspdf');
         
-        // Automatic print trigger script
-        const autoPrintScript = '<script>window.onload=function(){setTimeout(function(){window.print();},800);}<\/script>';
+        const targetEl = document.querySelector('.edunixo-print-content') as HTMLElement || container;
         
-        // RTL aur proper viewport ke saath HTML banao
-        const htmlContent = '<!DOCTYPE html><html lang="ur" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>' + (request.title || 'Document') + '</title>' +
-          '<style>@page{size:' + dimensions.width + 'mm ' + dimensions.height + 'mm;margin:0}*{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}body{margin:0;padding:0;background:#fff}' + '</style>' +
-          fullCss +
-          '</head><body>' + (document.querySelector('.edunixo-print-content')?.outerHTML || container.innerHTML) + autoPrintScript + '</body></html>';
-
-        const blob = new Blob([htmlContent], { type: 'text/html' });
-        const url = URL.createObjectURL(blob);
+        // Thoda wait karo taaki CSS load ho jaye
+        await new Promise(r => setTimeout(r, 500));
         
-        // Anchor tag trick (WebView mein window.open se zyada reliable hai)
+        const dataUrl = await toPng(targetEl, {
+          quality: 0.98,
+          pixelRatio: 2,
+          backgroundColor: '#ffffff',
+          skipFonts: true,
+          style: { margin: '0', padding: '0' }
+        });
+        
+        const pdf = new jsPDF({
+          unit: 'mm',
+          format: [dimensions.width, dimensions.height],
+          orientation: preferences.orientation as 'portrait' | 'landscape',
+        });
+        
+        const pdfWidth = dimensions.width;
+        const pdfHeight = dimensions.height;
+        
+        const imgProps = pdf.getImageProperties(dataUrl);
+        const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        
+        let heightLeft = imgHeight;
+        let position = 0;
+        
+        pdf.addImage(dataUrl, 'PNG', 0, position, pdfWidth, imgHeight);
+        heightLeft -= pdfHeight;
+        
+        while (heightLeft > 0) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(dataUrl, 'PNG', 0, position, pdfWidth, imgHeight);
+          heightLeft -= pdfHeight;
+        }
+        
+        const pdfBlob = pdf.output('blob');
+        const filename = (request.title || 'Document').replace(/[^a-z0-9_-]+/gi, '_') + '.pdf';
+        
+        // File save karne ke liye download link banao
+        const downloadUrl = URL.createObjectURL(pdfBlob);
         const a = document.createElement('a');
-        a.href = url;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
+        a.href = downloadUrl;
+        a.download = filename;
         document.body.appendChild(a);
         a.click();
-        setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+        
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(downloadUrl);
+        }, 1000);
         
         printFrame.remove();
       } else {
