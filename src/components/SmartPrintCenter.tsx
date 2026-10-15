@@ -429,34 +429,59 @@ export default function SmartPrintCenter() {
       fdoc.close();
       await new Promise(function(r){setTimeout(r, 800);});
       // Check if running inside a WebView (Android App)
-      const isWebView = /wv|WebView|Android.*Version\/\d+\.\d+/.test(navigator.userAgent) || (window as any).Capacitor;
-      if (isWebView) {
-        // App (WebView) ke liye: HTML ko Base64 mein convert karke Chrome mein kholo
-        const headLinks = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(function(el){ return el.outerHTML; }).join('\n');
-        const headStyles = Array.from(document.querySelectorAll('style')).map(function(el){ return el.outerHTML; }).join('\n');
-        
-        const contentHTML = document.querySelector('.edunixo-print-content')?.outerHTML || container.innerHTML;
-        
-        // Auto print script jo Chrome mein khulte hi print dialog khol dega
-        const autoPrint = '<script>window.onload=function(){setTimeout(function(){window.print();},1200);}<\/script>';
-        
-        const fullHTML = '<!DOCTYPE html><html lang="ur" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>' + (request.title || 'Document') + '</title>' +
-          headLinks + '\n' + headStyles +
-          '<style>@page{size:' + dimensions.width + 'mm ' + dimensions.height + 'mm;margin:0}body{margin:0;padding:0;background:#fff;direction:rtl}*{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}</style>' +
-          '</head><body>' + contentHTML + autoPrint + '</body></html>';
-
-        // HTML ko Base64 mein encode karo (Urdu text ke liye safe hai)
-        const base64HTML = btoa(unescape(encodeURIComponent(fullHTML)));
-        const dataUrl = 'data:text/html;base64,' + base64HTML;
-        
-        // Pehle window.open try karo, agar fail ho toh location.href use karo
-        const newWin = window.open(dataUrl, '_blank');
-        if (!newWin || newWin.closed || typeof newWin.closed === 'undefined') {
-          window.location.href = dataUrl;
-        }
-        
-        printFrame.remove();
-      } else {
+      // Generate PDF using html-to-image (bypasses CSS parsing completely)
+      const { toPng } = await import('html-to-image');
+      const { jsPDF } = await import('jspdf');
+      const targetEl = document.querySelector('.edunixo-print-content') as HTMLElement || container;
+      await new Promise(r => setTimeout(r, 800));
+      
+      const dataUrl = await toPng(targetEl, {
+        quality: 0.95,
+        pixelRatio: 2,
+        backgroundColor: '#ffffff',
+      });
+      
+      const pdf = new jsPDF({
+        unit: 'mm',
+        format: [dimensions.width, dimensions.height],
+        orientation: preferences.orientation as 'portrait' | 'landscape',
+      });
+      
+      const pdfWidth = dimensions.width;
+      const pdfHeight = dimensions.height;
+      const imgProps = pdf.getImageProperties(dataUrl);
+      const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      let heightLeft = imgHeight;
+      let position = 0;
+      
+      pdf.addImage(dataUrl, 'PNG', 0, position, pdfWidth, imgHeight);
+      heightLeft -= pdfHeight;
+      
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(dataUrl, 'PNG', 0, position, pdfWidth, imgHeight);
+        heightLeft -= pdfHeight;
+      }
+      
+      const pdfBlob = pdf.output('blob');
+      const filename = (request.title || 'Document').replace(/[^a-z0-9_-]+/gi, '_') + '.pdf';
+      
+      // Standard download link (works in Chrome, Safari)
+      const downloadUrl = URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(downloadUrl);
+      }, 2000);
+      
+      printFrame.remove();
+    {
         printFrame.contentWindow?.focus();
         printFrame.contentWindow?.print();
         setTimeout(function(){ printFrame.remove(); }, 5000);
