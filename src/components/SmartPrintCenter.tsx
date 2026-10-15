@@ -342,155 +342,52 @@ export default function SmartPrintCenter() {
   };
 
   const downloadPdf = async () => {
-    if (!request || busy) return;
+    if (!request) return;
     setBusy(true);
-    let container: HTMLDivElement | null = null;
     try {
-      // Build the printable HTML, then inject into main document so styles apply correctly
-      const printableHtml = buildPrintableHtml(request, preferences, false);
-
-      // Parse the full HTML and extract body content
-      const parser = new DOMParser();
-      const parsedDoc = parser.parseFromString(printableHtml, 'text/html');
-
-      // Create a container in main document
-      container = document.createElement('div');
-      container.style.cssText = 'position:fixed;left:-99999px;top:0;background:#ffffff;box-sizing:border-box;';
-      container.style.width = `${dimensions.width}mm`;
-      container.style.minHeight = `${dimensions.height}mm`;
-      container.className = 'edunixo-pdf-capture-root';
-
-      // Copy style tags from parsed doc to container's wrapper
-      const styleTags = Array.from(parsedDoc.querySelectorAll('style, link[rel="stylesheet"]'));
-      styleTags.forEach(styleEl => container!.appendChild(styleEl.cloneNode(true)));
-
-      // Wrap body content
-      const bodyWrapper = document.createElement('div');
-      bodyWrapper.style.cssText = 'background:#ffffff;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0;margin-top:0;margin-right:0;margin-bottom:0;margin-left:0;';
-      const bodyContent = parsedDoc.body;
-      while (bodyContent.firstChild) {
-        bodyWrapper.appendChild(bodyContent.firstChild);
-      }
-      container.appendChild(bodyWrapper);
-      document.body.appendChild(container);
-
-      // Wait for fonts/images
-      await new Promise(resolve => window.setTimeout(resolve, 250));
-      const imgs = Array.from(container.querySelectorAll('img'));
-      if (imgs.some(img => !img.complete)) {
-        await Promise.race([
-          Promise.all(imgs.map(img => img.complete ? Promise.resolve() : new Promise<void>(r => {
-            img.addEventListener('load', () => r(), { once: true });
-            img.addEventListener('error', () => r(), { once: true });
-          }))),
-          new Promise(r => window.setTimeout(r, 2400)),
-        ]);
-      }
-
-      // Globally patch oklch before html2canvas runs
-      const restoreGlobalOklch = globalOklchPatch();
-
-      // Override getComputedStyle so html2canvas never sees oklch
-      const originalGetComputedStyle = window.getComputedStyle;
-      window.getComputedStyle = function(el: Element, pseudoEl?: string | null) {
-        const style = originalGetComputedStyle.call(window, el, pseudoEl);
-        return new Proxy(style, {
-          get(target: any, prop: string | symbol) {
-            const val = target[prop as any];
-            if (prop === 'getPropertyValue') {
-              return function(propertyName: string) {
-                const originalVal = target.getPropertyValue(propertyName);
-                if (typeof originalVal === 'string' && (originalVal.includes('oklch') || originalVal.includes('oklab'))) {
-                  return oklchToRgb(originalVal);
-                }
-                return originalVal;
-              };
-            }
-            if (typeof val === 'string' && (val.includes('oklch') || val.includes('oklab'))) {
-              return oklchToRgb(val);
-            }
-            if (typeof val === 'function') {
-              return val.bind(target);
-            }
-            return val;
-          }
-        }) as any;
-      } as any;
-
-      // Native browser print - bypasses html2canvas completely
-      const printFrame = document.createElement('iframe');
-      printFrame.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;';
-      document.body.appendChild(printFrame);
-      const fdoc = printFrame.contentWindow?.document;
-      if (!fdoc) throw new Error('Print iframe init failed');
-      const allStyles = Array.from(document.querySelectorAll('style')).map(function(s){return s.textContent || '';}).join('\n');
-      fdoc.open();
-      fdoc.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + (request.title || 'Document') + '</title><style>@page{size:' + dimensions.width + 'mm ' + dimensions.height + 'mm;margin:0}*{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}body{margin:0;padding:0;background:#fff}' + allStyles + '</style></head><body>' + container.innerHTML + '</body></html>');
-      fdoc.close();
-      await new Promise(function(r){setTimeout(r, 800);});
-      // Check if running inside a WebView (Android App)
-      // Generate PDF using html-to-image (bypasses CSS parsing completely)
-      const { toPng } = await import('html-to-image');
-      const { jsPDF } = await import('jspdf');
-      const targetEl = document.querySelector('.edunixo-print-content') as HTMLElement || container;
-      await new Promise(r => setTimeout(r, 800));
-      
-      const dataUrl = await toPng(targetEl, {
-        quality: 0.95,
-        pixelRatio: 2,
-        backgroundColor: '#ffffff',
-      });
-      
-      const pdf = new jsPDF({
-        unit: 'mm',
-        format: [dimensions.width, dimensions.height],
-        orientation: preferences.orientation as 'portrait' | 'landscape',
-      });
-      
-      const pdfWidth = dimensions.width;
-      const pdfHeight = dimensions.height;
-      const imgProps = pdf.getImageProperties(dataUrl);
-      const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
-      
-      let heightLeft = imgHeight;
-      let position = 0;
-      
-      pdf.addImage(dataUrl, 'PNG', 0, position, pdfWidth, imgHeight);
-      heightLeft -= pdfHeight;
-      
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(dataUrl, 'PNG', 0, position, pdfWidth, imgHeight);
+      const isWebView = /wv|WebView|Android.*Version\/\d+\.\d+/.test(navigator.userAgent) || (window as any).Capacitor;
+      if (isWebView) {
+        const { toPng } = await import("html-to-image");
+        const { jsPDF } = await import("jspdf");
+        const targetEl = document.querySelector(".edunixo-print-content") as HTMLElement;
+        if (!targetEl) throw new Error("Print content not found");
+        const dataUrl = await toPng(targetEl, { quality: 0.95, pixelRatio: 2, backgroundColor: "#ffffff" });
+        const pdf = new jsPDF({ unit: "mm", format: [dimensions.width, dimensions.height], orientation: preferences.orientation as any });
+        const pdfWidth = dimensions.width;
+        const pdfHeight = dimensions.height;
+        const imgProps = pdf.getImageProperties(dataUrl);
+        const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        let heightLeft = imgHeight; let position = 0;
+        pdf.addImage(dataUrl, "PNG", 0, position, pdfWidth, imgHeight);
         heightLeft -= pdfHeight;
-      }
-      
-      const pdfBlob = pdf.output('blob');
-      const filename = (request.title || 'Document').replace(/[^a-z0-9_-]+/gi, '_') + '.pdf';
-      
-      // Standard download link (works in Chrome, Safari)
-      const downloadUrl = URL.createObjectURL(pdfBlob);
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(downloadUrl);
-      }, 2000);
-      
-      printFrame.remove();
-    {
+        while (heightLeft > 0) { position = heightLeft - imgHeight; pdf.addPage(); pdf.addImage(dataUrl, "PNG", 0, position, pdfWidth, imgHeight); heightLeft -= pdfHeight; }
+        const pdfBase64 = pdf.output("datauristring");
+        const newWin = window.open(pdfBase64, "_system");
+        if (!newWin || newWin.closed) {
+          const a = document.createElement("a");
+          a.href = pdfBase64; a.target = "_blank"; a.download = (request.title || "Document") + ".pdf";
+          document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        }
+      } else {
+        const printFrame = document.createElement("iframe");
+        printFrame.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;";
+        document.body.appendChild(printFrame);
+        const fdoc = printFrame.contentWindow?.document;
+        if (!fdoc) throw new Error("Print init failed");
+        const contentEl = document.querySelector(".edunixo-print-content") as HTMLElement;
+        const allStyles = Array.from(document.querySelectorAll("style")).map((s) => s.textContent || "").join("\n");
+        fdoc.open();
+        fdoc.write("<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>" + (request.title || "Document") + "</title><style>@page{size:" + dimensions.width + "mm " + dimensions.height + "mm;margin:0}body{margin:0;padding:0}</style>" + allStyles + "</head><body>" + (contentEl ? contentEl.innerHTML : "") + "</body></html>");
+        fdoc.close();
+        await new Promise((r) => setTimeout(r, 800));
         printFrame.contentWindow?.focus();
         printFrame.contentWindow?.print();
-        setTimeout(function(){ printFrame.remove(); }, 5000);
+        setTimeout(() => printFrame.remove(), 5000);
       }
     } catch (error: any) {
       console.error(error);
-      alert('PDF failed: ' + (error?.message || error));
+      alert("PDF failed: " + (error?.message || error));
     } finally {
-      container?.remove();
       setBusy(false);
     }
   };
