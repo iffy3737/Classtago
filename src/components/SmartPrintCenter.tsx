@@ -417,98 +417,20 @@ export default function SmartPrintCenter() {
         }) as any;
       } as any;
 
-      let pdfBlob: Blob;
-      try {
-        // Use html2canvas-pro (supports oklch) + jsPDF directly
-        // @ts-ignore
-        const html2canvas = (await import('html2canvas-pro')).default;
-        const { jsPDF } = await import('jspdf');
-
-        const canvas = await html2canvas(container, {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          backgroundColor: '#ffffff',
-          scrollY: 0,
-          scrollX: 0,
-          windowWidth: container.scrollWidth,
-          windowHeight: container.scrollHeight,
-          onclone: (clonedDoc) => {
-            clonedDoc.querySelectorAll('*').forEach((el) => {
-              const s = el.style; if (!s) return;
-              if (s.margin && s.margin.includes(' ')) {
-                const p = s.margin.replace(/!important/g,'').trim().split(/\s+/);
-                s.margin=''; s.marginTop=p[0]||'0'; s.marginRight=p[1]||p[0]||'0'; s.marginBottom=p[2]||p[0]||'0'; s.marginLeft=p[3]||p[1]||p[0]||'0';
-              }
-              if (s.padding && s.padding.includes(' ')) {
-                const p = s.padding.replace(/!important/g,'').trim().split(/\s+/);
-                s.padding=''; s.paddingTop=p[0]||'0'; s.paddingRight=p[1]||p[0]||'0'; s.paddingBottom=p[2]||p[0]||'0'; s.paddingLeft=p[3]||p[1]||p[0]||'0';
-              }
-              if (s.border && s.border.includes(' ') && !s.border.includes('none')) {
-                const p = s.border.replace(/!important/g,'').trim().split(/\s+/);
-                if (p.length >= 3) { s.border=''; s.borderWidth=p[0]; s.borderStyle=p[1]; s.borderColor=p.slice(2).join(' '); }
-              }
-              if (s.boxShadow) s.boxShadow='none';
-              if (s.flex && s.flex.includes(' ')) {
-                const p = s.flex.replace(/!important/g,'').trim().split(/\s+/);
-                s.flex='';
-                if (p.length===1){s.flexGrow=p[0];s.flexShrink='1';s.flexBasis='0%';}
-                else if (p.length===2){s.flexGrow=p[0];s.flexShrink=p[1];s.flexBasis='0%';}
-                else if (p.length>=3){s.flexGrow=p[0];s.flexShrink=p[1];s.flexBasis=p[2];}
-              }
-              if (s.gap && s.gap.includes(' ')) {
-                const p = s.gap.replace(/!important/g,'').trim().split(/\s+/);
-                s.gap=''; s.rowGap=p[0]; s.columnGap=p[1]||p[0];
-              }
-            });
-          },
-        } as any);
-
-        const imgData = canvas.toDataURL('image/jpeg', 0.95);
-        const pdf = new jsPDF({
-          unit: 'mm',
-          format: [dimensions.width, dimensions.height],
-          orientation: preferences.orientation as 'portrait' | 'landscape',
-        });
-
-        const pageW = dimensions.width;
-        const pageH = dimensions.height;
-        const imgW = pageW;
-        const imgH = (canvas.height * imgW) / canvas.width;
-
-        let heightLeft = imgH;
-        let position = 0;
-
-        pdf.addImage(imgData, 'JPEG', 0, position, imgW, imgH);
-        heightLeft -= pageH;
-
-        while (heightLeft > 0) {
-          position = heightLeft - imgH;
-          pdf.addPage();
-          pdf.addImage(imgData, 'JPEG', 0, position, imgW, imgH);
-          heightLeft -= pageH;
-        }
-
-        pdfBlob = pdf.output('blob');
-      } finally {
-        restoreGlobalOklch();
-        window.getComputedStyle = originalGetComputedStyle;
-      }
-
-      const filename = `${(request.title || 'School_Document').replace(/[^a-z0-9_-]+/gi, '_')}_${preferences.paperSize}_${preferences.orientation}.pdf`;
-      const reader = new FileReader();
-      const base64 = await new Promise<string>((resolve, reject) => {
-        reader.onloadend = () => {
-          const result = String(reader.result || '');
-          const comma = result.indexOf(',');
-          if (comma < 0) { reject(new Error('encode failed')); return; }
-          resolve(result.slice(comma + 1));
-        };
-        reader.onerror = () => reject(reader.error);
-        reader.readAsDataURL(pdfBlob);
-      });
-      const saved = await saveNativePdf(base64, filename);
-      window.alert(`PDF saved to ${saved.savedTo}`);
+      // Native browser print - bypasses html2canvas completely
+      const printFrame = document.createElement('iframe');
+      printFrame.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;';
+      document.body.appendChild(printFrame);
+      const fdoc = printFrame.contentWindow?.document;
+      if (!fdoc) throw new Error('Print iframe init failed');
+      const allStyles = Array.from(document.querySelectorAll('style')).map(function(s){return s.textContent || '';}).join('\n');
+      fdoc.open();
+      fdoc.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + (request.title || 'Document') + '</title><style>@page{size:' + dimensions.width + 'mm ' + dimensions.height + 'mm;margin:0}*{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}body{margin:0;padding:0;background:#fff}' + allStyles + '</style></head><body>' + container.innerHTML + '</body></html>');
+      fdoc.close();
+      await new Promise(function(r){setTimeout(r, 800);});
+      printFrame.contentWindow?.focus();
+      printFrame.contentWindow?.print();
+      setTimeout(function(){ printFrame.remove(); }, 5000);
     } catch (error: any) {
       console.error(error);
       alert('PDF failed: ' + (error?.message || error));

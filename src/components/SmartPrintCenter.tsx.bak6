@@ -1,0 +1,580 @@
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Download, Eye, FileText, Printer, RotateCcw, Settings2, X } from 'lucide-react';
+import { LocalERPDatabase } from '../lib/supabase';
+import {
+  DEFAULT_SMART_PRINT_PREFERENCES,
+  getSmartPaperDimensions,
+  loadSmartPrintPreferences,
+  openSmartPrint,
+  saveSmartPrintPreferences,
+  SMART_PRINT_EVENT,
+  SmartPaperSize,
+  SmartPrintPreferences,
+  SmartPrintRequest,
+  saveNativePdf
+} from '../lib/smartPrint';
+
+// oklch/oklab -> rgb converter for html2canvas (Android WebView doesn't support these).
+function replaceOklchWithRgb(input: string): string {
+  if (!input || typeof input !== 'string') return input;
+  if (!input.includes('oklch') && !input.includes('oklab')) return input;
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1; canvas.height = 1;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return input;
+    return input.replace(/okl(?:ch|ab)\([^)]+\)/g, (match) => {
+      try {
+        ctx.fillStyle = '#000';
+        ctx.fillStyle = match;
+        const result = ctx.fillStyle;
+        if (result && result !== '#000000' && result !== '#000') return result;
+        return match;
+      } catch { return match; }
+    });
+  } catch { return input; }
+}
+
+const PAPER_OPTIONS: SmartPaperSize[] = ['A3', 'A4', 'A5', 'Letter', 'Legal', 'Folio', 'Custom'];
+
+function oklchToRgb(str: string): string {
+  if (!str || typeof str !== 'string') return str;
+  if (!str.includes('oklch') && !str.includes('oklab')) return str;
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1; canvas.height = 1;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return str;
+    return str.replace(/okl(?:ch|ab)\([^)]+\)/g, (m) => {
+      try {
+        ctx.fillStyle = '#000';
+        ctx.fillStyle = m;
+        const r = ctx.fillStyle;
+        if (r && r !== '#000000' && r !== '#000') return r;
+      } catch {}
+      return 'rgb(0,0,0)';
+    });
+  } catch { return str; }
+}
+
+// Temporarily convert all oklch in ALL style tags across the document, and restore later
+function globalOklchPatch(): () => void {
+  const saved: Array<{ el: HTMLStyleElement; text: string }> = [];
+  document.querySelectorAll('style').forEach(styleEl => {
+    const txt = styleEl.textContent || '';
+    if (txt.includes('oklch') || txt.includes('oklab')) {
+      saved.push({ el: styleEl, text: txt });
+      styleEl.textContent = oklchToRgb(txt);
+    }
+  });
+  return () => {
+    saved.forEach(({ el, text }) => { el.textContent = text; });
+  };
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>'"]/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+  }[char] || char));
+}
+
+function collectDocumentStyles(): string {
+  return Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+    .map(node => node.outerHTML)
+    .join('\n');
+}
+
+function findPrintableElement(request: SmartPrintRequest): HTMLElement | null {
+  if (request.elementId) {
+    const byId = document.getElementById(request.elementId);
+    if (byId) return byId;
+  }
+  return document.querySelector<HTMLElement>('[data-smart-print-root="true"]')
+    || document.querySelector<HTMLElement>('.printable-area')
+    || document.querySelector<HTMLElement>('main')
+    || document.getElementById('root');
+}
+
+
+function preparePrintableContent(target: HTMLElement | null): string {
+  if (!target) return '<div>Print content is not available.</div>';
+  const clone = target.cloneNode(true) as HTMLElement;
+  clone.querySelectorAll('.screen-only,.no-print,[data-no-print="true"]').forEach(node => node.remove());
+  clone.querySelectorAll<HTMLElement>('.print-only').forEach(node => {
+    node.classList.remove('print-only');
+    node.classList.add('smart-print-visible');
+    node.style.display = 'block';
+  });
+  clone.classList.remove('screen-only','no-print');
+  clone.querySelectorAll('details').forEach(node => { if (!node.querySelector('.smart-print-visible')) node.remove(); });
+
+  // R33.12 print hygiene: No Division is a useful screen choice, but it is not
+  // part of an official class name. Strip only division-placeholder text from
+  // cloned print/PDF content while preserving real divisions such as A/B/C.
+  const textWalker = document.createTreeWalker(clone, NodeFilter.SHOW_TEXT);
+  let textNode = textWalker.nextNode();
+  while (textNode) {
+    const original = textNode.nodeValue || '';
+    let cleaned = original
+      .replace(/\(\s*No Division\s*\)/gi, '')
+      .replace(/\s*[·\-/]\s*No Division\b/gi, '')
+      .replace(/\bNo Division\s*[·\-/]\s*/gi, '')
+      .replace(/^\s*No Division\s*$/gi, '');
+    if (cleaned !== original) textNode.nodeValue = cleaned.replace(/\s{2,}/g, ' ');
+    textNode = textWalker.nextNode();
+  }
+
+  // R33.5: Smart Print clones only the requested card, not its React ancestors.
+  // Teacher Academic CSS is intentionally scoped below `.edx-teacher-ai`; without
+  // this wrapper the cloned Homework loses pre-wrap, RTL/Nastaliq, metadata-grid
+  // and print rules. That collapsed every newline into one flowing paragraph and
+  // made Class/Subject/Chapter/Date labels run together in downloaded PDFs.
+  const scopeClasses = [
+    target.closest('.edx-teacher-ai') ? 'edx-teacher-ai' : '',
+  ].filter(Boolean).join(' ');
+  return scopeClasses ? `<div class="${scopeClasses}">${clone.outerHTML}</div>` : clone.outerHTML;
+}
+
+function buildPrintableHtml(
+  request: SmartPrintRequest,
+  preferences: SmartPrintPreferences,
+  previewMode = false
+): string {
+  const dimensions = getSmartPaperDimensions(preferences);
+  const target = findPrintableElement(request);
+  const setup = LocalERPDatabase.getAcademicSetup();
+  const profile = setup?.schoolProfile || ({} as any);
+  const title = request.title || document.title || 'School Document';
+  const schoolName = profile.schoolName || 'School';
+  const schoolLine = [profile.address, profile.villageCity, profile.district, profile.state, profile.pinCode]
+    .filter(Boolean)
+    .join(', ');
+  const yearPlanMode = request.moduleName === 'year-plan';
+  const questionPaperMode = request.moduleName === 'question-paper';
+  const selfContainedDocumentMode = yearPlanMode || questionPaperMode;
+  const yearPlanHeaderEnabled = !yearPlanMode && (preferences.includeSchoolHeader || preferences.includeDocumentTitle);
+  const yearPlanFooterEnabled = !yearPlanMode && preferences.includeFooter;
+  const scale = preferences.scaleMode === 'custom' ? preferences.scalePercent / 100 : 1;
+  const fitCss = preferences.scaleMode === 'fit'
+    ? 'max-width:100%;width:100%;'
+    : preferences.scaleMode === 'custom'
+      ? `transform:scale(${scale});transform-origin:top left;width:${100 / Math.max(scale, 0.1)}%;`
+      : 'width:auto;max-width:none;';
+  const header = !questionPaperMode && yearPlanHeaderEnabled
+    ? `<header class="edunixo-print-header">
+        ${preferences.includeSchoolHeader ? `<div class="edunixo-school-name">${escapeHtml(schoolName)}</div><div class="edunixo-school-line">${escapeHtml(schoolLine || profile.schoolCode || '')}</div>` : ''}
+        ${preferences.includeDocumentTitle ? `<div class="edunixo-document-title">${escapeHtml(title)}</div>` : ''}
+      </header>`
+    : '';
+  const footer = !questionPaperMode && yearPlanFooterEnabled
+    ? `<footer class="edunixo-print-footer"><span>Generated by Classtago ERP · ${new Date().toLocaleString('en-IN')}</span>${preferences.includePageNumbers ? '<span class="edunixo-page-number"></span>' : ''}</footer>`
+    : '';
+  const content = preparePrintableContent(target);
+
+  return `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>${collectDocumentStyles()}
+  <style>
+    :root{--page-width:${dimensions.width}mm;--page-height:${dimensions.height}mm;--page-margin:${preferences.marginMm}mm}
+    *{box-sizing:border-box}html,body{margin-top:0;margin-right:0;margin-bottom:0;margin-left:0;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0;background:${previewMode ? '#e2e8f0' : '#fff'};color:#0f172a;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    body{font-family:var(--edunixo-interface-font,Inter,Arial,sans-serif)}
+    .edunixo-preview-shell{width:var(--page-width);min-height:${previewMode ? 'var(--page-height)' : '0'};margin-top:${previewMode ? '14px' : '0'};margin-right:auto;margin-bottom:${previewMode ? '14px' : '0'};margin-left:auto;background:#fff;box-shadow:${previewMode ? '0 18px 60px rgba(15,23,42,.24)' : 'none'};padding-top:var(--page-margin);padding-right:var(--page-margin);padding-bottom:var(--page-margin);padding-left:var(--page-margin);position:relative;overflow:${previewMode ? 'hidden' : 'visible'}}
+    .edunixo-print-header{text-align:center;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#0f172a;padding-bottom:7mm;margin-bottom:7mm;break-inside:avoid}
+    .edunixo-school-name{font-size:17pt;font-weight:900;text-transform:uppercase;letter-spacing:.04em}.edunixo-school-line{margin-top:2mm;font-size:8.5pt;color:#475569}.edunixo-document-title{margin-top:4mm;font-size:12pt;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+    .edunixo-print-content{${fitCss}}
+    .edunixo-print-content .no-print,.edunixo-print-content .screen-only,.edunixo-print-content [data-no-print="true"]{display:none!important}
+    .edunixo-print-content .smart-print-visible{display:block!important}
+    .edunixo-print-content table{border-collapse:collapse;max-width:100%}.edunixo-print-content thead{display:table-header-group}.edunixo-print-content tfoot{display:table-footer-group}.edunixo-print-content tr,.edunixo-print-content img,.edunixo-print-content .avoid-print-break{break-inside:avoid;page-break-inside:avoid}
+    .edunixo-print-content [class*="fixed"],.edunixo-print-content [class*="sticky"]{position:static!important}.edunixo-print-content [class*="overflow-"]{overflow:visible!important;max-height:none!important}
+    .edunixo-print-content .smart-print-source{display:block!important;position:static!important;left:auto!important;top:auto!important;visibility:visible!important;opacity:1!important}
+    /* R33.5 Homework print safety: these rules are deliberately unscoped so the
+       PDF remains structured even if a module wrapper is changed in the future. */
+    .edunixo-print-content .homework-print-document{display:block!important;width:100%;overflow:visible!important}
+    .edunixo-print-content .homework-print-title{margin-top:0;margin-right:0;margin-bottom:5mm;margin-left:0;text-align:center;font-size:16pt;font-weight:900;letter-spacing:.04em}
+    .edunixo-print-content .homework-print-meta{display:flex!important; flex-wrap:wrap!important;row-gap:2.5mm;column-gap:8mm;margin-top:0;margin-right:0;margin-bottom:6mm;margin-left:0;padding-top:3.5mm;padding-right:4mm;padding-bottom:3.5mm;padding-left:4mm;border-width:1px;border-style:solid;border-color:#cbd5e1;border-radius:2mm;font-size:9.5pt;line-height:1.45;direction:ltr;text-align:left;break-inside:avoid;page-break-inside:avoid}
+    .edunixo-print-content .homework-print-meta span{display:block;min-width:0;overflow-wrap:anywhere}
+    .edunixo-print-content .homework-print-meta span:nth-child(3){grid-column:1/-1}
+    .edunixo-print-content .generated-print-content{display:block!important;width:100%;height:auto!important;max-height:none!important;overflow:visible!important;white-space:pre-wrap!important;unicode-bidi:plaintext;overflow-wrap:break-word;word-break:normal}
+    .edunixo-print-content .generated-print-content[dir="rtl"]{direction:rtl;text-align:right}
+    .edunixo-print-content .generated-print-content[dir="ltr"]{direction:ltr;text-align:left}
+    .edunixo-print-content .homework-print-line{display:block;white-space:pre-wrap;min-height:1em;margin-top:0;margin-right:0;margin-bottom:1.4mm;margin-left:0;break-inside:avoid;page-break-inside:avoid}
+    .edunixo-print-content .homework-print-line.is-blank{min-height:2.6mm;margin:0}
+    ${yearPlanMode ? `
+    /* R33.8 Year Plan PDF parity: html2canvas renders screen media, so the old
+       @media print override never removed the 1900px screen min-width. These
+       unscoped rules force the full June-April table inside real A3 landscape. */
+    .edunixo-preview-shell{padding-top:5mm!important;padding-right:5mm!important;padding-bottom:5mm!important;padding-left:5mm!important;overflow:visible!important}
+    .edunixo-print-content{width:100%!important;max-width:none!important;transform:none!important}
+    .edunixo-print-content .year-plan-print-root{width:100%!important;max-width:100%!important;margin-top:0!important;margin-right:0!important;margin-bottom:0!important;margin-left:0!important;padding-top:0!important;padding-right:0!important;padding-bottom:0!important;padding-left:0!important;border:0!important;border-radius:0!important;overflow:visible!important}
+    .edunixo-print-content .year-plan-document-head{margin-top:0!important;margin-right:0!important;margin-bottom:3mm!important;margin-left:0!important;padding:0 0 2.5mm!important}
+    .edunixo-print-content .year-plan-school{font-size:11pt!important}
+    .edunixo-print-content .year-plan-main-title{font-size:13pt!important;row-gap:6mm!important;column-gap:6mm!important;margin-top:1mm!important}
+    .edunixo-print-content .year-plan-meta{font-size:7.4pt!important;row-gap:1mm!important;column-gap:5mm!important;margin-top:2mm!important}
+    .edunixo-print-content .year-plan-table-scroll{width:100%!important;max-width:100%!important;overflow:visible!important;border:0!important;border-radius:0!important}
+    .edunixo-print-content .year-plan-table-scroll .year-plan-table,.edunixo-print-content .year-plan-table{width:100%!important;min-width:0!important;max-width:100%!important;table-layout:fixed!important;font-size:7pt!important;line-height:1.22!important}
+    .edunixo-print-content .year-plan-table th,.edunixo-print-content .year-plan-table td{min-width:0!important;max-width:none!important;padding-top:0!important;padding-right:0!important;padding-bottom:0!important;padding-left:0!important;overflow:hidden!important;vertical-align:top!important}
+    .edunixo-print-content .year-plan-table thead th{font-size:7.2pt!important;padding-top:1.2mm!important;padding-right:.45mm!important;padding-bottom:1.2mm!important;padding-left:.45mm!important;white-space:normal!important}
+    .edunixo-print-content .year-plan-table .year-plan-subject-head{width:24mm!important;min-width:24mm!important}
+    .edunixo-print-content .year-plan-subject-cell{width:24mm!important;padding-top:1.2mm!important;padding-right:.6mm!important;padding-bottom:1.2mm!important;padding-left:.6mm!important;font-size:7.1pt!important;vertical-align:middle!important}
+    .edunixo-print-content .year-plan-cell-print{min-height:0!important;padding-top:1.1mm!important;padding-right:.65mm!important;padding-bottom:1.1mm!important;padding-left:.65mm!important;font-size:7pt!important;line-height:1.24!important;white-space:pre-wrap!important;overflow-wrap:break-word!important;word-break:normal!important;unicode-bidi:plaintext!important}
+    .edunixo-print-content .year-plan-signatures{display:flex!important; flex-wrap:wrap!important;row-gap:20mm!important;column-gap:20mm!important;margin-top:5mm!important;font-size:7pt!important;text-align:center!important}
+    ` : ''}
+    ${questionPaperMode ? `
+    /* R33.10 Question Paper: this is a student write-on paper. Preserve answer
+       spaces and let the document grow across A4 pages instead of scaling them away. */
+    .edunixo-preview-shell{padding-top:10mm!important;padding-right:10mm!important;padding-bottom:10mm!important;padding-left:10mm!important;overflow:visible!important}
+    .edunixo-print-content{width:100%!important;max-width:none!important;transform:none!important}
+    .edunixo-print-content .paper-sheet{width:100%!important;max-width:none!important;margin-top:0!important;margin-right:0!important;margin-bottom:0!important;margin-left:0!important;padding-top:0!important;padding-right:0!important;padding-bottom:0!important;padding-left:0!important;border:0!important;box-shadow:none!important}
+    .edunixo-print-content .qp-model-answer-offscreen{position:static!important;left:auto!important;top:auto!important;width:100%!important;max-width:none!important;z-index:auto!important;pointer-events:auto!important}
+    .edunixo-print-content .qp-model-answer-title{margin-top:2mm!important;margin-right:0!important;margin-bottom:4mm!important;margin-left:0!important;text-align:center!important;font-size:14pt!important;font-weight:900!important}
+    .edunixo-print-content .qp-model-answer-response{margin-top:1.5mm!important;padding-top:1.5mm!important;padding-right:2mm!important;padding-bottom:1.5mm!important;padding-left:2mm!important;background:#fff!important;border-left-width:.7mm!important;border-left-style:solid!important;border-left-color:#64748b!important;white-space:pre-wrap!important;break-inside:avoid!important;page-break-inside:avoid!important}
+    .edunixo-print-content .qp-model-answer-item,.edunixo-print-content .qp-model-answer-match-wrap{break-inside:avoid!important;page-break-inside:avoid!important}
+    .edunixo-print-content .school-header{border-bottom:0!important;padding-bottom:1mm!important;margin-bottom:1.5mm!important}
+    .edunixo-print-content .school-header h1{margin:0!important}
+    .edunixo-print-content .school-header p{margin:1mm 0 0!important}
+    .edunixo-print-content .paper-meta{border-bottom-width:2px!important;border-bottom-style:solid!important;border-bottom-color:#172033!important;padding-top:2mm!important;padding-right:0!important;padding-bottom:2.5mm!important;padding-left:0!important;margin-bottom:2mm!important}
+    .edunixo-print-content .question-row{break-inside:avoid!important;page-break-inside:avoid!important;margin:5mm 0!important}
+    .edunixo-print-content .question-row-rtl{grid-template-columns:50px 1fr 44px!important}
+    .edunixo-print-content .question-row-rtl .qno{grid-column:3!important;grid-row:1!important;text-align:right!important;direction:ltr!important}
+    .edunixo-print-content .question-row-rtl .qbody{grid-column:2!important;grid-row:1!important}
+    .edunixo-print-content .question-row-rtl .marks{grid-column:1!important;grid-row:1!important;text-align:left!important;direction:ltr!important}
+    /* R33.13: pattern rows are main numbered sections; generated items are
+       sub-questions under that heading instead of becoming Q1/Q2/Q3 themselves. */
+    .edunixo-print-content .qp-sections{display:flex!important;flex-direction:column!important;gap:4mm!important}
+    .edunixo-print-content .qp-section{margin-top:0!important;margin-right:0!important;margin-bottom:5mm!important;margin-left:0!important;break-inside:auto!important;page-break-inside:auto!important}
+    .edunixo-print-content .qp-section-head{margin-top:0!important;margin-right:0!important;margin-bottom:2mm!important;margin-left:0!important;padding-top:0!important;padding-right:0!important;padding-bottom:0!important;padding-left:0!important;break-after:avoid!important;page-break-after:avoid!important}
+    .edunixo-print-content .qp-section-title{font-size:11.5pt!important;line-height:1.55!important}
+    .edunixo-print-content .qp-section-marks{font-size:10.5pt!important}
+    .edunixo-print-content .qp-section-items{display:flex!important;flex-direction:column!important;gap:3.2mm!important}
+    .edunixo-print-content .qp-subquestion-row{break-inside:avoid!important;page-break-inside:avoid!important}
+    .edunixo-print-content .qp-subno{font-size:10.5pt!important}
+    .edunixo-print-content .qp-section-match-wrap{break-inside:avoid!important;page-break-inside:avoid!important}
+    .edunixo-print-content .qp-answer-area,.edunixo-print-content .qp-match-table{break-inside:avoid!important;page-break-inside:avoid!important}
+    .edunixo-print-content .qp-answer-line{height:7.2mm!important;border-bottom:1px solid #9ca3af!important}
+    .edunixo-print-content .qp-working-box.small{min-height:32mm!important}.edunixo-print-content .qp-working-box.medium{min-height:48mm!important}.edunixo-print-content .qp-working-box.large{min-height:66mm!important}
+    .edunixo-print-content .qp-diagram-box.medium{min-height:55mm!important}.edunixo-print-content .qp-diagram-box.large{min-height:78mm!important}
+    ` : ''}
+    .edunixo-print-footer{position:static!important;clear:both;display:flex;justify-content:space-between;row-gap:8mm;column-gap:8mm;border-top-width:1px;border-top-style:solid;border-top-color:#cbd5e1;margin-top:8mm;padding-top:3mm;font-size:7.5pt;color:#64748b;break-inside:avoid;page-break-inside:avoid}
+    .edunixo-page-number:after{content:"Page " counter(page)}
+    @page{size:${dimensions.width}mm ${dimensions.height}mm;margin:0}
+    @media print{html,body{background:#fff}.edunixo-preview-shell{width:var(--page-width);min-height:0;margin-top:0;margin-right:0;margin-bottom:0;margin-left:0;box-shadow:none}.no-print,.screen-only{display:none!important}.smart-print-visible{display:block!important}}
+  </style></head><body><div class="edunixo-preview-shell">${header}<section class="edunixo-print-content">${content}</section>${footer}</div></body></html>`;
+}
+
+export default function SmartPrintCenter() {
+  const [request, setRequest] = useState<SmartPrintRequest | null>(null);
+  const [preferences, setPreferences] = useState<SmartPrintPreferences>(() => loadSmartPrintPreferences());
+  const [busy, setBusy] = useState(false);
+  const previewRef = useRef<HTMLIFrameElement | null>(null);
+  const nativePrintRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    const handleRequest = (event: Event) => {
+      const detail = (event as CustomEvent<SmartPrintRequest>).detail || {};
+      setRequest(detail);
+      setPreferences(previous => ({
+        ...previous,
+        orientation: detail.orientation || previous.orientation,
+        paperSize: detail.paperSize || previous.paperSize
+      }));
+    };
+    window.addEventListener(SMART_PRINT_EVENT, handleRequest as EventListener);
+
+    const nativePrint = window.print.bind(window);
+    nativePrintRef.current = nativePrint;
+    (window as any).__edunixoNativePrint = nativePrint;
+    window.print = () => openSmartPrint({ title: document.title || 'School Document' });
+
+    return () => {
+      window.removeEventListener(SMART_PRINT_EVENT, handleRequest as EventListener);
+      window.print = nativePrint;
+      if ((window as any).__edunixoNativePrint === nativePrint) delete (window as any).__edunixoNativePrint;
+    };
+  }, []);
+
+  useEffect(() => {
+    saveSmartPrintPreferences(preferences);
+  }, [preferences]);
+
+  const previewHtml = useMemo(
+    () => request ? buildPrintableHtml(request, preferences, true) : '',
+    [request, preferences]
+  );
+
+  const dimensions = getSmartPaperDimensions(preferences);
+
+  const runNativePrint = () => {
+    if (!request) return;
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (isMobile) {
+      // Android WebView iframe print is unreliable - generate PDF instead
+      downloadPdf();
+      return;
+    }
+    const frame = document.createElement('iframe');
+    frame.setAttribute('aria-hidden', 'true');
+    frame.style.position = 'fixed';
+    frame.style.right = '0';
+    frame.style.bottom = '0';
+    frame.style.width = '1px';
+    frame.style.height = '1px';
+    frame.style.border = '0';
+    document.body.appendChild(frame);
+    const doc = frame.contentDocument;
+    if (!doc) return;
+    doc.open();
+    doc.write(buildPrintableHtml(request, preferences, false));
+    doc.close();
+    const doPrint = () => {
+      frame.contentWindow?.focus();
+      frame.contentWindow?.print();
+      window.setTimeout(() => frame.remove(), 1800);
+    };
+    const images = Array.from(doc.images);
+    if (!images.length || images.every(image => image.complete)) window.setTimeout(doPrint, 350);
+    else {
+      let pending = images.length;
+      const done = () => { pending -= 1; if (pending <= 0) window.setTimeout(doPrint, 250); };
+      images.forEach(image => {
+        image.addEventListener('load', done, { once: true });
+        image.addEventListener('error', done, { once: true });
+      });
+      window.setTimeout(doPrint, 2800);
+    }
+  };
+
+  const downloadPdf = async () => {
+    if (!request || busy) return;
+    setBusy(true);
+    let container: HTMLDivElement | null = null;
+    try {
+      // Build the printable HTML, then inject into main document so styles apply correctly
+      const printableHtml = buildPrintableHtml(request, preferences, false);
+
+      // Parse the full HTML and extract body content
+      const parser = new DOMParser();
+      const parsedDoc = parser.parseFromString(printableHtml, 'text/html');
+
+      // Create a container in main document
+      container = document.createElement('div');
+      container.style.cssText = 'position:fixed;left:-99999px;top:0;background:#ffffff;box-sizing:border-box;';
+      container.style.width = `${dimensions.width}mm`;
+      container.style.minHeight = `${dimensions.height}mm`;
+      container.className = 'edunixo-pdf-capture-root';
+
+      // Copy style tags from parsed doc to container's wrapper
+      const styleTags = Array.from(parsedDoc.querySelectorAll('style, link[rel="stylesheet"]'));
+      styleTags.forEach(styleEl => container!.appendChild(styleEl.cloneNode(true)));
+
+      // Wrap body content
+      const bodyWrapper = document.createElement('div');
+      bodyWrapper.style.cssText = 'background:#ffffff;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0;margin-top:0;margin-right:0;margin-bottom:0;margin-left:0;';
+      const bodyContent = parsedDoc.body;
+      while (bodyContent.firstChild) {
+        bodyWrapper.appendChild(bodyContent.firstChild);
+      }
+      container.appendChild(bodyWrapper);
+      document.body.appendChild(container);
+
+      // Wait for fonts/images
+      await new Promise(resolve => window.setTimeout(resolve, 250));
+      const imgs = Array.from(container.querySelectorAll('img'));
+      if (imgs.some(img => !img.complete)) {
+        await Promise.race([
+          Promise.all(imgs.map(img => img.complete ? Promise.resolve() : new Promise<void>(r => {
+            img.addEventListener('load', () => r(), { once: true });
+            img.addEventListener('error', () => r(), { once: true });
+          }))),
+          new Promise(r => window.setTimeout(r, 2400)),
+        ]);
+      }
+
+      // Globally patch oklch before html2canvas runs
+      const restoreGlobalOklch = globalOklchPatch();
+
+      // Override getComputedStyle so html2canvas never sees oklch
+      const originalGetComputedStyle = window.getComputedStyle;
+      window.getComputedStyle = function(el: Element, pseudoEl?: string | null) {
+        const style = originalGetComputedStyle.call(window, el, pseudoEl);
+        return new Proxy(style, {
+          get(target: any, prop: string | symbol) {
+            const val = target[prop as any];
+            if (prop === 'getPropertyValue') {
+              return function(propertyName: string) {
+                const originalVal = target.getPropertyValue(propertyName);
+                if (typeof originalVal === 'string' && (originalVal.includes('oklch') || originalVal.includes('oklab'))) {
+                  return oklchToRgb(originalVal);
+                }
+                return originalVal;
+              };
+            }
+            if (typeof val === 'string' && (val.includes('oklch') || val.includes('oklab'))) {
+              return oklchToRgb(val);
+            }
+            if (typeof val === 'function') {
+              return val.bind(target);
+            }
+            return val;
+          }
+        }) as any;
+      } as any;
+
+      let pdfBlob: Blob;
+      try {
+        // Use html2canvas-pro (supports oklch) + jsPDF directly
+        // @ts-ignore
+        const html2canvas = (await import('html2canvas-pro')).default;
+        const { jsPDF } = await import('jspdf');
+
+        const canvas = await html2canvas(container, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff',
+          scrollY: 0,
+          scrollX: 0,
+          windowWidth: container.scrollWidth,
+          windowHeight: container.scrollHeight,
+          onclone: (clonedDoc) => {
+            clonedDoc.querySelectorAll('*').forEach((el) => {
+              const s = el.style; if (!s) return;
+              if (s.margin && s.margin.includes(' ')) {
+                const p = s.margin.replace(/!important/g,'').trim().split(/\s+/);
+                s.margin=''; s.marginTop=p[0]||'0'; s.marginRight=p[1]||p[0]||'0'; s.marginBottom=p[2]||p[0]||'0'; s.marginLeft=p[3]||p[1]||p[0]||'0';
+              }
+              if (s.padding && s.padding.includes(' ')) {
+                const p = s.padding.replace(/!important/g,'').trim().split(/\s+/);
+                s.padding=''; s.paddingTop=p[0]||'0'; s.paddingRight=p[1]||p[0]||'0'; s.paddingBottom=p[2]||p[0]||'0'; s.paddingLeft=p[3]||p[1]||p[0]||'0';
+              }
+              if (s.border && s.border.includes(' ') && !s.border.includes('none')) {
+                const p = s.border.replace(/!important/g,'').trim().split(/\s+/);
+                if (p.length >= 3) { s.border=''; s.borderWidth=p[0]; s.borderStyle=p[1]; s.borderColor=p.slice(2).join(' '); }
+              }
+              if (s.boxShadow) s.boxShadow='none';
+              if (s.flex && s.flex.includes(' ')) {
+                const p = s.flex.replace(/!important/g,'').trim().split(/\s+/);
+                s.flex='';
+                if (p.length===1){s.flexGrow=p[0];s.flexShrink='1';s.flexBasis='0%';}
+                else if (p.length===2){s.flexGrow=p[0];s.flexShrink=p[1];s.flexBasis='0%';}
+                else if (p.length>=3){s.flexGrow=p[0];s.flexShrink=p[1];s.flexBasis=p[2];}
+              }
+              if (s.gap && s.gap.includes(' ')) {
+                const p = s.gap.replace(/!important/g,'').trim().split(/\s+/);
+                s.gap=''; s.rowGap=p[0]; s.columnGap=p[1]||p[0];
+              }
+            });
+          },
+        } as any);
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        const pdf = new jsPDF({
+          unit: 'mm',
+          format: [dimensions.width, dimensions.height],
+          orientation: preferences.orientation as 'portrait' | 'landscape',
+        });
+
+        const pageW = dimensions.width;
+        const pageH = dimensions.height;
+        const imgW = pageW;
+        const imgH = (canvas.height * imgW) / canvas.width;
+
+        let heightLeft = imgH;
+        let position = 0;
+
+        pdf.addImage(imgData, 'JPEG', 0, position, imgW, imgH);
+        heightLeft -= pageH;
+
+        while (heightLeft > 0) {
+          position = heightLeft - imgH;
+          pdf.addPage();
+          pdf.addImage(imgData, 'JPEG', 0, position, imgW, imgH);
+          heightLeft -= pageH;
+        }
+
+        pdfBlob = pdf.output('blob');
+      } finally {
+        restoreGlobalOklch();
+        window.getComputedStyle = originalGetComputedStyle;
+      }
+
+      const filename = `${(request.title || 'School_Document').replace(/[^a-z0-9_-]+/gi, '_')}_${preferences.paperSize}_${preferences.orientation}.pdf`;
+      const reader = new FileReader();
+      const base64 = await new Promise<string>((resolve, reject) => {
+        reader.onloadend = () => {
+          const result = String(reader.result || '');
+          const comma = result.indexOf(',');
+          if (comma < 0) { reject(new Error('encode failed')); return; }
+          resolve(result.slice(comma + 1));
+        };
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(pdfBlob);
+      });
+      const saved = await saveNativePdf(base64, filename);
+      window.alert(`PDF saved to ${saved.savedTo}`);
+    } catch (error: any) {
+      console.error(error);
+      alert('PDF failed: ' + (error?.message || error));
+    } finally {
+      container?.remove();
+      setBusy(false);
+    }
+  };
+
+  if (!request) return null;
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/75 p-0 sm:p-3 backdrop-blur-md no-print">
+      <div className="flex h-screen sm:h-[95vh] w-full max-w-full sm:max-w-[96rem] flex-col overflow-hidden rounded-none sm:rounded-[1.75rem] border border-white/10 bg-slate-100 shadow-2xl">
+        <div className="flex items-center justify-between border-b border-slate-200 bg-white px-5 py-4">
+          <div className="flex items-center gap-3">
+            <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-cyan-500 to-indigo-600 text-white"><Printer className="h-5 w-5" /></div>
+            <div><p className="text-[10px] font-black uppercase tracking-[.22em] text-cyan-700">Website-wide Smart Print Setup</p><h2 className="text-lg font-black text-slate-900">{request.title || 'School Document'}</h2></div>
+          </div>
+          <button onClick={() => setRequest(null)} className="rounded-xl border border-slate-200 bg-white p-2 text-slate-500 hover:bg-slate-50"><X className="h-5 w-5" /></button>
+        </div>
+
+        <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[360px_minmax(0,1fr)]">
+          <aside className="overflow-y-auto border-r border-slate-200 bg-white p-5">
+            <div className="space-y-5">
+              <section>
+                <label className="mb-2 block text-[11px] font-black uppercase tracking-wider text-slate-500">Paper size</label>
+                <select value={preferences.paperSize} onChange={e => setPreferences(p => ({ ...p, paperSize: e.target.value as any }))} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold text-slate-700">
+                  {PAPER_OPTIONS.map(size => <option key={size} value={size}>{size}</option>)}
+                </select>
+              </section>
+
+              {preferences.paperSize === 'Custom' && <section className="grid grid-cols-2 gap-3"><label className="text-xs font-bold text-slate-600">Width (mm)<input type="number" min="50" max="1000" value={preferences.customWidthMm} onChange={e => setPreferences(p => ({ ...p, customWidthMm: Number(e.target.value) }))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2" /></label><label className="text-xs font-bold text-slate-600">Height (mm)<input type="number" min="50" max="1000" value={preferences.customHeightMm} onChange={e => setPreferences(p => ({ ...p, customHeightMm: Number(e.target.value) }))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2" /></label></section>}
+
+              <section>
+                <label className="mb-2 block text-[11px] font-black uppercase tracking-wider text-slate-500">Orientation</label>
+                <select value={preferences.orientation} onChange={e => setPreferences(p => ({ ...p, orientation: e.target.value as 'portrait' | 'landscape' }))} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold text-slate-700">
+                  <option value="portrait">Portrait</option>
+                  <option value="landscape">Landscape</option>
+                </select>
+              </section>
+
+              <section><label className="mb-1 flex items-center justify-between text-xs font-bold text-slate-600"><span>Margins</span><span>{preferences.marginMm} mm</span></label><input type="range" min="0" max="30" step="1" value={preferences.marginMm} onChange={e => setPreferences(p => ({ ...p, marginMm: Number(e.target.value) }))} className="w-full" /></section>
+
+              <section><label className="mb-2 block text-[11px] font-black uppercase tracking-wider text-slate-500">Scaling</label><select value={preferences.scaleMode} onChange={e => setPreferences(p => ({ ...p, scaleMode: e.target.value as SmartPrintPreferences['scaleMode'] }))} className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-bold"><option value="fit">Fit to page</option><option value="actual">Actual size</option><option value="custom">Custom scale</option></select>{preferences.scaleMode === 'custom' && <div className="mt-3"><label className="flex justify-between text-xs font-bold text-slate-600"><span>Scale</span><span>{preferences.scalePercent}%</span></label><input type="range" min="50" max="150" value={preferences.scalePercent} onChange={e => setPreferences(p => ({ ...p, scalePercent: Number(e.target.value) }))} className="w-full" /></div>}</section>
+
+              <section>
+                <details className="rounded-xl border border-slate-200 bg-white">
+                  <summary className="cursor-pointer select-none px-3 py-2.5 text-[11px] font-black uppercase tracking-wider text-slate-500">Header &amp; footer</summary>
+                  <div className="space-y-2 p-3 pt-1">{[['includeSchoolHeader','School details'],['includeDocumentTitle','Document title'],['includeFooter','Footer'],['includePageNumbers','Page numbers']].map(([key,label]) => <label key={key} className="flex items-center justify-between rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700"><span>{label}</span><input type="checkbox" checked={Boolean(preferences[key as keyof SmartPrintPreferences])} onChange={e => setPreferences(p => ({ ...p, [key]: e.target.checked }))} /></label>)}</div>
+                </details>
+              </section>
+
+              <div className="rounded-xl border border-cyan-200 bg-cyan-50 p-3 text-xs leading-5 text-cyan-900"><strong>{dimensions.width.toFixed(1)} × {dimensions.height.toFixed(1)} mm</strong><br />Generated PDF and print layout use the selected paper dimensions. In the printer dialog, select the same physical paper size.</div>
+
+              <button onClick={() => setPreferences(DEFAULT_SMART_PRINT_PREFERENCES)} className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-black text-slate-600 hover:bg-slate-50"><RotateCcw className="h-4 w-4" />Reset defaults</button>
+            </div>
+          </aside>
+
+          <section className="flex min-h-0 flex-col bg-slate-200/70">
+            <div className="flex items-center justify-between border-b border-slate-300 bg-slate-50 px-4 py-3"><div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-600"><Eye className="h-4 w-4" />Live print preview</div><div className="text-xs font-bold text-slate-500">Tables repeat headings and avoid row cuts automatically</div></div>
+            <div className="min-h-0 flex-1 overflow-auto p-4"><div className="min-w-fit"><iframe ref={previewRef} title="Smart print preview" srcDoc={previewHtml} className="h-full min-h-[640px] w-full min-w-[640px] rounded-xl border border-slate-300 bg-white shadow-inner" /></div></div>
+            <div className="flex flex-col gap-2 border-t border-slate-300 bg-white px-4 pt-3 pb-24 sm:flex-row sm:flex-wrap sm:justify-end sm:gap-3 sm:px-5 sm:py-4"><button onClick={() => setRequest(null)} className="order-3 w-full rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-black text-slate-600 sm:order-1 sm:w-auto">Cancel</button><button onClick={downloadPdf} disabled={busy} className="order-1 flex w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 py-2.5 text-xs font-black text-white disabled:opacity-50 sm:order-2 sm:w-auto"><Download className="h-4 w-4" />{busy ? 'Generating PDF…' : 'Download PDF'}</button><button onClick={runNativePrint} className="order-2 flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-xs font-black text-white sm:order-3 sm:w-auto"><Printer className="h-4 w-4" />Print</button></div>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}
