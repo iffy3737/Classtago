@@ -346,11 +346,12 @@ export default function SmartPrintCenter() {
     setBusy(true);
     try {
       const isWebView = /wv|WebView|Android.*Version\/\d+\.\d+/.test(navigator.userAgent) || (window as any).Capacitor;
+      const marginPx = preferences.marginMm;
       if (isWebView) {
         const { toPng } = await import("html-to-image");
         const { jsPDF } = await import("jspdf");
-        const targetEl = document.querySelector(".edunixo-print-content") as HTMLElement;
-        if (!targetEl) throw new Error("Print content not found");
+        const targetEl = document.querySelector(".edunixo-preview-shell") as HTMLElement || document.querySelector(".edunixo-print-content") as HTMLElement;
+        if (!targetEl) throw new Error("Print content not found. Please ensure the preview is loaded.");
         const dataUrl = await toPng(targetEl, { quality: 0.95, pixelRatio: 2, backgroundColor: "#ffffff" });
         const pdf = new jsPDF({ unit: "mm", format: [dimensions.width, dimensions.height], orientation: preferences.orientation as any });
         const pdfWidth = dimensions.width;
@@ -374,10 +375,11 @@ export default function SmartPrintCenter() {
         document.body.appendChild(printFrame);
         const fdoc = printFrame.contentWindow?.document;
         if (!fdoc) throw new Error("Print init failed");
-        const contentEl = document.querySelector(".edunixo-print-content") as HTMLElement;
+        const contentEl = document.querySelector(".edunixo-preview-shell") as HTMLElement || document.querySelector(".edunixo-print-content") as HTMLElement;
         const allStyles = Array.from(document.querySelectorAll("style")).map((s) => s.textContent || "").join("\n");
+        const marginMm = preferences.marginMm;
         fdoc.open();
-        fdoc.write("<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>" + (request.title || "Document") + "</title><style>@page{size:" + dimensions.width + "mm " + dimensions.height + "mm;margin:0}body{margin:0;padding:0}</style>" + allStyles + "</head><body>" + (contentEl ? contentEl.innerHTML : "") + "</body></html>");
+        fdoc.write("<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>" + (request.title || "Document") + "</title><style>@page{size:" + dimensions.width + "mm " + dimensions.height + "mm;margin:" + marginMm + "mm}body{margin:0;padding:0}" + allStyles + "</style></head><body>" + (contentEl ? contentEl.innerHTML : "") + "</body></html>");
         fdoc.close();
         await new Promise((r) => setTimeout(r, 800));
         printFrame.contentWindow?.focus();
