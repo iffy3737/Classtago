@@ -189,7 +189,7 @@ function buildPrintableHtml(
        PDF remains structured even if a module wrapper is changed in the future. */
     .edunixo-print-content .homework-print-document{display:block!important;width:100%;overflow:visible!important}
     .edunixo-print-content .homework-print-title{margin-top:0;margin-right:0;margin-bottom:5mm;margin-left:0;text-align:center;font-size:16pt;font-weight:900;letter-spacing:.04em}
-    .edunixo-print-content .homework-print-meta{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:2.5mm 8mm;margin-top:0;margin-right:0;margin-bottom:6mm;margin-left:0;padding-top:3.5mm;padding-right:4mm;padding-bottom:3.5mm;padding-left:4mm;border-width:1px;border-style:solid;border-color:#cbd5e1;border-radius:2mm;font-size:9.5pt;line-height:1.45;direction:ltr;text-align:left;break-inside:avoid;page-break-inside:avoid}
+    .edunixo-print-content .homework-print-meta{display:flex!important; flex-wrap:wrap!important;row-gap:2.5mm;column-gap:8mm;margin-top:0;margin-right:0;margin-bottom:6mm;margin-left:0;padding-top:3.5mm;padding-right:4mm;padding-bottom:3.5mm;padding-left:4mm;border-width:1px;border-style:solid;border-color:#cbd5e1;border-radius:2mm;font-size:9.5pt;line-height:1.45;direction:ltr;text-align:left;break-inside:avoid;page-break-inside:avoid}
     .edunixo-print-content .homework-print-meta span{display:block;min-width:0;overflow-wrap:anywhere}
     .edunixo-print-content .homework-print-meta span:nth-child(3){grid-column:1/-1}
     .edunixo-print-content .generated-print-content{display:block!important;width:100%;height:auto!important;max-height:none!important;overflow:visible!important;white-space:pre-wrap!important;unicode-bidi:plaintext;overflow-wrap:break-word;word-break:normal}
@@ -203,11 +203,11 @@ function buildPrintableHtml(
        unscoped rules force the full June-April table inside real A3 landscape. */
     .edunixo-preview-shell{padding-top:5mm!important;padding-right:5mm!important;padding-bottom:5mm!important;padding-left:5mm!important;overflow:visible!important}
     .edunixo-print-content{width:100%!important;max-width:none!important;transform:none!important}
-    .edunixo-print-content .year-plan-print-root{width:100%!important;max-width:100%!important;margin-top:0!important;margin-right:0!important;margin-bottom:0!important;margin-left:0!important;padding-top:0!important;padding-right:0!important;padding-bottom:0!important;padding-left:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important}
+    .edunixo-print-content .year-plan-print-root{width:100%!important;max-width:100%!important;margin-top:0!important;margin-right:0!important;margin-bottom:0!important;margin-left:0!important;padding-top:0!important;padding-right:0!important;padding-bottom:0!important;padding-left:0!important;border:0!important;border-radius:0!important;overflow:visible!important}
     .edunixo-print-content .year-plan-document-head{margin-top:0!important;margin-right:0!important;margin-bottom:3mm!important;margin-left:0!important;padding:0 0 2.5mm!important}
     .edunixo-print-content .year-plan-school{font-size:11pt!important}
-    .edunixo-print-content .year-plan-main-title{font-size:13pt!important;gap:6mm!important;margin-top:1mm!important}
-    .edunixo-print-content .year-plan-meta{font-size:7.4pt!important;gap:1mm 5mm!important;margin-top:2mm!important}
+    .edunixo-print-content .year-plan-main-title{font-size:13pt!important;row-gap:6mm!important;column-gap:6mm!important;margin-top:1mm!important}
+    .edunixo-print-content .year-plan-meta{font-size:7.4pt!important;row-gap:1mm!important;column-gap:5mm!important;margin-top:2mm!important}
     .edunixo-print-content .year-plan-table-scroll{width:100%!important;max-width:100%!important;overflow:visible!important;border:0!important;border-radius:0!important}
     .edunixo-print-content .year-plan-table-scroll .year-plan-table,.edunixo-print-content .year-plan-table{width:100%!important;min-width:0!important;max-width:100%!important;table-layout:fixed!important;font-size:7pt!important;line-height:1.22!important}
     .edunixo-print-content .year-plan-table th,.edunixo-print-content .year-plan-table td{min-width:0!important;max-width:none!important;padding-top:0!important;padding-right:0!important;padding-bottom:0!important;padding-left:0!important;overflow:hidden!important;vertical-align:top!important}
@@ -215,7 +215,7 @@ function buildPrintableHtml(
     .edunixo-print-content .year-plan-table .year-plan-subject-head{width:24mm!important;min-width:24mm!important}
     .edunixo-print-content .year-plan-subject-cell{width:24mm!important;padding-top:1.2mm!important;padding-right:.6mm!important;padding-bottom:1.2mm!important;padding-left:.6mm!important;font-size:7.1pt!important;vertical-align:middle!important}
     .edunixo-print-content .year-plan-cell-print{min-height:0!important;padding-top:1.1mm!important;padding-right:.65mm!important;padding-bottom:1.1mm!important;padding-left:.65mm!important;font-size:7pt!important;line-height:1.24!important;white-space:pre-wrap!important;overflow-wrap:break-word!important;word-break:normal!important;unicode-bidi:plaintext!important}
-    .edunixo-print-content .year-plan-signatures{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:20mm!important;margin-top:5mm!important;font-size:7pt!important;text-align:center!important}
+    .edunixo-print-content .year-plan-signatures{display:flex!important; flex-wrap:wrap!important;row-gap:20mm!important;column-gap:20mm!important;margin-top:5mm!important;font-size:7pt!important;text-align:center!important}
     ` : ''}
     ${questionPaperMode ? `
     /* R33.10 Question Paper: this is a student write-on paper. Preserve answer
@@ -252,7 +252,7 @@ function buildPrintableHtml(
     .edunixo-print-content .qp-working-box.small{min-height:32mm!important}.edunixo-print-content .qp-working-box.medium{min-height:48mm!important}.edunixo-print-content .qp-working-box.large{min-height:66mm!important}
     .edunixo-print-content .qp-diagram-box.medium{min-height:55mm!important}.edunixo-print-content .qp-diagram-box.large{min-height:78mm!important}
     ` : ''}
-    .edunixo-print-footer{position:static!important;clear:both;display:flex;justify-content:space-between;gap:8mm;border-top-width:1px;border-top-style:solid;border-top-color:#cbd5e1;margin-top:8mm;padding-top:3mm;font-size:7.5pt;color:#64748b;break-inside:avoid;page-break-inside:avoid}
+    .edunixo-print-footer{position:static!important;clear:both;display:flex;justify-content:space-between;row-gap:8mm;column-gap:8mm;border-top-width:1px;border-top-style:solid;border-top-color:#cbd5e1;margin-top:8mm;padding-top:3mm;font-size:7.5pt;color:#64748b;break-inside:avoid;page-break-inside:avoid}
     .edunixo-page-number:after{content:"Page " counter(page)}
     @page{size:${dimensions.width}mm ${dimensions.height}mm;margin:0}
     @media print{html,body{background:#fff}.edunixo-preview-shell{width:var(--page-width);min-height:0;margin-top:0;margin-right:0;margin-bottom:0;margin-left:0;box-shadow:none}.no-print,.screen-only{display:none!important}.smart-print-visible{display:block!important}}
@@ -433,6 +433,35 @@ export default function SmartPrintCenter() {
           scrollX: 0,
           windowWidth: container.scrollWidth,
           windowHeight: container.scrollHeight,
+          onclone: (clonedDoc) => {
+            clonedDoc.querySelectorAll('*').forEach((el) => {
+              const s = el.style; if (!s) return;
+              if (s.margin && s.margin.includes(' ')) {
+                const p = s.margin.replace(/!important/g,'').trim().split(/\s+/);
+                s.margin=''; s.marginTop=p[0]||'0'; s.marginRight=p[1]||p[0]||'0'; s.marginBottom=p[2]||p[0]||'0'; s.marginLeft=p[3]||p[1]||p[0]||'0';
+              }
+              if (s.padding && s.padding.includes(' ')) {
+                const p = s.padding.replace(/!important/g,'').trim().split(/\s+/);
+                s.padding=''; s.paddingTop=p[0]||'0'; s.paddingRight=p[1]||p[0]||'0'; s.paddingBottom=p[2]||p[0]||'0'; s.paddingLeft=p[3]||p[1]||p[0]||'0';
+              }
+              if (s.border && s.border.includes(' ') && !s.border.includes('none')) {
+                const p = s.border.replace(/!important/g,'').trim().split(/\s+/);
+                if (p.length >= 3) { s.border=''; s.borderWidth=p[0]; s.borderStyle=p[1]; s.borderColor=p.slice(2).join(' '); }
+              }
+              if (s.boxShadow) s.boxShadow='none';
+              if (s.flex && s.flex.includes(' ')) {
+                const p = s.flex.replace(/!important/g,'').trim().split(/\s+/);
+                s.flex='';
+                if (p.length===1){s.flexGrow=p[0];s.flexShrink='1';s.flexBasis='0%';}
+                else if (p.length===2){s.flexGrow=p[0];s.flexShrink=p[1];s.flexBasis='0%';}
+                else if (p.length>=3){s.flexGrow=p[0];s.flexShrink=p[1];s.flexBasis=p[2];}
+              }
+              if (s.gap && s.gap.includes(' ')) {
+                const p = s.gap.replace(/!important/g,'').trim().split(/\s+/);
+                s.gap=''; s.rowGap=p[0]; s.columnGap=p[1]||p[0];
+              }
+            });
+          },
         } as any);
 
         const imgData = canvas.toDataURL('image/jpeg', 0.95);
