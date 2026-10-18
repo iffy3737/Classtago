@@ -12123,13 +12123,15 @@ const R33_9_QUESTION_PAPER_SCHEMA:any={type:'object',properties:{title:{type:'st
       let combinedMeta:any=null;
       try{combinedMeta=qpCombinedMetaFromPattern(pattern);}catch{}
       if(combinedMeta?.combinedGroupId||combinedMeta?.collaborationKey)return res.status(400).json({error:'Combined Subject papers must use the Combined Question Paper save flow.'});
-      const projection:any=await resolveQuestionPaperProjectionAssignment(req.activeUser,scope);
+      let projection:any=null;
+      // R33.20b: legacy edunixo_teacher_assignments table may be missing in the live DB; never block the save on it.
+      try{projection=await resolveQuestionPaperProjectionAssignment(req.activeUser,scope);}catch{projection=null;}
       const uuidLike=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-      const candidateIds:string[]=[...new Set([projection?.id,scope?.assignmentId,String(scope?.id||'').replace(/^subject:/,''),assignmentId].map((value:any)=>String(value||'').trim()).filter((value:string)=>uuidLike.test(value)))];
+      const candidateIds:string[]=[...new Set([projection?.id,scope?.assignmentId,String(scope?.id||'').replace(/^subject:/,'')].map((value:any)=>String(value||'').trim()).filter((value:string)=>uuidLike.test(value)))];
       if(!candidateIds.length)return res.status(409).json({error:'Question Paper save could not resolve the assigned Subject. Ask Headmaster to open Academic Assignments once, then retry.'});
       let savedAssignmentId:string=candidateIds[0];
       const canonicalRead=await supabaseAdmin.from('school_subject_teacher_assignments').select('id').in('id',candidateIds);
-      if(!canonicalRead.error){const known=new Set((canonicalRead.data||[]).map((row:any)=>String(row.id)));savedAssignmentId=candidateIds.find((value:string)=>known.has(value))||candidateIds[0];}
+      if(!canonicalRead.error){const known=new Set((canonicalRead.data||[]).map((row:any)=>String(row.id)));const hit=candidateIds.find((value:string)=>known.has(value));if(!hit)return res.status(409).json({error:'Question Paper save could not match this Subject assignment (checked '+candidateIds.length+' ids: '+candidateIds.map((value:string)=>value.slice(0,8)).join(', ')+'). Ask Headmaster to open Academic Assignments once, then retry.'});savedAssignmentId=hit;}
       const questions=Array.isArray(paper.questions)?paper.questions:[];
       if(!questions.length)return res.status(400).json({error:'Question Paper must contain at least one question.'});
       const totalMarks=Number(paper.totalMarks||0),durationMinutes=Math.round(Number(paper.durationMinutes||0));
