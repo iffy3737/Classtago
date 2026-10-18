@@ -35,7 +35,7 @@ export function SmartPrintDialog({ disabled = false, targetId, title = 'Teacher 
 
   return (
     <>
-      <button className="btn secondary screen-only" disabled={disabled} onClick={() => setOpen(true)}>{moduleName === 'question-paper' ? 'Page Setup & Print' : buttonLabel}</button>
+      <button className="btn secondary screen-only" disabled={disabled} onClick={() => setOpen(true)}>{buttonLabel !== 'Smart Print / PDF' ? buttonLabel : (moduleName === 'question-paper' ? 'Page Setup & Print' : buttonLabel)}</button>
       {open && (
         <div className="modal screen-only" role="dialog" aria-modal="true">
           <div className="modal-card">
