@@ -350,7 +350,8 @@ export default function SmartPrintCenter() {
       if (isWebView) {
         const { toPng } = await import("html-to-image");
         const { jsPDF } = await import("jspdf");
-        const targetEl = document.querySelector(".edunixo-preview-shell") as HTMLElement || document.querySelector(".edunixo-print-content") as HTMLElement;
+        const pvDoc = previewRef.current?.contentDocument;
+        const targetEl = (pvDoc?.querySelector(".edunixo-preview-shell") || pvDoc?.querySelector(".edunixo-print-content") || document.querySelector(".edunixo-preview-shell") || document.querySelector(".edunixo-print-content")) as HTMLElement;
         if (!targetEl) throw new Error("Print content not found. Please ensure the preview is loaded.");
         const dataUrl = await toPng(targetEl, { quality: 0.95, pixelRatio: 2, backgroundColor: "#ffffff" });
         const pdf = new jsPDF({ unit: "mm", format: [dimensions.width, dimensions.height], orientation: preferences.orientation as any });
