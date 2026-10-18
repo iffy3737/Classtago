@@ -12107,6 +12107,60 @@ const R33_9_QUESTION_PAPER_SCHEMA:any={type:'object',properties:{title:{type:'st
     }catch(error:any){return res.status(500).json({engineBuild:'R33.19',error:error?.message||'Combined Question Paper could not be saved.'});}
   });
 
+  // R33.20: normal (non-combined) Question Paper save through the server. The Supabase RPC edunixo_save_question_paper does not exist in the live database.
+  app.post('/api/teacher/academic/save-question-paper',verifyActiveUserAuth,async(req:ActiveUserRequest,res)=>{
+    res.setHeader('Cache-Control','no-store');
+    if(!req.activeUser||!supabaseAdmin)return res.status(503).json({error:'Question Paper save service is unavailable.'});
+    if(!['teacher','class_teacher','headmaster'].includes(req.activeUser.role))return res.status(403).json({error:'Assigned Subject Teacher access is required.'});
+    try{
+      const paper=req.body?.paper&&typeof req.body.paper==='object'?req.body.paper:null;
+      if(!paper)return res.status(400).json({error:'Question Paper payload is required.'});
+      const assignmentId=String(paper.assignmentId||'').trim(),exam=String(paper.exam||'').trim();
+      if(!assignmentId||!R33_9_EXAMS.has(exam))return res.status(400).json({error:'Assigned scope and valid examination are required.'});
+      const{scope}=await resolveQuestionPaperScope(req,assignmentId);
+      if(!scope)return res.status(403).json({error:'This Question Paper scope is not assigned to this Teacher.'});
+      const pattern=Array.isArray(paper.pattern)?paper.pattern:[];
+      let combinedMeta:any=null;
+      try{combinedMeta=qpCombinedMetaFromPattern(pattern);}catch{}
+      if(combinedMeta?.combinedGroupId||combinedMeta?.collaborationKey)return res.status(400).json({error:'Combined Subject papers must use the Combined Question Paper save flow.'});
+      const projection:any=await resolveQuestionPaperProjectionAssignment(req.activeUser,scope);
+      const uuidLike=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const candidateIds:string[]=[...new Set([projection?.id,scope?.assignmentId,String(scope?.id||'').replace(/^subject:/,''),assignmentId].map((value:any)=>String(value||'').trim()).filter((value:string)=>uuidLike.test(value)))];
+      if(!candidateIds.length)return res.status(409).json({error:'Question Paper save could not resolve the assigned Subject. Ask Headmaster to open Academic Assignments once, then retry.'});
+      let savedAssignmentId:string=candidateIds[0];
+      const canonicalRead=await supabaseAdmin.from('school_subject_teacher_assignments').select('id').in('id',candidateIds);
+      if(!canonicalRead.error){const known=new Set((canonicalRead.data||[]).map((row:any)=>String(row.id)));savedAssignmentId=candidateIds.find((value:string)=>known.has(value))||candidateIds[0];}
+      const questions=Array.isArray(paper.questions)?paper.questions:[];
+      if(!questions.length)return res.status(400).json({error:'Question Paper must contain at least one question.'});
+      const totalMarks=Number(paper.totalMarks||0),durationMinutes=Math.round(Number(paper.durationMinutes||0));
+      if(!Number.isFinite(totalMarks)||totalMarks<=0||!Number.isFinite(durationMinutes)||durationMinutes<1)return res.status(400).json({error:'Valid Question Paper marks and duration are required.'});
+      const questionMarks=questions.reduce((sum:number,q:any)=>sum+Number(q?.marks||0),0);
+      if(Math.abs(questionMarks-totalMarks)>0.001)return res.status(400).json({error:'Question marks total '+questionMarks+' does not equal paper total '+totalMarks+'.'});
+      const materialIds=[...new Set((Array.isArray(paper.materialIds)?paper.materialIds:[]).map((value:any)=>String(value||'').trim()).filter(Boolean))].slice(0,100);
+      if(materialIds.length){
+        const materialRead=await supabaseAdmin.from('edunixo_study_materials').select('id').in('id',materialIds).eq('school_id',req.activeUser.schoolId).eq('owner_teacher_id',req.activeUser.userId);
+        if(materialRead.error)throw materialRead.error;
+        if((materialRead.data||[]).length!==materialIds.length)return res.status(403).json({error:'One or more Question Paper Textbook sources are outside this Teacher account.'});
+      }
+      let supersedesId:string|null=null;
+      if(paper.id){const prior=await supabaseAdmin.from('edunixo_question_papers').select('id').eq('id',String(paper.id)).eq('owner_teacher_id',req.activeUser.userId).maybeSingle();if(!prior.error&&prior.data)supersedesId=String((prior.data as any).id);}
+      const questionRows=questions.map((q:any,index:number)=>{
+        const internal=Array.isArray(q?.internalSources)?q.internalSources.filter((row:any)=>row&&typeof row==='object'):[];
+        const carrier={sectionIndex:Number(q?.sectionIndex||0)||undefined,sourceKind:q?.sourceKind,answerLayout:q?.answerLayout,answerLines:Number(q?.answerLines||0)||undefined,options:Array.isArray(q?.options)?q.options:[],matchLeft:Array.isArray(q?.matchLeft)?q.matchLeft:[],matchRight:Array.isArray(q?.matchRight)?q.matchRight:[],modelAnswer:String(q?.modelAnswer||'')};
+        const sources=internal.length?internal:[{}];
+        const enriched=sources.map((source:any,sourceIndex:number)=>sourceIndex===0?{...source,__edunixoQuestion:carrier,...(q?.modelAnswer?{modelAnswer:String(q.modelAnswer)}:{})}:source);
+        return{text:String(q?.text||'').trim(),marks:Number(q?.marks||0),type:String(q?.type||'Other').trim()||'Other',order_no:Number(q?.orderNo||index+1),internal_sources:enriched};
+      });
+      if(questionRows.some((row:any)=>!row.text||!Number.isFinite(row.marks)||row.marks<=0))return res.status(400).json({error:'Question Paper contains an invalid question row.'});
+      const insertPaper=await supabaseAdmin.from('edunixo_question_papers').insert({owner_teacher_id:req.activeUser.userId,supersedes_paper_id:supersedesId,assignment_id:savedAssignmentId,exam,material_ids:materialIds,chapters:Array.isArray(paper.chapters)?paper.chapters.map((value:any)=>String(value||'')).filter(Boolean).slice(0,120):[],total_marks:totalMarks,duration_minutes:durationMinutes,medium:String(paper.medium||scope.medium||'School Medium').slice(0,120),title:String(paper.title||'Question Paper').trim().slice(0,300),instructions:Array.isArray(paper.instructions)?paper.instructions.map((value:any)=>String(value||'')).filter(Boolean).slice(0,30):[],pattern,review_status:'final'}).select('id').single();
+      if(insertPaper.error)throw insertPaper.error;
+      const paperId=String((insertPaper.data as any)?.id||'');
+      if(!paperId)throw new Error('Question Paper save did not return a document ID.');
+      const insertQuestions=await supabaseAdmin.from('edunixo_question_paper_questions').insert(questionRows.map((row:any)=>({...row,question_paper_id:paperId})));
+      if(insertQuestions.error){await supabaseAdmin.from('edunixo_question_papers').delete().eq('id',paperId).eq('owner_teacher_id',req.activeUser.userId);throw insertQuestions.error;}
+      return res.status(201).json({id:paperId});
+    }catch(error:any){return res.status(500).json({error:error?.message||'Question Paper could not be saved.'});}
+  });
   app.get('/api/teacher/academic/combined-subject-groups-r33-19',verifyActiveUserAuth,async(req:ActiveUserRequest,res)=>{
     res.setHeader('Cache-Control','no-store');
     if(!req.activeUser||!supabaseAdmin)return res.status(503).json({engineBuild:'R33.19',error:'Combined Subject service is unavailable.'});

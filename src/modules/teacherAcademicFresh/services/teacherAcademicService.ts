@@ -381,45 +381,13 @@ export async function saveQuestionPaper(paper: QuestionPaperDraft): Promise<stri
     if (!payload?.id) throw new Error('Combined Question Paper save did not return a document ID.');
     return String(payload.id);
   }
-  const db = requireSupabase();
-  const { data, error } = await db.rpc('edunixo_save_question_paper', {
-    p_supersedes_paper_id: paper.id ?? null,
-    p_assignment_id: paper.assignmentId,
-    p_exam: paper.exam,
-    p_material_ids: paper.materialIds,
-    p_chapters: paper.chapters,
-    p_total_marks: paper.totalMarks,
-    p_duration_minutes: paper.durationMinutes,
-    p_medium: paper.medium,
-    p_title: paper.title,
-    p_instructions: paper.instructions,
-    p_pattern: paper.pattern,
-    p_questions: paper.questions.map((q) => ({
-      text: q.text,
-      marks: q.marks,
-      type: q.type,
-      sectionIndex: q.sectionIndex,
-      orderNo: q.orderNo,
-      sourceKind: q.sourceKind,
-      answerLayout: q.answerLayout,
-      answerLines: q.answerLines,
-      options: q.options ?? [],
-      matchLeft: q.matchLeft ?? [],
-      matchRight: q.matchRight ?? [],
-      modelAnswer: q.modelAnswer ?? '',
-      internalSources: (q.internalSources || []).map((source, index) => index === 0 ? {
-        ...source,
-        __edunixoQuestion: {
-          sectionIndex: q.sectionIndex, sourceKind: q.sourceKind, answerLayout: q.answerLayout, answerLines: q.answerLines,
-          options: q.options ?? [], matchLeft: q.matchLeft ?? [], matchRight: q.matchRight ?? [], modelAnswer: q.modelAnswer ?? '',
-        },
-        ...(q.modelAnswer ? { modelAnswer: q.modelAnswer } : {}),
-      } : source),
-    })),
+  const payload = await academicApiJson<any>('/api/teacher/academic/save-question-paper', {
+    method: 'POST',
+    body: JSON.stringify({ paper }),
+    cache: 'no-store',
   });
-  if (error) throw error;
-  if (!data) throw new Error('Question Paper save did not return a document ID.');
-  return String(data);
+  if (!payload?.id) throw new Error('Question Paper save did not return a document ID.');
+  return String(payload.id);
 }
 
 export async function listCombinedSubjectGroups(input: { assignmentId: string; exam?: QuestionPaperExam }): Promise<CombinedSubjectGroup[]> {
