@@ -541,10 +541,18 @@ export default function RoleModuleMenu({
   .edx-role-module-drawer .space-y-3,
   .edx-role-module-drawer > div > div,
   .edx-role-module-drawer .min-h-0,
-  .edx-role-module-drawer .flex-1 {
+  .edx-role-module-drawer div.flex-1 {
     background: #05060a !important;
     background-color: #05060a !important;
     background-image: none !important;
+  }
+
+  /* Footer brand card: dark, global light section rule ko override */
+  .edx-role-module-drawer section.edx-role-module-brand-card {
+    background: #0a0e1a !important;
+    background-color: #0a0e1a !important;
+    border-color: rgba(26, 31, 46, 1) !important;
+    box-shadow: none !important;
   }
 `}</style>
             <header className="edx-role-module-drawer-header relative z-10 shrink-0 p-4 pt-[max(1rem,env(safe-area-inset-top))] sm:p-5 sm:pt-[max(1.25rem,env(safe-area-inset-top))]" style={{ backgroundColor: '#05060a' }}>
@@ -568,23 +576,7 @@ export default function RoleModuleMenu({
                 </button>
               </div>
 
-              <label className="edx-role-module-search mt-4 flex min-h-12 items-center gap-3 rounded-xl px-4" style={{ border: '1px solid #06b6d4', backgroundColor: '#0a0e1a', boxShadow: '0 0 20px rgba(6,182,212,0.15)', color: '#06b6d4' }}>
-                <Search className="h-4 w-4 shrink-0" style={{ color: '#06b6d4', stroke: '#06b6d4' }} />
-                <input
-                  value={query}
-                  onChange={(event: ChangeEvent<HTMLInputElement>) => setQuery(event.target.value)}
-                  placeholder={copy.search}
-                  autoComplete="off"
-                  autoCorrect="off"
-                  autoCapitalize="off"
-                  spellCheck={false}
-                  inputMode="search"
-                  enterKeyHint="search"
-                  className="w-full bg-transparent py-3 text-sm font-semibold outline-none" style={{ color: '#06b6d4', caretColor: '#06b6d4' }} placeholder="Search modules..."
-                  onPointerDown={(e) => e.stopPropagation()}
-                  onTouchStart={(e) => e.stopPropagation()}
-                />
-              </label>
+              
             </header>
 
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3 sm:p-4">
@@ -630,7 +622,7 @@ export default function RoleModuleMenu({
                 </div>
               )}
 
-              <section className="mt-5 overflow-hidden rounded-2xl border" style={{ borderColor: 'rgba(26,31,46,1)', backgroundColor: '#0a0e1a' }}>
+              <section className="edx-role-module-brand-card mt-5 overflow-hidden rounded-2xl border" style={{ borderColor: 'rgba(26,31,46,1)', backgroundColor: '#0a0e1a' }}>
                 <div className="border-b px-4 py-4" style={{ borderColor: 'rgba(6,182,212,0.15)', background: 'linear-gradient(135deg, rgba(6,182,212,0.08), rgba(139,92,246,0.05))' }}>
                   <div className="flex items-center gap-3">
                     <div className="grid h-11 w-11 place-items-center rounded-2xl" style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4)', boxShadow: '0 10px 28px rgba(6,182,212,0.3)' }}>
