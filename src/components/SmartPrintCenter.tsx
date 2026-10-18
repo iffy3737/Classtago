@@ -447,10 +447,49 @@ export default function SmartPrintCenter() {
 
           <section className="flex min-h-0 flex-col bg-slate-200/70">
             <div className="flex items-center justify-between border-b border-slate-300 bg-slate-50 px-4 py-3"><div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-600"><Eye className="h-4 w-4" />Live print preview</div><div className="text-xs font-bold text-slate-500">Tables repeat headings and avoid row cuts automatically</div></div>
-            <div className="min-h-0 flex-1 overflow-auto p-4"><div className="min-w-fit"><iframe ref={previewRef} title="Smart print preview" srcDoc={previewHtml} className="h-full min-h-[640px] w-full min-w-[640px] rounded-xl border border-slate-300 bg-white shadow-inner" /></div></div>
+            <div className="min-h-0 flex-1 overflow-auto p-2 sm:p-4"><SmartPreviewFitFrame frameRef={previewRef} srcDoc={previewHtml} pageWidthMm={Number(dimensions.width) || 210} /></div>
             <div className="flex flex-col gap-2 border-t border-slate-300 bg-white px-4 pt-3 pb-24 sm:flex-row sm:flex-wrap sm:justify-end sm:gap-3 sm:px-5 sm:py-4"><button onClick={() => setRequest(null)} className="order-3 w-full rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-black text-slate-600 sm:order-1 sm:w-auto">Cancel</button><button onClick={downloadPdf} disabled={busy} className="order-1 flex w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 py-2.5 text-xs font-black text-white disabled:opacity-50 sm:order-2 sm:w-auto"><Download className="h-4 w-4" />{busy ? 'Generating PDF…' : 'Download PDF'}</button><button onClick={runNativePrint} className="order-2 flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-xs font-black text-white sm:order-3 sm:w-auto"><Printer className="h-4 w-4" />Print</button></div>
           </section>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// Preview ko phone ki width me fit karta hai (badi screen par pehle jaisa full-width).
+function SmartPreviewFitFrame({ srcDoc, frameRef, pageWidthMm }: { srcDoc: string; frameRef: React.Ref<HTMLIFrameElement>; pageWidthMm: number }) {
+  const boxRef = useRef<HTMLDivElement | null>(null);
+  const [boxW, setBoxW] = useState(0);
+  const [pageW, setPageW] = useState(Math.round(((pageWidthMm || 210) * 96) / 25.4) + 32);
+  useEffect(() => {
+    const el = boxRef.current;
+    if (!el) return;
+    const measure = () => setBoxW(el.clientWidth);
+    measure();
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
+    ro?.observe(el);
+    window.addEventListener('resize', measure);
+    return () => { ro?.disconnect(); window.removeEventListener('resize', measure); };
+  }, []);
+  const scale = boxW > 0 ? Math.min(1, boxW / pageW) : 1;
+  const fit = scale < 1;
+  const frameH = Math.max(640, Math.round(640 / scale));
+  return (
+    <div ref={boxRef} className="w-full">
+      <div style={fit ? { width: Math.floor(pageW * scale), height: Math.round(frameH * scale), overflow: 'hidden', margin: '0 auto' } : { height: frameH }}>
+        <iframe
+          ref={frameRef}
+          title="Smart print preview"
+          srcDoc={srcDoc}
+          onLoad={(e) => {
+            try {
+              const sh = e.currentTarget.contentDocument?.querySelector('.edunixo-preview-shell') as HTMLElement | null;
+              if (sh) setPageW(Math.ceil(sh.getBoundingClientRect().width) + 32);
+            } catch { /* ignore */ }
+          }}
+          className="rounded-xl border border-slate-300 bg-white shadow-inner"
+          style={fit ? { width: pageW, height: frameH, transform: 'scale(' + scale + ')', transformOrigin: 'top left' } : { width: '100%', height: '100%' }}
+        />
       </div>
     </div>
   );
