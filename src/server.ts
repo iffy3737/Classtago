@@ -12261,6 +12261,38 @@ const R33_9_QUESTION_PAPER_SCHEMA:any={type:'object',properties:{title:{type:'st
       return res.json({paper:{id:String(paper.id),exam:String(paper.exam||''),assignmentId:String(paper.assignment_id||''),materialIds:list(paper.material_ids),chapters:list(paper.chapters),totalMarks:Number(paper.total_marks||0),durationMinutes:Number(paper.duration_minutes||0),medium:String(paper.medium||''),title:String(paper.title||''),instructions:list(paper.instructions),pattern,questions,reviewStatus:status}});
     }catch(error:any){return res.status(500).json({error:error?.message||'Saved Question Paper could not be opened.'});}
   });
+  // R33.22: Teacher deletes their own saved Question Paper (plus older hidden versions of it).
+  app.post('/api/teacher/academic/question-papers/:paperId/delete',verifyActiveUserAuth,async(req:ActiveUserRequest,res)=>{
+    res.setHeader('Cache-Control','no-store');
+    if(!req.activeUser||!supabaseAdmin)return res.status(503).json({error:'Question Paper delete service is unavailable.'});
+    if(!['teacher','class_teacher','headmaster'].includes(req.activeUser.role))return res.status(403).json({error:'Assigned Subject Teacher access is required.'});
+    try{
+      const paperId=String(req.params.paperId||'').trim();
+      if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(paperId))return res.status(400).json({error:'Valid Question Paper ID is required.'});
+      const adminDb:any=supabaseAdmin;
+      const userId=req.activeUser.userId;
+      const isCombined=(row:any)=>Array.isArray(row?.pattern)&&row.pattern.some((item:any)=>item&&(item.combinedGroupId||item.combinedWorkflow));
+      const first=await adminDb.from('edunixo_question_papers').select('id,title,exam,assignment_id,review_status,pattern,supersedes_paper_id').eq('id',paperId).eq('owner_teacher_id',userId).maybeSingle();
+      if(first.error)throw first.error;
+      const paper:any=first.data;
+      if(!paper)return res.status(404).json({error:'Question Paper was not found in this Teacher account.'});
+      if(isCombined(paper))return res.status(409).json({error:'Combined Subject papers cannot be deleted here.'});
+      const ids:string[]=[paperId];
+      let cursor=String(paper.supersedes_paper_id||'');
+      for(let step=0;step<25&&cursor&&!ids.includes(cursor);step+=1){
+        const prior=await adminDb.from('edunixo_question_papers').select('id,pattern,supersedes_paper_id').eq('id',cursor).eq('owner_teacher_id',userId).maybeSingle();
+        if(prior.error||!prior.data||isCombined(prior.data))break;
+        ids.push(String(prior.data.id));
+        cursor=String(prior.data.supersedes_paper_id||'');
+      }
+      const removed=await adminDb.from('edunixo_question_papers').delete().in('id',ids).eq('owner_teacher_id',userId);
+      if(removed.error)throw removed.error;
+      try{
+        await adminDb.from('audit_logs').insert({actor_user_id:userId,actor_kind:'school_user',action:'question_paper.deleted_by_teacher',entity_type:'question_paper',entity_id:paperId,school_id:req.activeUser.schoolId,summary:'Teacher deleted a saved Question Paper.',before_state:{title:paper.title,exam:paper.exam,review_status:paper.review_status},after_state:{deleted:true},metadata:{assignment_id:paper.assignment_id,deleted_versions:ids.length}});
+      }catch(auditError){console.warn('Question Paper delete audit event could not be written.',auditError);}
+      return res.json({success:true,deleted:ids.length});
+    }catch(error:any){return res.status(500).json({error:error?.message||'Question Paper could not be deleted.'});}
+  });
   app.get('/api/teacher/academic/combined-subject-groups-r33-19',verifyActiveUserAuth,async(req:ActiveUserRequest,res)=>{
     res.setHeader('Cache-Control','no-store');
     if(!req.activeUser||!supabaseAdmin)return res.status(503).json({engineBuild:'R33.19',error:'Combined Subject service is unavailable.'});

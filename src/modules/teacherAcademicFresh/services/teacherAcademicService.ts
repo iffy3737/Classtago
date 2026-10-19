@@ -417,6 +417,11 @@ export async function loadSavedQuestionPaper(paperId: string): Promise<QuestionP
   return payload.paper as QuestionPaperDraft;
 }
 
+// R33.22: delete one of the Teacher's own saved Question Papers.
+export async function deleteSavedQuestionPaper(paperId: string): Promise<void> {
+  await academicApiJson<any>('/api/teacher/academic/question-papers/' + encodeURIComponent(paperId) + '/delete', { method: 'POST', cache: 'no-store' });
+}
+
 export async function listCombinedSubjectGroups(input: { assignmentId: string; exam?: QuestionPaperExam }): Promise<CombinedSubjectGroup[]> {
   if (!input.assignmentId) return [];
   const query = new URLSearchParams({ assignmentId: input.assignmentId });
