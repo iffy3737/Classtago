@@ -59,13 +59,23 @@ void installNativeAppRuntime();
   document.addEventListener('pointerdown', (event) => {
     if (isTextField(event.target as Element | null)) lastPointerOnFieldAt = Date.now();
   }, true);
-  const observer = new MutationObserver(() => {
+  // R33.23: blur ONLY a field that was auto-focused inside a node that was just added to the page
+  // (autoFocus when a screen opens). The old observer blurred the focused field on ANY page change,
+  // which closed the keyboard while typing.
+  const observer = new MutationObserver((records) => {
     const active = document.activeElement;
-    if (isTextField(active) && Date.now() - lastPointerOnFieldAt > 350) {
-      try { (active as HTMLElement).blur(); } catch {}
+    if (!isTextField(active) || !(active instanceof HTMLElement)) return;
+    if (Date.now() - lastPointerOnFieldAt <= 350) return;
+    for (const record of records) {
+      for (const node of Array.from(record.addedNodes)) {
+        if (node instanceof Element && (node === active || node.contains(active))) {
+          try { active.blur(); } catch {}
+          return;
+        }
+      }
     }
   });
-  observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['autofocus'] });
+  observer.observe(document.body, { childList: true, subtree: true });
 })();
 
 // Cache-bust premium theme: forces fresh CSS after every deploy
