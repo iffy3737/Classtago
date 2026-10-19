@@ -18,8 +18,7 @@ import {
   listStudyMaterialChapters,
   prepareHomeworkTextbookSource,
   regenerateQuestion,
-  saveQuestionPaper,
-} from '../services/teacherAcademicService';
+  saveQuestionPaper, listSavedQuestionPapers, loadSavedQuestionPaper, type SavedQuestionPaperSummary } from '../services/teacherAcademicService';
 import { resolveAcademicTextPresentation } from '../utils/languagePresentation';
 import { divisionPrintSuffix, divisionScreenLabel } from '../../../lib/divisionPresentation';
 import { subscribeMariaDynamicCommands, takePendingMariaDynamicCommands, type MariaQuestionPaperCommand } from '../../../lib/mariaClientBridge';
@@ -456,6 +455,21 @@ export function QuestionPaperPage({ assignments, materials, initialTerm, initial
 
   const chooseTerm = (value: Term) => { setTerm(value); setStep('exam'); setExam(null); setPaper(null); };
   const chooseExam = (value: QuestionPaperExam) => { setExam(value); setStep('builder'); setPaper(null); };
+  // R33.21: open a saved paper from the Saved Question Papers card.
+  const openSavedPaper = (saved: QuestionPaperDraft, row: SavedQuestionPaperSummary): string | null => {
+    const match = assignments.find((a) => a.id === saved.assignmentId)
+      || assignments.find((a) => Boolean(row.className) && Boolean(row.subjectName) && a.className === row.className && (a.division || '') === (row.division || '') && a.subjectName === row.subjectName);
+    if (!match) return 'This saved paper belongs to a Subject assignment that is not in your current assignments, so it cannot be opened here.';
+    const nextTerm: Term = String(saved.exam).startsWith('first_') ? 'first' : 'second';
+    setPaperMode('single'); setCombinedGroupId('');
+    setTerm(nextTerm); setExam(saved.exam); setStep('builder');
+    setAssignmentId(match.id); setClassId(match.className); setDivisionId(match.division); setSubjectId(match.subjectId);
+    setTotalMarks(saved.totalMarks); setDurationMinutes(saved.durationMinutes);
+    setError(''); setSaveMessage('');
+    setPaper({ ...saved, assignmentId: match.id });
+    window.setTimeout(() => document.getElementById('question-paper-print')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+    return null;
+  };
 
   const toggleChapter = (chapter: string) => {
     setChapters((current) => {
@@ -638,6 +652,7 @@ export function QuestionPaperPage({ assignments, materials, initialTerm, initial
       <div className="screen-only flex flex-wrap gap-2"><button className="back-btn" onClick={() => { setPaper(null); if (term && onBackToTerm) onBackToTerm(term); else setStep('exam'); }}>← Back to {term === 'first' ? 'First Term' : 'Second Term'} Exams</button><button className="back-btn" onClick={() => { setStep('term'); setExam(null); setPaper(null); }}>All Terms</button>{onBackToTeacher && <button className="back-btn" onClick={onBackToTeacher}>Teacher Dashboard</button>}</div>
       <header className="page-head"><div><h2>{exam ? examLabels[exam] : 'Question Paper Builder'}</h2><p>AI automatically uses the assigned Textbook. Select one or more chapters, confirm the school paper pattern, then review every generated question.</p></div><span className="pill">Teacher Review Required</span></header>
       {!assignments.length && <div className="alert warning screen-only"><strong>No assigned subject scope is available.</strong> Question Paper generation stays locked until Headmaster/Academic Setup assigns this Teacher to a Class/Division/Subject.</div>}
+      <SavedQuestionPapersCard refreshKey={paper?.id || ''} onOpen={openSavedPaper} />
       <div className="card screen-only">
         {(combinedLoading || combinedGroups.length > 0) && <div className="combined-paper-mode-box">
           <div className="card-title-row"><div><h3>Paper Type</h3></div>{combinedLoading && <small>Checking Subject Groups…</small>}</div>
@@ -755,5 +770,57 @@ export function QuestionPaperPage({ assignments, materials, initialTerm, initial
       </div>
       </>}
     </section>
+  );
+}
+
+// R33.21: Teacher's own saved Question Papers (list + open).
+function SavedQuestionPapersCard({ refreshKey, onOpen }: { refreshKey: string; onOpen: (paper: QuestionPaperDraft, row: SavedQuestionPaperSummary) => string | null }) {
+  const [open, setOpen] = useState(false);
+  const [rows, setRows] = useState<SavedQuestionPaperSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [openingId, setOpeningId] = useState('');
+  const [reloadTick, setReloadTick] = useState(0);
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    void listSavedQuestionPapers()
+      .then((list) => { if (!cancelled) { setRows(list); setError(''); } })
+      .catch((e) => { if (!cancelled) setError(e instanceof Error ? e.message : 'Saved Question Papers could not be loaded.'); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [refreshKey, reloadTick]);
+  const openRow = async (row: SavedQuestionPaperSummary) => {
+    setOpeningId(row.id); setError('');
+    try {
+      const draft = await loadSavedQuestionPaper(row.id);
+      const problem = onOpen(draft, row);
+      if (problem) setError(problem); else setOpen(false);
+    } catch (e) { setError(e instanceof Error ? e.message : 'Saved Question Paper could not be opened.'); }
+    finally { setOpeningId(''); }
+  };
+  const labelOf = (value: string) => (examLabels as Record<string, string>)[value] || String(value || '').replace(/_/g, ' ');
+  const dateOf = (value: string) => { const d = new Date(value); return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString(); };
+  return (
+    <div className="card screen-only">
+      <div className="card-title-row">
+        <div><h3>Saved Question Papers{loading ? '' : ' (' + rows.length + ')'}</h3></div>
+        <div className="actions">
+          <button type="button" className="btn ghost" onClick={() => setReloadTick((n) => n + 1)} disabled={loading}>{loading ? 'Loading…' : 'Refresh'}</button>
+          <button type="button" className="btn ghost" onClick={() => setOpen((v) => !v)}>{open ? 'Hide' : 'Show'}</button>
+        </div>
+      </div>
+      {error && <div className="alert danger">{error}</div>}
+      {open && !loading && !error && rows.length === 0 && <small>No saved Question Papers yet. Save a paper with Save Final and it will appear here.</small>}
+      {open && rows.map((row) => (
+        <div key={row.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 0', borderTop: '1px solid #e2e8f0' }}>
+          <div style={{ minWidth: 0 }}>
+            <strong dir="auto" style={{ display: 'block', overflowWrap: 'anywhere' }}>{row.title || 'Question Paper'}</strong>
+            <small>{[labelOf(row.exam), [row.className, row.division].filter(Boolean).join(' '), row.subjectName, row.totalMarks + ' marks', dateOf(row.updatedAt)].filter(Boolean).join(' • ')}</small>
+          </div>
+          <button type="button" className="btn primary" onClick={() => void openRow(row)} disabled={Boolean(openingId)}>{openingId === row.id ? 'Opening…' : 'Open'}</button>
+        </div>
+      ))}
+    </div>
   );
 }

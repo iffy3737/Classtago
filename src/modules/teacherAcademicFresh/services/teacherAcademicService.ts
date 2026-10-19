@@ -390,6 +390,33 @@ export async function saveQuestionPaper(paper: QuestionPaperDraft): Promise<stri
   return String(payload.id);
 }
 
+// R33.21: Teacher's own saved Question Papers.
+export type SavedQuestionPaperSummary = {
+  id: string;
+  assignmentId: string;
+  exam: string;
+  title: string;
+  totalMarks: number;
+  durationMinutes: number;
+  reviewStatus: string;
+  updatedAt: string;
+  className?: string | null;
+  division?: string | null;
+  subjectName?: string | null;
+  academicYear?: string | null;
+};
+
+export async function listSavedQuestionPapers(): Promise<SavedQuestionPaperSummary[]> {
+  const payload = await academicApiJson<any>('/api/teacher/academic/question-papers', { cache: 'no-store' });
+  return Array.isArray(payload?.papers) ? payload.papers as SavedQuestionPaperSummary[] : [];
+}
+
+export async function loadSavedQuestionPaper(paperId: string): Promise<QuestionPaperDraft> {
+  const payload = await academicApiJson<any>('/api/teacher/academic/question-papers/' + encodeURIComponent(paperId), { cache: 'no-store' });
+  if (!payload?.paper) throw new Error('Saved Question Paper could not be opened.');
+  return payload.paper as QuestionPaperDraft;
+}
+
 export async function listCombinedSubjectGroups(input: { assignmentId: string; exam?: QuestionPaperExam }): Promise<CombinedSubjectGroup[]> {
   if (!input.assignmentId) return [];
   const query = new URLSearchParams({ assignmentId: input.assignmentId });

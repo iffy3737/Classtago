@@ -12188,6 +12188,79 @@ const R33_9_QUESTION_PAPER_SCHEMA:any={type:'object',properties:{title:{type:'st
       return res.status(201).json({id:paperId});
     }catch(error:any){return res.status(500).json({error:error?.message||'Question Paper could not be saved.'});}
   });
+  // R33.21: Teacher's own saved Question Papers (list + open). The tables have RLS ON, so reads go through the server.
+  app.get('/api/teacher/academic/question-papers',verifyActiveUserAuth,async(req:ActiveUserRequest,res)=>{
+    res.setHeader('Cache-Control','no-store');
+    if(!req.activeUser||!supabaseAdmin)return res.status(503).json({error:'Saved Question Papers are unavailable.'});
+    if(!['teacher','class_teacher','headmaster'].includes(req.activeUser.role))return res.status(403).json({error:'Assigned Subject Teacher access is required.'});
+    try{
+      const adminDb:any=supabaseAdmin;
+      const schoolId=req.activeUser.schoolId;
+      const read=await adminDb.from('edunixo_question_papers').select('id,assignment_id,exam,title,total_marks,duration_minutes,review_status,pattern,supersedes_paper_id,updated_at,created_at').eq('owner_teacher_id',req.activeUser.userId).order('updated_at',{ascending:false}).limit(120);
+      if(read.error)throw read.error;
+      const rows:any[]=read.data||[];
+      const superseded=new Set(rows.map((row:any)=>String(row.supersedes_paper_id||'')).filter(Boolean));
+      const isCombined=(row:any)=>Array.isArray(row.pattern)&&row.pattern.some((item:any)=>item&&(item.combinedGroupId||item.combinedWorkflow));
+      const visible=rows.filter((row:any)=>!superseded.has(String(row.id))&&!isCombined(row)).slice(0,60);
+      const assignmentIds=Array.from(new Set(visible.map((row:any)=>String(row.assignment_id||'')).filter(Boolean)));
+      const assignmentMap=new Map<string,any>();
+      if(assignmentIds.length){
+        const assignmentRead=await adminDb.from('school_subject_teacher_assignments').select('id,academic_year_id,class_id,division_id,subject_id').eq('school_id',schoolId).in('id',assignmentIds);
+        if(assignmentRead.error)throw assignmentRead.error;
+        const raw:any[]=assignmentRead.data||[];
+        const nameMap=async(table:string,col:string,key:string)=>{
+          const ids=Array.from(new Set(raw.map((row:any)=>String(row[key]||'')).filter(Boolean)));
+          const names=new Map<string,string>();
+          if(!ids.length)return names;
+          const read2=await adminDb.from(table).select('id,'+col).eq('school_id',schoolId).in('id',ids);
+          if(read2.error){console.warn('Saved Question Papers: name lookup failed for '+table,read2.error.message);return names;}
+          (read2.data||[]).forEach((row:any)=>names.set(String(row.id),String(row[col]||'')));
+          return names;
+        };
+        const [years,classes,divisions,subjects]=await Promise.all([nameMap('school_academic_years','year_code','academic_year_id'),nameMap('school_classes','class_name','class_id'),nameMap('school_divisions','division_name','division_id'),nameMap('subjects','subject_name','subject_id')]);
+        raw.forEach((row:any)=>assignmentMap.set(String(row.id),{academicYear:years.get(String(row.academic_year_id||''))||null,className:classes.get(String(row.class_id||''))||null,division:divisions.get(String(row.division_id||''))||null,subjectName:subjects.get(String(row.subject_id||''))||null}));
+      }
+      return res.json({papers:visible.map((row:any)=>{const a:any=assignmentMap.get(String(row.assignment_id||''))||{};return{id:String(row.id),assignmentId:String(row.assignment_id||''),exam:String(row.exam||''),title:String(row.title||''),totalMarks:Number(row.total_marks||0),durationMinutes:Number(row.duration_minutes||0),reviewStatus:String(row.review_status||'final'),updatedAt:String(row.updated_at||row.created_at||''),className:a.className||null,division:a.division||null,subjectName:a.subjectName||null,academicYear:a.academicYear||null};})});
+    }catch(error:any){return res.status(500).json({error:error?.message||'Saved Question Papers could not be loaded.'});}
+  });
+
+  app.get('/api/teacher/academic/question-papers/:paperId',verifyActiveUserAuth,async(req:ActiveUserRequest,res)=>{
+    res.setHeader('Cache-Control','no-store');
+    if(!req.activeUser||!supabaseAdmin)return res.status(503).json({error:'Saved Question Papers are unavailable.'});
+    if(!['teacher','class_teacher','headmaster'].includes(req.activeUser.role))return res.status(403).json({error:'Assigned Subject Teacher access is required.'});
+    try{
+      const paperId=String(req.params.paperId||'').trim();
+      if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(paperId))return res.status(400).json({error:'Valid Question Paper ID is required.'});
+      const adminDb:any=supabaseAdmin;
+      const paperRead=await adminDb.from('edunixo_question_papers').select('*').eq('id',paperId).eq('owner_teacher_id',req.activeUser.userId).maybeSingle();
+      if(paperRead.error)throw paperRead.error;
+      const paper:any=paperRead.data;
+      if(!paper)return res.status(404).json({error:'Question Paper was not found in this Teacher account.'});
+      const pattern:any[]=Array.isArray(paper.pattern)?paper.pattern:[];
+      if(pattern.some((item:any)=>item&&(item.combinedGroupId||item.combinedWorkflow)))return res.status(409).json({error:'Combined Subject papers open from the Combined Question Paper flow.'});
+      const questionRead=await adminDb.from('edunixo_question_paper_questions').select('*').eq('question_paper_id',paperId).order('order_no',{ascending:true});
+      if(questionRead.error)throw questionRead.error;
+      const list=(value:any)=>Array.isArray(value)?value.map((item:any)=>String(item||'')).filter(Boolean):[];
+      const readMeta=(value:any)=>{
+        const sources:any[]=Array.isArray(value)?value:[];
+        const first:any=sources.find((row:any)=>row&&typeof row==='object')||{};
+        const meta:any=first.__edunixoQuestion&&typeof first.__edunixoQuestion==='object'?first.__edunixoQuestion:{};
+        const clean=sources.map((row:any)=>{if(!row||typeof row!=='object')return null;const copy:any={...row};delete copy.__edunixoQuestion;delete copy.modelAnswer;return copy;}).filter((row:any)=>row&&Object.keys(row).length>0);
+        return{
+          sectionIndex:Number(meta.sectionIndex||0)||undefined,
+          sourceKind:String(meta.sourceKind||'')==='exercise'?'exercise':String(meta.sourceKind||'')==='whole_chapter'?'whole_chapter':undefined,
+          answerLayout:String(meta.answerLayout||'')||undefined,
+          answerLines:Number(meta.answerLines||0)||undefined,
+          options:list(meta.options),matchLeft:list(meta.matchLeft),matchRight:list(meta.matchRight),
+          modelAnswer:String(meta.modelAnswer||first.modelAnswer||''),
+          internalSources:clean
+        };
+      };
+      const questions=(questionRead.data||[]).map((row:any,index:number)=>({id:String(row.id),text:String(row.text||''),marks:Number(row.marks||0),type:String(row.type||'Other'),orderNo:Number(row.order_no||index+1),...readMeta(row.internal_sources)}));
+      const status=['ai_draft','teacher_reviewed','final'].includes(String(paper.review_status))?String(paper.review_status):'final';
+      return res.json({paper:{id:String(paper.id),exam:String(paper.exam||''),assignmentId:String(paper.assignment_id||''),materialIds:list(paper.material_ids),chapters:list(paper.chapters),totalMarks:Number(paper.total_marks||0),durationMinutes:Number(paper.duration_minutes||0),medium:String(paper.medium||''),title:String(paper.title||''),instructions:list(paper.instructions),pattern,questions,reviewStatus:status}});
+    }catch(error:any){return res.status(500).json({error:error?.message||'Saved Question Paper could not be opened.'});}
+  });
   app.get('/api/teacher/academic/combined-subject-groups-r33-19',verifyActiveUserAuth,async(req:ActiveUserRequest,res)=>{
     res.setHeader('Cache-Control','no-store');
     if(!req.activeUser||!supabaseAdmin)return res.status(503).json({engineBuild:'R33.19',error:'Combined Subject service is unavailable.'});
