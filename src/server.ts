@@ -3559,15 +3559,40 @@ async function startServer() {
     if (!supabaseAdmin || !req.authenticatedHeadmaster) return res.status(503).json({ error: 'Question Paper review is unavailable.' });
     try {
       const schoolId = req.authenticatedHeadmaster.schoolId;
-      const { data: assignments, error: assignmentError } = await supabaseAdmin
-        .from('edunixo_teacher_assignments')
-        .select('id,teacher_id,school_id,academic_year,class_name,division,subject_id,subject_name,medium')
+      // R33.20c: assignments come from canonical school_subject_teacher_assignments (the legacy assignments table is not in the live DB).
+      const adminDb: any = supabaseAdmin;
+      const assignmentRead = await adminDb
+        .from('school_subject_teacher_assignments')
+        .select('id,teacher_id,academic_year_id,class_id,division_id,subject_id')
         .eq('school_id', schoolId);
-      if (assignmentError) {
-        const setupMissing = /edunixo_teacher_assignments|relation .* does not exist/i.test(String(assignmentError.message || ''));
-        return res.status(setupMissing ? 503 : 500).json({ error: setupMissing ? 'Teacher academic cloud setup is not installed yet.' : assignmentError.message });
-      }
-      const assignmentRows = assignments || [];
+      if (assignmentRead.error) throw assignmentRead.error;
+      const assignmentRaw: any[] = assignmentRead.data || [];
+      const idsOf = (key: string) => Array.from(new Set(assignmentRaw.map((row: any) => String(row[key] || '')).filter(Boolean)));
+      const nameMapOf = async (table: string, nameCol: string, ids: string[]) => {
+        const names = new Map<string, string>();
+        if (!ids.length) return names;
+        const read = await adminDb.from(table).select('id,' + nameCol).eq('school_id', schoolId).in('id', ids);
+        if (read.error) { console.warn('Question Paper review: name lookup failed for ' + table, read.error.message); return names; }
+        (read.data || []).forEach((row: any) => names.set(String(row.id), String(row[nameCol] || '')));
+        return names;
+      };
+      const [yearNames, classNames, divisionNames, subjectNames] = await Promise.all([
+        nameMapOf('school_academic_years', 'year_code', idsOf('academic_year_id')),
+        nameMapOf('school_classes', 'class_name', idsOf('class_id')),
+        nameMapOf('school_divisions', 'division_name', idsOf('division_id')),
+        nameMapOf('subjects', 'subject_name', idsOf('subject_id'))
+      ]);
+      const assignmentRows: any[] = assignmentRaw.map((row: any) => ({
+        id: row.id,
+        teacher_id: row.teacher_id,
+        school_id: schoolId,
+        subject_id: row.subject_id,
+        academic_year: yearNames.get(String(row.academic_year_id || '')) || null,
+        class_name: classNames.get(String(row.class_id || '')) || null,
+        division: divisionNames.get(String(row.division_id || '')) || null,
+        subject_name: subjectNames.get(String(row.subject_id || '')) || null,
+        medium: null
+      }));
       const assignmentIds = assignmentRows.map((row: any) => String(row.id)).filter(Boolean);
       if (!assignmentIds.length) return res.json({ papers: [] });
 
@@ -3586,7 +3611,7 @@ async function startServer() {
         : { data: [], error: null } as any;
       if (questionsError) throw questionsError;
 
-      const teacherIds = Array.from(new Set(assignmentRows.map((row: any) => String(row.teacher_id || '')).filter(Boolean)));
+      const teacherIds = Array.from(new Set([...assignmentRows.map((row: any) => String(row.teacher_id || '')), ...visiblePapers.map((row: any) => String(row.owner_teacher_id || ''))].filter(Boolean)));
       const { data: users } = teacherIds.length
         ? await supabaseAdmin.from('users').select('id,full_name,email,username').in('id', teacherIds)
         : { data: [] } as any;
@@ -3603,7 +3628,7 @@ async function startServer() {
       return res.json({
         papers: visiblePapers.map((paper: any) => {
           const assignment: any = assignmentMap.get(String(paper.assignment_id)) || {};
-          const teacher: any = userMap.get(String(assignment.teacher_id || '')) || {};
+          const teacher: any = userMap.get(String(paper.owner_teacher_id || assignment.teacher_id || '')) || {};
           return {
             ...paper,
             teacher_name: teacher.full_name || teacher.username || teacher.email || 'Teacher',
@@ -3630,7 +3655,7 @@ async function startServer() {
       if (paperError) throw paperError;
       if (!paper) return res.status(404).json({ error: 'Question Paper was not found.' });
       const { data: assignment, error: assignmentError } = await supabaseAdmin
-        .from('edunixo_teacher_assignments').select('id,school_id').eq('id', paper.assignment_id).maybeSingle();
+        .from('school_subject_teacher_assignments').select('id,school_id').eq('id', paper.assignment_id).maybeSingle();
       if (assignmentError) throw assignmentError;
       if (!assignment || String(assignment.school_id) !== req.authenticatedHeadmaster.schoolId) return res.status(404).json({ error: 'Question Paper was not found for this school.' });
       if (paper.review_status === 'final') return res.json({ success: true, paper, alreadyFinal: true });
