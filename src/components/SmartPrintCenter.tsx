@@ -361,12 +361,64 @@ export default function SmartPrintCenter() {
         const pdf = new jsPDF({ unit: "mm", format: [dimensions.width, dimensions.height], orientation: preferences.orientation as any });
         const pdfWidth = dimensions.width;
         const pdfHeight = dimensions.height;
-        const imgProps = pdf.getImageProperties(dataUrl);
-        const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        let heightLeft = imgHeight; let position = 0;
-        pdf.addImage(dataUrl, "PNG", 0, position, pdfWidth, imgHeight);
-        heightLeft -= pdfHeight;
-        while (heightLeft > 0) { position = heightLeft - imgHeight; pdf.addPage(); pdf.addImage(dataUrl, "PNG", 0, position, pdfWidth, imgHeight); heightLeft -= pdfHeight; }
+        // PAGE_SLICER_V1: slice the capture page by page so EVERY page gets the same top/bottom margin,
+        // and move each page break up to a blank row so text lines are not cut in half.
+        const pageImg = new Image();
+        await new Promise<void>((resolve, reject) => { pageImg.onload = () => resolve(); pageImg.onerror = () => reject(new Error("PDF image could not be read.")); pageImg.src = dataUrl; });
+        const imgW = pageImg.naturalWidth;
+        const imgH = pageImg.naturalHeight;
+        const pxPerMm = imgW / pdfWidth;
+        const cssToImg = imgW / boxW;
+        const shellStyle = (targetEl.ownerDocument.defaultView || window).getComputedStyle(targetEl);
+        const padTopPx = Math.max(0, Math.round((parseFloat(shellStyle.paddingTop) || 0) * cssToImg));
+        const padBottomPx = Math.max(0, Math.round((parseFloat(shellStyle.paddingBottom) || 0) * cssToImg));
+        const pageMarginMm = Math.min(25, Math.max(5, padTopPx / pxPerMm || Number(preferences.marginMm) || 5));
+        const contentTop = padTopPx;
+        const contentBottom = Math.max(contentTop + 1, imgH - padBottomPx);
+        const perPagePx = Math.max(200, Math.floor((pdfHeight - 2 * pageMarginMm) * pxPerMm));
+        const probe = document.createElement("canvas");
+        const findBreak = (hardEnd: number): number => {
+          const rows = Math.min(Math.floor(perPagePx * 0.2), 300);
+          const top = hardEnd - rows;
+          probe.width = imgW;
+          probe.height = rows;
+          const pctx = probe.getContext("2d", { willReadFrequently: true });
+          if (!pctx || rows < 20) return hardEnd;
+          pctx.fillStyle = "#ffffff";
+          pctx.fillRect(0, 0, imgW, rows);
+          pctx.drawImage(pageImg, 0, top, imgW, rows, 0, 0, imgW, rows);
+          const px = pctx.getImageData(0, 0, imgW, rows).data;
+          for (let r = rows - 1; r >= 0; r -= 1) {
+            let blank = true;
+            const base = r * imgW * 4;
+            for (let x = 0; x < imgW; x += 2) {
+              const i = base + x * 4;
+              if (px[i] < 215 || px[i + 1] < 215 || px[i + 2] < 215) { blank = false; break; }
+            }
+            if (blank) return top + r;
+          }
+          return hardEnd;
+        };
+        let startY = contentTop;
+        let firstPage = true;
+        while (startY < contentBottom - 1) {
+          const hardEnd = Math.min(startY + perPagePx, contentBottom);
+          let endY = hardEnd < contentBottom ? findBreak(hardEnd) : contentBottom;
+          if (endY <= startY + 40) endY = hardEnd;
+          const sliceH = endY - startY;
+          const pageCanvas = document.createElement("canvas");
+          pageCanvas.width = imgW;
+          pageCanvas.height = sliceH;
+          const pageCtx = pageCanvas.getContext("2d");
+          if (!pageCtx) throw new Error("Canvas is not available for PDF pages.");
+          pageCtx.fillStyle = "#ffffff";
+          pageCtx.fillRect(0, 0, imgW, sliceH);
+          pageCtx.drawImage(pageImg, 0, startY, imgW, sliceH, 0, 0, imgW, sliceH);
+          if (!firstPage) pdf.addPage();
+          pdf.addImage(pageCanvas.toDataURL("image/jpeg", 0.92), "JPEG", 0, pageMarginMm, pdfWidth, sliceH / pxPerMm);
+          firstPage = false;
+          startY = endY;
+        }
         const isNativeShell = Boolean((window as any).Capacitor?.isNativePlatform?.()) || navigator.userAgent.includes("; wv)");
         if (isNativeShell) {
           // R33.24: never hand a multi-MB data: URL to the OS (it crashes the app). Upload and open a short https link instead.
