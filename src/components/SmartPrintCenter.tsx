@@ -357,7 +357,45 @@ export default function SmartPrintCenter() {
         const boxW = Math.max(1, targetEl.scrollWidth || targetEl.offsetWidth || 794);
         const boxH = Math.max(1, targetEl.scrollHeight || targetEl.offsetHeight || 1123);
         const safeRatio = Math.max(1, Math.min(2, Math.sqrt(16000000 / (boxW * boxH))));
-        const dataUrl = await toPng(targetEl, { quality: 0.95, pixelRatio: safeRatio, backgroundColor: "#ffffff" });
+        // NOWRAP_CAPTURE_V1: the image capture re-lays text out inside an SVG, where widths can differ by a hair.
+        // Boxes sized to their text then wrap (last letter drops down, a heading word jumps to a new line).
+        // Text that fits on ONE line in the preview is locked to one line only while the image is taken.
+        const lockedEls: Array<[HTMLElement, string]> = [];
+        let dataUrl = "";
+        try {
+          const capDoc = targetEl.ownerDocument;
+          const capWin: any = capDoc.defaultView || window;
+          try { await Promise.race([(capDoc as any).fonts?.ready, new Promise((r) => setTimeout(r, 1500))]); } catch { /* ignore */ }
+          const lineState = new Map<HTMLElement, boolean>();
+          const textWalker = capDoc.createTreeWalker(targetEl, NodeFilter.SHOW_TEXT);
+          while (textWalker.nextNode()) {
+            const textNode = textWalker.currentNode as Text;
+            if (!textNode.nodeValue || !textNode.nodeValue.trim()) continue;
+            const holder = textNode.parentElement;
+            if (!holder) continue;
+            const range = capDoc.createRange();
+            range.selectNodeContents(textNode);
+            const rects = Array.from(range.getClientRects()).filter((r) => r.width > 0 && r.height > 0);
+            let singleLine = rects.length > 0;
+            for (let i = 0; singleLine && i < rects.length; i += 1) {
+              for (let j = i + 1; j < rects.length; j += 1) {
+                const overlap = Math.min(rects[i].right, rects[j].right) - Math.max(rects[i].left, rects[j].left);
+                if (overlap > 3 && overlap > Math.min(rects[i].width, rects[j].width) * 0.25) { singleLine = false; break; }
+              }
+            }
+            lineState.set(holder, (lineState.get(holder) ?? true) && singleLine);
+          }
+          lineState.forEach((single, holder) => {
+            if (!single) return;
+            if (Array.from(holder.children).some((child) => (child.textContent || "").trim())) return;
+            const ws = String(capWin.getComputedStyle(holder).whiteSpace || "");
+            lockedEls.push([holder, holder.style.whiteSpace]);
+            holder.style.whiteSpace = /^(pre|break-spaces)/.test(ws) ? "pre" : "nowrap";
+          });
+          dataUrl = await toPng(targetEl, { quality: 0.95, pixelRatio: safeRatio, backgroundColor: "#ffffff" });
+        } finally {
+          lockedEls.forEach(([holder, previous]) => { holder.style.whiteSpace = previous; });
+        }
         const pdf = new jsPDF({ unit: "mm", format: [dimensions.width, dimensions.height], orientation: preferences.orientation as any });
         const pdfWidth = dimensions.width;
         const pdfHeight = dimensions.height;
