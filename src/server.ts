@@ -12293,6 +12293,61 @@ const R33_9_QUESTION_PAPER_SCHEMA:any={type:'object',properties:{title:{type:'st
       return res.json({success:true,deleted:ids.length});
     }catch(error:any){return res.status(500).json({error:error?.message||'Question Paper could not be deleted.'});}
   });
+  // R33.24: short-lived PDF handoff for the Android app.
+  // A multi-MB data: URL given to window.open() is forwarded to the OS as an Intent and crashes the app.
+  // The app uploads the PDF here, gets a short https link and opens it in the system browser to download.
+  const pdfHandoffStore = new Map<string, { buf: Buffer; name: string; exp: number }>();
+  const PDF_HANDOFF_TTL_MS = 10 * 60 * 1000;
+  const PDF_HANDOFF_MAX_BYTES = 25 * 1024 * 1024;
+  const PDF_HANDOFF_MAX_TOTAL = 120 * 1024 * 1024;
+  const PDF_HANDOFF_MAX_ENTRIES = 40;
+  const sweepPdfHandoff = () => { const now = Date.now(); for (const [key, entry] of pdfHandoffStore) { if (entry.exp <= now) pdfHandoffStore.delete(key); } };
+  const pdfHandoffTotal = () => { let total = 0; for (const entry of pdfHandoffStore.values()) total += entry.buf.length; return total; };
+  const cleanPdfName = (raw: string) => {
+    let out = '';
+    for (const ch of String(raw || '')) {
+      const code = ch.charCodeAt(0);
+      out += (code < 32 || code === 127 || code === 92 || '<>:"/|?*'.includes(ch)) ? ' ' : ch;
+    }
+    return out.split(' ').filter(Boolean).join(' ').slice(0, 80) || 'Document';
+  };
+  app.post('/api/print/pdf-handoff', verifyActiveUserAuth, express.raw({ type: 'application/pdf', limit: '25mb' }), async (req: ActiveUserRequest, res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    if (!req.activeUser) return res.status(401).json({ error: 'An active login session is required.' });
+    try {
+      const body: any = req.body;
+      if (!Buffer.isBuffer(body) || body.length < 64) return res.status(400).json({ error: 'PDF data is required.' });
+      if (body.length > PDF_HANDOFF_MAX_BYTES) return res.status(413).json({ error: 'PDF is too large.' });
+      if (body.subarray(0, 5).toString('latin1') !== '%PDF-') return res.status(400).json({ error: 'Only PDF files are accepted.' });
+      sweepPdfHandoff();
+      while (pdfHandoffStore.size >= PDF_HANDOFF_MAX_ENTRIES || pdfHandoffTotal() + body.length > PDF_HANDOFF_MAX_TOTAL) {
+        const oldest = pdfHandoffStore.keys().next().value;
+        if (!oldest) break;
+        pdfHandoffStore.delete(oldest);
+      }
+      const { randomBytes } = await import('node:crypto');
+      const token = randomBytes(24).toString('hex');
+      let name = 'Document';
+      try { name = cleanPdfName(decodeURIComponent(String(req.headers['x-pdf-name'] || ''))); } catch { name = 'Document'; }
+      pdfHandoffStore.set(token, { buf: Buffer.from(body), name, exp: Date.now() + PDF_HANDOFF_TTL_MS });
+      return res.status(201).json({ url: '/api/print/pdf-handoff/' + token });
+    } catch (error: any) { return res.status(500).json({ error: error?.message || 'PDF could not be prepared.' }); }
+  });
+  app.get('/api/print/pdf-handoff/:token', (req, res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    const token = String(req.params.token || '');
+    sweepPdfHandoff();
+    const entry = /^[0-9a-f]{48}$/.test(token) ? pdfHandoffStore.get(token) : undefined;
+    if (!entry) return res.status(404).type('text/plain').send('This PDF link has expired. Please generate the PDF again from the app.');
+    const apos = String.fromCharCode(39), dq = String.fromCharCode(34);
+    let ascii = '';
+    for (const ch of entry.name) { const code = ch.charCodeAt(0); ascii += (code < 32 || code > 126 || code === 34 || code === 92 || code === 37) ? '_' : ch; }
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=' + dq + (ascii || 'Document') + '.pdf' + dq + '; filename*=UTF-8' + apos + apos + encodeURIComponent(entry.name).replace(/'/g, '%27') + '.pdf');
+    res.setHeader('Content-Length', String(entry.buf.length));
+    return res.end(entry.buf);
+  });
   app.get('/api/teacher/academic/combined-subject-groups-r33-19',verifyActiveUserAuth,async(req:ActiveUserRequest,res)=>{
     res.setHeader('Cache-Control','no-store');
     if(!req.activeUser||!supabaseAdmin)return res.status(503).json({engineBuild:'R33.19',error:'Combined Subject service is unavailable.'});

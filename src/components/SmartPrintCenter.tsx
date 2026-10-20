@@ -353,7 +353,11 @@ export default function SmartPrintCenter() {
         const pvDoc = previewRef.current?.contentDocument;
         const targetEl = (pvDoc?.querySelector(".edunixo-preview-shell") || pvDoc?.querySelector(".edunixo-print-content") || document.querySelector(".edunixo-preview-shell") || document.querySelector(".edunixo-print-content")) as HTMLElement;
         if (!targetEl) throw new Error("Print content not found. Please ensure the preview is loaded.");
-        const dataUrl = await toPng(targetEl, { quality: 0.95, pixelRatio: 2, backgroundColor: "#ffffff" });
+        // R33.24: keep the canvas under ~16M pixels so low-memory phones do not run out of memory on long papers.
+        const boxW = Math.max(1, targetEl.scrollWidth || targetEl.offsetWidth || 794);
+        const boxH = Math.max(1, targetEl.scrollHeight || targetEl.offsetHeight || 1123);
+        const safeRatio = Math.max(1, Math.min(2, Math.sqrt(16000000 / (boxW * boxH))));
+        const dataUrl = await toPng(targetEl, { quality: 0.95, pixelRatio: safeRatio, backgroundColor: "#ffffff" });
         const pdf = new jsPDF({ unit: "mm", format: [dimensions.width, dimensions.height], orientation: preferences.orientation as any });
         const pdfWidth = dimensions.width;
         const pdfHeight = dimensions.height;
@@ -363,6 +367,14 @@ export default function SmartPrintCenter() {
         pdf.addImage(dataUrl, "PNG", 0, position, pdfWidth, imgHeight);
         heightLeft -= pdfHeight;
         while (heightLeft > 0) { position = heightLeft - imgHeight; pdf.addPage(); pdf.addImage(dataUrl, "PNG", 0, position, pdfWidth, imgHeight); heightLeft -= pdfHeight; }
+        const isNativeShell = Boolean((window as any).Capacitor?.isNativePlatform?.()) || navigator.userAgent.includes("; wv)");
+        if (isNativeShell) {
+          // R33.24: never hand a multi-MB data: URL to the OS (it crashes the app). Upload and open a short https link instead.
+          const fileTitle = String(request.title || "Document").trim().slice(0, 80) || "Document";
+          const handoffUrl = await uploadPdfForNativeOpen(pdf.output("blob"), fileTitle);
+          await openPdfLinkInSystemBrowser(handoffUrl);
+          return;
+        }
         const pdfBase64 = pdf.output("datauristring");
         const newWin = window.open(pdfBase64, "_system");
         if (!newWin || newWin.closed) {
@@ -493,4 +505,33 @@ function SmartPreviewFitFrame({ srcDoc, frameRef, pageWidthMm }: { srcDoc: strin
       </div>
     </div>
   );
+}
+
+// R33.24: native-app PDF handoff helpers.
+async function uploadPdfForNativeOpen(blob: Blob, title: string): Promise<string> {
+  let accessToken = '';
+  try {
+    const mod: any = await import('../lib/supabase');
+    const client: any = (typeof mod.requireSupabase === 'function' ? mod.requireSupabase() : null) || mod.supabase || mod.supabaseClient || mod.default || null;
+    const sessionResult = client?.auth?.getSession ? await client.auth.getSession() : null;
+    accessToken = String(sessionResult?.data?.session?.access_token || '');
+  } catch { accessToken = ''; }
+  if (!accessToken) throw new Error('Your login session could not be verified. Please sign in again and retry the PDF.');
+  const response = await fetch('/api/print/pdf-handoff', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/pdf', Authorization: 'Bearer ' + accessToken, 'X-Pdf-Name': encodeURIComponent(title) },
+    body: blob,
+  });
+  const payload: any = await response.json().catch(() => ({}));
+  if (!response.ok || !payload?.url) throw new Error(String(payload?.error || ('PDF could not be prepared (' + response.status + ').')));
+  return new URL(String(payload.url), window.location.origin).toString();
+}
+
+async function openPdfLinkInSystemBrowser(url: string): Promise<void> {
+  try {
+    const { Browser } = await import('@capacitor/browser');
+    await Browser.open({ url });
+    return;
+  } catch { /* fall back below */ }
+  window.open(url, '_blank');
 }
