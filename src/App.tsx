@@ -798,6 +798,37 @@ export default function App() {
         </div>
       )}
 
+      {/* Floating global assistant button (ERP view) - Maria AI */}
+      {currentView === 'erp' && Boolean(user) && teacherProfileLocked === false && (
+        <div className="fixed right-4 md:right-6 bottom-24 md:bottom-6 z-50 no-print">
+          {showAssistant ? (
+            <div className="relative w-[calc(100vw-2rem)] max-w-96 shadow-2xl rounded-2xl overflow-hidden animate-slide-up border border-slate-200 bg-white">
+              <div className="absolute top-3.5 right-3.5 z-50">
+                <button
+                  onClick={() => setShowAssistant(false)}
+                  className="p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors cursor-pointer"
+                  aria-label="Close Maria"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <React.Suspense fallback={<ViewLoadingFallback label="Opening Maria…" />}>
+                <AIAssistant lang={lang} />
+              </React.Suspense>
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowAssistant(true)}
+              id="btn-floating-ai-erp"
+              className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center gap-2 font-semibold cursor-pointer"
+            >
+              <Bot className="w-4 h-4 text-blue-200" />
+              <span>Talk to Maria</span>
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Footer Block: platform landing owns its footer; school and authenticated workspaces use contextual identity. */}
       {!IS_EDUNIXO_APP_RUNTIME && currentView !== 'website' && (
         <footer className={`edunixo-context-footer mt-10 border-t py-6 no-print ${currentView === 'erp' && user?.role !== 'super_admin' ? 'border-white/10 bg-[#040714] text-slate-500' : 'border-slate-200 bg-white'}`}>
