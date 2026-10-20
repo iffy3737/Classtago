@@ -729,7 +729,7 @@ export default function App() {
                   : <div className="space-y-4"><div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs font-bold text-amber-900"><strong>Complete Profile required:</strong> {teacherProfileMissing.length ? teacherProfileMissing.join(', ') : 'Please complete all required Teacher profile fields.'}</div><CompleteProfileWorkspace user={user} forcedTeacherCompletion onProfileSaved={() => void refreshTeacherProfileGate()} /></div>
                 ) : <DashboardOverview lang={lang} user={user} onRefreshData={refreshNotices} />}
               </div>
-              {showAssistant && !teacherProfileLocked && <aside className="no-print animate-fade-in"><div className="sticky top-28 overflow-hidden rounded-[1.75rem] border border-white/10 bg-white shadow-2xl"><AIAssistant lang={lang} /></div></aside>}
+              
             </div>
           </div>
         )}
