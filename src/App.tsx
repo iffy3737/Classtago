@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -799,8 +800,8 @@ export default function App() {
       )}
 
       {/* Floating global assistant button (ERP view) - Maria AI */}
-      {currentView === 'erp' && Boolean(user) && teacherProfileLocked === false && (
-        <div className="fixed right-4 md:right-6 bottom-24 md:bottom-6 z-50 no-print">
+      {currentView === 'erp' && Boolean(user) && teacherProfileLocked === false && createPortal(
+        <div className="no-print" style={{position:'fixed',right:16,bottom:96,zIndex:2147483000}}>
           {showAssistant ? (
             <div className="relative w-[calc(100vw-2rem)] max-w-96 shadow-2xl rounded-2xl overflow-hidden animate-slide-up border border-slate-200 bg-white">
               <div className="absolute top-3.5 right-3.5 z-50">
@@ -826,7 +827,8 @@ export default function App() {
               <span>Talk to Maria</span>
             </button>
           )}
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Footer Block: platform landing owns its footer; school and authenticated workspaces use contextual identity. */}
