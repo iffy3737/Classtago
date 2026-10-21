@@ -1,3 +1,4 @@
+import ManualTimetableEditor from "./ManualTimetableEditor";
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   Users,
@@ -193,6 +194,7 @@ export type TimetableWorkspaceTab =
   | "setup"
   | "workload"
   | "generate"
+  | "manual"
   | "view"
   | "reports"
   | "substitute";
@@ -3521,6 +3523,14 @@ export default function SmartTimetableV2({
         </button>
 
         <button
+          onClick={() => setActiveTab("manual")}
+          className={`flex-1 min-w-[120px] flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-black transition-all cursor-pointer ${activeTab === "manual" ? "bg-gradient-to-r from-cyan-500 to-violet-500 text-white shadow-lg font-black" : "text-slate-400 hover:text-slate-100 hover:bg-slate-900/50"}`}
+        >
+          <Calendar className="w-4 h-4" />
+          <span>Manual Entry</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab("view")}
           className={`flex-1 min-w-[120px] flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-black transition-all cursor-pointer ${
             activeTab === "view"
@@ -4237,6 +4247,10 @@ export default function SmartTimetableV2({
         )}
 
         {/* TAB 4: INTERACTIVE CALENDAR BOARD (EXCEL & GOOGLE CALENDAR STYLING) */}
+        {activeTab === "manual" && (
+          <ManualTimetableEditor timetable={timetable} workload={workload} setup={setup} onChange={(updated: V2TimetableCell[]) => { setTimetable(updated); triggerAutoSave(updated); const nextHistory = history.slice(0, historyIndex + 1); setHistory([...nextHistory, updated]); setHistoryIndex(nextHistory.length); }} />
+        )}
+
         {activeTab === "view" && (
           <>
             <div className="space-y-6 animate-fade-in text-left no-print">
