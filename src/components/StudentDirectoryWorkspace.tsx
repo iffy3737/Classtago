@@ -1,3 +1,4 @@
+import StudentIdCards from "./StudentIdCards";
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -24,7 +25,7 @@ import { supabase } from '../lib/supabase';
 import type { User } from '../types';
 import { requestActionConfirm } from '../lib/actionConfirm';
 
-type DirectorySection = 'master' | 'profile' | 'guardians' | 'placement' | 'history' | 'documents';
+type DirectorySection = 'master' | 'profile' | 'guardians' | 'placement' | 'history' | 'documents' | 'idcards';
 
 type StudentRow = {
   id: string;
@@ -90,7 +91,8 @@ const featureToSection: Record<string, DirectorySection> = {
   'cl-lifecycle-passout': 'history',
   'cl-lifecycle-leaving': 'history',
   'cl-lifecycle-archive': 'history',
-  'cl-lifecycle-history': 'history'
+  'cl-lifecycle-history': 'history',
+  'cl-student-id-cards': 'idcards'
 };
 
 const sections: Array<{ id: DirectorySection; label: string; icon: React.ComponentType<{ className?: string }> }> = [
@@ -99,7 +101,8 @@ const sections: Array<{ id: DirectorySection; label: string; icon: React.Compone
   { id: 'guardians', label: 'Parent & Guardian Linkage', icon: UsersRound },
   { id: 'placement', label: 'Class & Division Placement', icon: GraduationCap },
   { id: 'history', label: 'Student Status & History', icon: History },
-  { id: 'documents', label: 'Student Document Index', icon: FolderOpen }
+  { id: 'documents', label: 'Student Document Index', icon: FolderOpen },
+  { id: 'idcards', label: 'Student ID Cards', icon: BookUser }
 ];
 
 async function api(url: string, options: RequestInit = {}) {
@@ -467,6 +470,7 @@ export default function StudentDirectoryWorkspace({ user, activeFeatureId }: Pro
             <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-7"><h3 className="font-black text-slate-950">Audit history</h3><div className="mt-4 space-y-3">{selectedHistory.length === 0 ? <div className="rounded-xl border border-dashed border-slate-300 p-6 text-center text-xs text-slate-500">No lifecycle/status audit event has been recorded yet.</div> : selectedHistory.map(item => <div key={item.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4"><div className="flex flex-wrap items-center justify-between gap-2"><div className="text-xs font-black text-slate-900">{item.summary || item.action}</div><div className="text-[10px] text-slate-400">{item.createdAt ? new Date(item.createdAt).toLocaleString() : ''}</div></div>{(item.beforeStatus || item.afterStatus) && <div className="mt-2 text-[10px] font-bold text-slate-500">{item.beforeStatus || '—'} → {item.afterStatus || '—'}</div>}{item.reason && <div className="mt-2 text-[10px] leading-5 text-slate-500"><b>Reason:</b> {item.reason}</div>}</div>)}</div></div>
           </div> : <EmptySelection />)}
 
+          {section === 'idcards' && <StudentIdCards />}
           {section === 'documents' && (selected ? <div className="space-y-5"><div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-7"><div className="flex items-start justify-between gap-4"><div><h2 className="text-xl font-black text-slate-950">Student Document Index</h2><p className="mt-2 text-xs leading-6 text-slate-500">Required document master and documents received with the linked admission application.</p></div><FileText className="h-7 w-7 text-cyan-700" /></div><div className="mt-6 grid gap-3 md:grid-cols-2">{payload.requiredDocuments.map(doc => { const uploaded = uploadedDocuments.find(item => item.type === doc.id || item.type === doc.name || item.fileName.toLowerCase().includes(doc.name.toLowerCase())); return <div key={doc.id} className={`rounded-xl border p-4 ${uploaded ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200 bg-slate-50'}`}><div className="flex items-start gap-3">{uploaded ? <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" /> : <FileText className="mt-0.5 h-5 w-5 shrink-0 text-slate-400" />}<div><div className="text-xs font-black text-slate-900">{doc.name}</div><div className="mt-1 text-[10px] text-slate-500">{doc.required ? 'Required' : 'Optional'} · {uploaded ? `Received (${uploaded.status})` : 'Not linked'}</div></div></div></div>; })}{payload.requiredDocuments.length === 0 && <div className="md:col-span-2 rounded-xl border border-dashed border-slate-300 p-6 text-center text-xs text-slate-500">No required-document master is configured.</div>}</div></div><div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-7"><h3 className="font-black text-slate-950">Uploaded admission documents</h3>{documentsLoading ? <div className="grid min-h-32 place-items-center"><Loader2 className="h-7 w-7 animate-spin text-cyan-600" /></div> : <div className="mt-4 space-y-3">{uploadedDocuments.length === 0 ? <div className="rounded-xl border border-dashed border-slate-300 p-6 text-center text-xs text-slate-500">No linked admission documents were found for this Student Master record.</div> : uploadedDocuments.map(doc => <div key={doc.id} className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center"><FileText className="h-5 w-5 shrink-0 text-cyan-700"/><div className="min-w-0 flex-1"><div className="break-words text-xs font-black text-slate-900">{doc.fileName}</div><div className="mt-1 text-[10px] text-slate-500">{doc.type.replaceAll('_', ' ')} · {doc.status}</div></div>{doc.previewUrl && <a href={doc.previewUrl} target="_blank" rel="noreferrer" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-center text-[10px] font-black text-slate-900">View document</a>}</div>)}</div>}</div></div> : <EmptySelection />)}
         </section>
       </div>

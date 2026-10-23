@@ -1504,7 +1504,8 @@ export const ROLE_MODULE_BLUEPRINT: Record<string, RoleModuleCategory[]> = {
             { "id": "cl-student-profile", "label": "Student profile" },
             { "id": "cl-guardian-details", "label": "Parent / guardian details" },
             { "id": "cl-class-placement", "label": "Class / division placement" },
-            { "id": "cl-student-document-index", "label": "Student document index" }
+            { "id": "cl-student-document-index", "label": "Student document index" },
+            { "id": "cl-student-id-cards", "label": "Student ID cards" }
           ]
         },
         {
