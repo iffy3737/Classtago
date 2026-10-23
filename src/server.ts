@@ -7454,6 +7454,82 @@ async function startServer() {
     } catch (error:any) { return res.status(500).json({error:error?.message || 'Admission applications could not be loaded.'}); }
   });
 
+  // ID card data for Headmaster/Clerk. Card is generated from live admission/student data.
+  app.get('/api/id-cards/students', verifyAcademicAdminAuth, requireAcademicAdminModule('master_data'), async (req: AcademicAdminRequest, res) => {
+    if (!supabaseAdmin || !req.academicAdmin) return res.status(503).json({ error: 'ID card service is unavailable.' });
+    if (!['headmaster', 'clerk'].includes(String(req.academicAdmin.role || '').toLowerCase())) return res.status(403).json({ error: 'ID cards are available to Headmaster and Clerk only.' });
+    try {
+      const schoolId = req.academicAdmin.schoolId;
+      const [schoolRead, extRead, studentsRead, profilesRead, photoDocsRead] = await Promise.all([
+        supabaseAdmin.from('schools').select('school_name,address,phone_number').eq('id', schoolId).maybeSingle(),
+        supabaseAdmin.from('school_profile_extensions').select('school_logo_url,principal_signature_url,headmaster_signature_url,principal_name,address_line,village_city,district').eq('school_id', schoolId).maybeSingle(),
+        supabaseAdmin.from('students').select('id,gr_number,full_name,class_id,division,roll_number').eq('school_id', schoolId).eq('is_active', true).order('full_name').limit(3000),
+        supabaseAdmin.from('edunixo_student_profiles').select('student_id,date_of_birth,mobile_number,alternate_mobile,address,source_application_id').eq('school_id', schoolId).limit(3000),
+        supabaseAdmin.from('school_admission_application_documents').select('application_id,storage_bucket,storage_path,created_at').eq('school_id', schoolId).eq('document_type', 'photo').order('created_at', { ascending: false }).limit(3000)
+      ]);
+      if (studentsRead.error) throw studentsRead.error;
+      const students: any[] = studentsRead.data || [];
+      const classIds = Array.from(new Set(students.map((s: any) => String(s.class_id || '')).filter(Boolean)));
+      const divIds = Array.from(new Set(students.map((s: any) => String(s.division || '')).filter(Boolean)));
+      const classNames = new Map<string, string>();
+      const divNames = new Map<string, string>();
+      if (classIds.length) {
+        const r = await supabaseAdmin.from('school_classes').select('id,class_name').in('id', classIds);
+        if (!r.error) (r.data || []).forEach((c: any) => classNames.set(String(c.id), String(c.class_name || '')));
+      }
+      if (divIds.length) {
+        const r = await supabaseAdmin.from('school_divisions').select('id,division_name').in('id', divIds);
+        if (!r.error) (r.data || []).forEach((d: any) => divNames.set(String(d.id), String(d.division_name || '')));
+      }
+      const profileByStudent = new Map<string, any>();
+      (profilesRead.error ? [] : profilesRead.data || []).forEach((p: any) => profileByStudent.set(String(p.student_id), p));
+      const photoByApp = new Map<string, any>();
+      (photoDocsRead.error ? [] : photoDocsRead.data || []).forEach((d: any) => { if (!photoByApp.has(String(d.application_id))) photoByApp.set(String(d.application_id), d); });
+      const wanted: Record<string, string[]> = {};
+      students.forEach((s: any) => {
+        const p = profileByStudent.get(String(s.id));
+        const d = p && p.source_application_id ? photoByApp.get(String(p.source_application_id)) : null;
+        if (d) { if (!wanted[d.storage_bucket]) wanted[d.storage_bucket] = []; wanted[d.storage_bucket].push(d.storage_path); }
+      });
+      const signedMap = new Map<string, string>();
+      for (const bucket of Object.keys(wanted)) {
+        const r: any = await supabaseAdmin.storage.from(bucket).createSignedUrls(Array.from(new Set(wanted[bucket])), 60 * 60);
+        if (!r.error) (r.data || []).forEach((x: any) => { if (x.signedUrl && x.path) signedMap.set(bucket + '|' + x.path, x.signedUrl); });
+      }
+      const school: any = schoolRead.data || {};
+      const ext: any = extRead.data || {};
+      const addressParts = [ext.address_line, ext.village_city, ext.district].filter(Boolean).join(', ');
+      res.setHeader('Cache-Control', 'private, no-store');
+      return res.json({
+        school: {
+          name: String(school.school_name || ''),
+          address: addressParts || String(school.address || ''),
+          logoUrl: ext.school_logo_url || null,
+          signatureUrl: ext.principal_signature_url || ext.headmaster_signature_url || null,
+          principalName: String(ext.principal_name || '')
+        },
+        students: students.map((s: any) => {
+          const p = profileByStudent.get(String(s.id)) || {};
+          const d = p.source_application_id ? photoByApp.get(String(p.source_application_id)) : null;
+          return {
+            id: String(s.id),
+            grNumber: String(s.gr_number || ''),
+            fullName: String(s.full_name || ''),
+            className: classNames.get(String(s.class_id || '')) || String(s.class_id || ''),
+            division: divNames.get(String(s.division || '')) || String(s.division || ''),
+            dob: String(p.date_of_birth || ''),
+            mobile: String(p.mobile_number || p.alternate_mobile || ''),
+            address: String(p.address || ''),
+            photoUrl: d ? (signedMap.get(d.storage_bucket + '|' + d.storage_path) || null) : null
+          };
+        })
+      });
+    } catch (error: any) {
+      console.error('ID card data error:', error?.message || error);
+      return res.status(500).json({ error: error?.message || 'ID card data could not be loaded.' });
+    }
+  });
+
   app.get('/api/school-website/admission-applications/:applicationId', verifyAcademicAdminAuth, requireAcademicAdminModule('admissions'), async (req: AcademicAdminRequest, res) => {
     if (!req.academicAdmin || req.academicAdmin.role !== 'headmaster') return res.status(403).json({ error: 'Admission Applications and Admission Confirmation are Headmaster-only.' });
     if (!supabaseAdmin || !req.academicAdmin) return res.status(503).json({ error:'Admission queue is unavailable.' });

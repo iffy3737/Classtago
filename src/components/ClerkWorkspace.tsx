@@ -1,3 +1,4 @@
+import StudentIdCards from "./StudentIdCards";
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -46,7 +47,7 @@ interface ClerkWorkspaceProps {
   user: UserType;
   classes: ClassStructure[];
   onRefreshData?: () => void;
-  initialTab?: 'dashboard' | 'admissions' | 'student_records' | 'certificates' | 'documents' | 'reports' | 'fees' | 'accounting' | 'registers' | 'attendance' | 'leaves' | 'profile';
+  initialTab?: 'dashboard' | 'admissions' | 'student_records' | 'id_cards' | 'certificates' | 'documents' | 'reports' | 'fees' | 'accounting' | 'registers' | 'attendance' | 'leaves' | 'profile';
   hideAdmissionNavigation?: boolean;
   focusedMode?: boolean;
   focusedTitle?: string;
@@ -129,7 +130,7 @@ interface AdmittedStudent {
 
 export default function ClerkWorkspace({ lang, user, classes, onRefreshData, initialTab = 'dashboard', hideAdmissionNavigation = false, focusedMode = false, focusedTitle, activeFeatureId = null, onOpenAdmissionDesk, onBackToOverview }: ClerkWorkspaceProps) {
   const activeYear = LocalERPDatabase.getAcademicSetup()?.academicYears?.find(y => y.isActive)?.year || '';
-  const [clerkTab, setClerkTab] = useState<'dashboard' | 'admissions' | 'student_records' | 'certificates' | 'documents' | 'reports' | 'fees' | 'accounting' | 'registers' | 'attendance' | 'leaves' | 'profile'>(initialTab);
+  const [clerkTab, setClerkTab] = useState<'dashboard' | 'admissions' | 'student_records' | 'id_cards' | 'certificates' | 'documents' | 'reports' | 'fees' | 'accounting' | 'registers' | 'attendance' | 'leaves' | 'profile'>(initialTab);
   const [setup, setSetup] = useState(() => LocalERPDatabase.getAcademicSetup());
 
   useEffect(() => {
@@ -1123,6 +1124,7 @@ export default function ClerkWorkspace({ lang, user, classes, onRefreshData, ini
               { id: 'dashboard', label: 'Dashboard', icon: Shield },
               ...(hideAdmissionNavigation ? [] : [{ id: 'admissions', label: 'Admission Desk', icon: Plus }]),
               { id: 'student_records', label: 'Student Records', icon: Users },
+              { id: 'id_cards', label: 'ID Cards', icon: Users },
               { id: 'certificates', label: 'Certificates Center', icon: Award },
               { id: 'documents', label: 'Documents Vault', icon: FileText },
               { id: 'reports', label: 'Analytical Reports', icon: FileText },
@@ -2380,6 +2382,10 @@ export default function ClerkWorkspace({ lang, user, classes, onRefreshData, ini
       {/* ======================================================== */}
       {/* CLERK TAB 3: STUDENT RECORDS */}
       {/* ======================================================== */}
+      {clerkTab === 'id_cards' && (
+        <StudentIdCards />
+      )}
+
       {clerkTab === 'student_records' && (
         <div className="bg-white rounded-2xl border border-slate-200 p-5 space-y-4 text-left">
           <div className="flex flex-wrap justify-between items-center gap-4 border-b border-slate-100 pb-3">
