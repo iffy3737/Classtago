@@ -1328,8 +1328,18 @@ export default function ClerkWorkspace({ lang, user, classes, onRefreshData, ini
           { id: 'documents', label: 'Documents Vault', subtitle: 'Student documents · Compliance', icon: MI_File, gradient: 'linear-gradient(135deg, #14B8A6, #0F766E)', route: 'documents' }
         ]}
         onNavigate={(route, featureId) => {
+          const clerkRoutes: Record<string, [string, string?]> = {
+            admissions: ['cl-new-admission'],
+            certificates: ['cl-certificates-documents'],
+            fees: ['cl-fees-management'],
+            documents: ['cl-certificates-documents', 'cl-document-vault']
+          };
+          const mapped = clerkRoutes[route];
           const opener = (window as any).__classtago_maria_open_role_module;
-          if (typeof opener === 'function') opener(route, featureId);
+          const opened = typeof opener === 'function'
+            ? opener(mapped ? mapped[0] : route, mapped && mapped[1] ? mapped[1] : featureId)
+            : false;
+          if (opened === false && mapped) setClerkTab(route as any);
         }}
         onViewAll={() => window.dispatchEvent(new CustomEvent('edunixo:open-menu'))}
       />
