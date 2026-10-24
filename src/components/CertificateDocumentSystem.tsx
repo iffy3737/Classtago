@@ -1055,6 +1055,13 @@ export default function CertificateDocumentSystem({ lang, user, onRefreshData, a
   const titleTrans = translations[titleLanguage as keyof typeof translations] || translations.en;
   const signatureTrans = translations[signatureLanguage as keyof typeof translations] || translations.en;
   const activeTemplatePreset = getCertificateTemplatePreset(certType === 'leaving' ? 'official-lc-reference' : selectedTemplateId);
+  const previewCertNumber = (): string => {
+    if (!selectedStudent) return '';
+    const prefix = certType === 'leaving' ? 'LC' : certType === 'bonafide' ? 'BON' : 'CERT';
+    const yearCode = String(selectedStudent.academicYear || new Date().getFullYear()).replace('-', '');
+    const sequence = String(certRegistry.filter(c => c.certificateType === certType && c.grNumber.startsWith(String(selectedStudent.grNumber).substring(0, 1))).length + 1).padStart(4, '0');
+    return certificateSchoolCode + '/' + prefix + '/' + yearCode + '/' + sequence;
+  };
   const templateIsLandscape = certType !== 'leaving' && activeTemplatePreset.orientation === 'landscape';
   const visibleTemplatePresets = useMemo(() => CERTIFICATE_TEMPLATE_PRESETS.filter((preset) => !preset.officialLc && preset.orientation === templateOrientation), [templateOrientation]);
   const selectedLanguageOption = useMemo(() => CERTIFICATE_LANGUAGE_OPTIONS.find((item) => item.code === certLanguage) || CERTIFICATE_LANGUAGE_OPTIONS[0], [certLanguage]);
@@ -1737,7 +1744,7 @@ export default function CertificateDocumentSystem({ lang, user, onRefreshData, a
                       </div>
 
                       <div className="flex justify-between items-center text-[11px] font-bold border-b border-dashed border-slate-300 pb-2">
-                        <span>{activeTrans.certNum}: NHS/BON/202627/{selectedStudent.grNumber}</span>
+                        <span>{activeTrans.certNum}: {previewCertNumber()}</span>
                         <span>Date: {new Date().toISOString().substring(0, 10)}</span>
                       </div>
 
@@ -1946,9 +1953,11 @@ export default function CertificateDocumentSystem({ lang, user, onRefreshData, a
                     <div className="space-y-6 pt-6">
                       <div className="text-center">
                         <h2 className="inline-block border-y-2 border-slate-800 px-6 py-1.5 text-base font-black uppercase bg-slate-50 tracking-wider text-indigo-950">
-                          {certType === 'custom' ? customTitle.toUpperCase() : `${certType.replace('_', ' ').toUpperCase()} CERTIFICATE`}
+                          {certType === 'custom' ? customTitle.toUpperCase() : (({ study: 'STUDY CERTIFICATE', passing: 'PASSING CERTIFICATE', promotion: 'PROMOTION CERTIFICATE', birth_date: 'BIRTH DATE CERTIFICATE', medium: 'MEDIUM OF INSTRUCTION CERTIFICATE', conduct: 'CONDUCT CERTIFICATE', duplicate: 'DUPLICATE CERTIFICATE' } as Record<string, string>)[certType] || (certType.replace('_', ' ').toUpperCase() + ' CERTIFICATE'))}
                         </h2>
                       </div>
+
+                      <div className="flex justify-between items-center text-[11px] font-bold border-b border-dashed border-slate-300 pb-2"><span>Certificate No.: {previewCertNumber()}</span><span>Date: {new Date().toISOString().substring(0, 10)}</span></div>
 
                       <div className="leading-loose text-justify text-sm space-y-6 pt-4 px-4 text-slate-800">
                         <p>
@@ -1960,8 +1969,31 @@ export default function CertificateDocumentSystem({ lang, user, onRefreshData, a
                         ) : (
                           <div className="space-y-4">
                             <p>
-                              This is to verify that <strong className="text-indigo-950 underline">{selectedStudent.name}</strong> (G.R. Number <strong className="font-mono text-indigo-900 font-bold">{selectedStudent.grNumber}</strong>) is enrolled under our institutional curriculum.
+                              This is to verify that <strong className="text-indigo-950 underline">{selectedStudent.name}</strong> (G.R. Number <strong className="font-mono text-indigo-900 font-bold">{selectedStudent.grNumber}</strong>) {certType === 'passing' ? 'was a student of this institution.' : certType === 'duplicate' ? 'is recorded in the General Register of this institution.' : 'is enrolled under our institutional curriculum.'}
                             </p>
+                            {certType === 'study' && (
+                              <p>
+                                It is further certified that he/she has been studying in this school in Standard <strong className="underline">{selectedStudent.className || selectedStudent.classId || '—'}</strong> (Division <strong className="underline">{selectedStudent.divisionName || selectedStudent.division || 'No Division'}</strong>) during the academic year <strong className="font-mono">{selectedStudent.academicYear}</strong>, and that his/her attendance and progress in studies are recorded in the school registers. This certificate is issued on the request of the parent/guardian for whatever lawful purpose it may serve.
+                              </p>
+                            )}
+                            {certType === 'passing' && (
+                              <p>
+                                It is further certified that he/she appeared for and passed the examination of Standard <strong className="underline">{selectedStudent.className || selectedStudent.classId || '—'}</strong> (Division <strong className="underline">{selectedStudent.divisionName || selectedStudent.division || 'No Division'}</strong>) during the academic year <strong className="font-mono">{selectedStudent.academicYear}</strong>, as per the result records of this school. This certificate is issued on request for further admission or official use.
+                              </p>
+                            )}
+                            {certType === 'conduct' && (
+                              <p>
+                                It is further certified that during his/her period of study in this school, his/her conduct and behaviour have been found to be good. To the best of our knowledge and as per the school records, he/she bears a good moral character. This certificate is issued on the request of the parent/guardian.
+                              </p>
+                            )}
+                            {certType === 'duplicate' && (
+                              <div className="space-y-3">
+                                <p>
+                                  This is a duplicate copy of the certificate originally issued by this school, prepared on the written request of the parent/guardian from the entries of the General Register. It is valid only with the school seal and the signature of the Headmaster.
+                                </p>
+                                <p className="text-xs font-mono">Original Certificate No.: ____________________  Date of original issue: ______________</p>
+                              </div>
+                            )}
                             {certType === 'promotion' && (
                               <p>
                                 Based on the approved promotion decision recorded by the school, the student is promoted from <strong className="underline">{selectedStudent.className || selectedStudent.classId || selectedStudent.admissionClassId || 'Class —'}</strong> to the recorded next standard for the subsequent academic session.
@@ -2008,7 +2040,7 @@ export default function CertificateDocumentSystem({ lang, user, onRefreshData, a
                         <div className="h-10 flex items-center justify-center border-b border-dashed border-slate-400 w-4/5 mx-auto">
                           {clerkSignType === 'digital' ? (
                             <span className="font-mono text-[9px] text-emerald-600 bg-emerald-50 border border-emerald-100 px-1.5 py-0.5 rounded italic">
-                              ✓ S. Deshmukh (Clerk)
+                              ✓ {user.role === 'clerk' ? user.name + ' (Clerk)' : 'School Clerk'}
                             </span>
                           ) : (
                             <span className="text-slate-300 italic text-[9px]">Manual Sign</span>

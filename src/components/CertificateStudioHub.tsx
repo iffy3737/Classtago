@@ -1,3 +1,4 @@
+import { CertificateTemplateDecorations } from "./CertificateTemplateVisual";
 import React, { useEffect, useMemo, useState } from 'react';
 import { Blocks, FileSpreadsheet, ShieldCheck, Upload, Download, Link2, Search, CheckCircle2, AlertTriangle, FileText, QrCode, Mail, Share2, Check, Sparkles, Eye } from 'lucide-react';
 import * as XLSX from 'xlsx';
@@ -62,6 +63,7 @@ function TemplatePreview({ preset, schoolName, managementName, officialLogo, stu
 
   return (
     <div className={frameClass} style={common} dir={['Urdu', 'Kashmiri', 'Sindhi'].includes(languageLabel) ? 'rtl' : 'ltr'}>
+      {!preset.officialLc && <CertificateTemplateDecorations preset={preset} />}
       {preset.layout === 'official-lc' && <>
         <div className="absolute inset-3 rounded-md border-[5px] border-double" style={{ borderColor: preset.accent }} />
         <div className="absolute left-6 right-6 top-7 flex items-center gap-3">
@@ -73,48 +75,48 @@ function TemplatePreview({ preset, schoolName, managementName, officialLogo, stu
         <div className="absolute bottom-7 left-8 right-8 flex justify-between text-[6px] font-bold"><span>Class Teacher</span><span>Clerk</span><span>Headmaster</span></div>
       </>}
 
-      {preset.layout === 'midnight-gold' && <>
+      {false && preset.layout === 'midnight-gold' && <>
         <div className="absolute -left-14 -top-14 h-40 w-40 rounded-[44%] border-[7px]" style={{ borderColor: preset.accent }} />
         <div className="absolute -right-16 -top-16 h-44 w-44 rounded-[45%] border-[7px]" style={{ borderColor: preset.accent }} />
         <div className="absolute -bottom-20 -left-16 h-48 w-48 rounded-[45%] border-[7px]" style={{ borderColor: preset.accent }} />
         <div className="absolute -bottom-20 -right-16 h-48 w-48 rounded-[45%] border-[7px]" style={{ borderColor: preset.accent }} />
       </>}
 
-      {preset.layout === 'school-geometric' && <>
+      {false && preset.layout === 'school-geometric' && <>
         <div className="absolute -left-12 -top-10 h-32 w-40 rotate-12 bg-[#214e91]" />
         <div className="absolute -left-3 top-0 h-24 w-6 -rotate-[35deg]" style={{ background: preset.secondary }} />
         <div className="absolute -right-12 -bottom-10 h-32 w-40 rotate-12 bg-[#214e91]" />
         <div className="absolute right-4 top-3 h-12 w-9 bg-[#243d82]" /><div className="absolute right-2 top-5 h-10 w-10 rounded-full border-4" style={{ background: preset.secondary, borderColor: '#f7df95' }} />
       </>}
 
-      {preset.layout === 'institutional-crest' && <>
+      {false && preset.layout === 'institutional-crest' && <>
         <div className="absolute left-5 right-5 top-0 h-24 bg-[#14365a]" style={{ clipPath: 'polygon(0 0,100% 0,100% 66%,70% 90%,50% 100%,30% 90%,0 66%)' }} />
         <div className="absolute left-3 right-3 top-3 bottom-3 border-[5px]" style={{ borderColor: preset.secondary }} />
         <div className="absolute left-1/2 top-16 flex h-16 w-16 -translate-x-1/2 items-center justify-center rounded-full border-[5px] text-xl font-black" style={{ borderColor: preset.secondary, background: '#14365a', color: preset.secondary }}>★</div>
       </>}
 
-      {preset.layout === 'ornate-heritage' && <>
+      {false && preset.layout === 'ornate-heritage' && <>
         <div className="absolute inset-3 border" style={{ borderColor: preset.accent }} />
         {['left-3 top-0','right-3 top-0','left-3 bottom-0','right-3 bottom-0'].map((pos, i) => <div key={pos} className={`absolute ${pos} text-5xl leading-none ${i % 2 ? '-scale-x-100' : ''}`} style={{ color: preset.accent, transform: `${i > 1 ? 'scaleY(-1)' : ''} ${i % 2 ? 'scaleX(-1)' : ''}` }}>❦</div>)}
         <div className="absolute left-1/2 top-3 -translate-x-1/2 text-xl" style={{ color: preset.accent }}>◆</div>
       </>}
 
-      {preset.layout === 'emerald-modern' && <>
+      {false && preset.layout === 'emerald-modern' && <>
         <div className="absolute -left-14 top-0 h-full w-32 -skew-x-12" style={{ background: preset.accent }} />
         <div className="absolute left-7 top-0 h-full w-2 -skew-x-12" style={{ background: preset.secondary }} />
         <div className="absolute right-4 top-4 bottom-4 w-px" style={{ background: preset.accent }} />
       </>}
 
-      {preset.layout === 'maroon-classic' && <>
+      {false && preset.layout === 'maroon-classic' && <>
         <div className="absolute inset-3 border-[5px] border-double" style={{ borderColor: preset.accent }} />
         <div className="absolute left-7 top-7 h-8 w-8 border-l-4 border-t-4" style={{ borderColor: preset.secondary }} /><div className="absolute right-7 top-7 h-8 w-8 border-r-4 border-t-4" style={{ borderColor: preset.secondary }} /><div className="absolute bottom-7 left-7 h-8 w-8 border-b-4 border-l-4" style={{ borderColor: preset.secondary }} /><div className="absolute bottom-7 right-7 h-8 w-8 border-b-4 border-r-4" style={{ borderColor: preset.secondary }} />
       </>}
 
-      {preset.layout === 'minimal-clean' && <>
+      {false && preset.layout === 'minimal-clean' && <>
         <div className="absolute inset-4 border border-slate-400" /><div className="absolute left-7 right-7 top-7 h-1 bg-slate-700" />
       </>}
 
-      {preset.layout === 'urdu-heritage' && <>
+      {false && preset.layout === 'urdu-heritage' && <>
         <div className="absolute inset-3 border-[5px] border-double" style={{ borderColor: preset.accent }} />
         <div className="absolute left-3 right-3 top-3 h-7" style={{ background: preset.secondary }} /><div className="absolute bottom-3 left-3 right-3 h-5" style={{ background: preset.accent }} />
       </>}

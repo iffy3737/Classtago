@@ -7,9 +7,11 @@ interface DecorationProps {
   preset: CertificateTemplatePreset;
 }
 
-export function CertificateTemplateDecorations({ preset }: DecorationProps) {
+function LayoutDecorations({ preset }: DecorationProps) {
   const a = preset.accent;
   const b = preset.secondary;
+  const ga = gradientOf(a);
+  const gb = gradientOf(b);
   switch (preset.layout) {
     case 'midnight-gold':
       return <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -21,14 +23,14 @@ export function CertificateTemplateDecorations({ preset }: DecorationProps) {
       </div>;
     case 'school-geometric':
       return <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-16 -top-16 h-48 w-56 rotate-12" style={{ background: a }} />
-        <div className="absolute left-7 top-0 h-32 w-3 -rotate-[35deg]" style={{ background: b }} />
-        <div className="absolute -right-16 -bottom-16 h-48 w-56 rotate-12" style={{ background: a }} />
-        <div className="absolute bottom-0 right-7 h-32 w-3 -rotate-[35deg]" style={{ background: b }} />
+        <div className="absolute -left-16 -top-16 h-48 w-56 rotate-12" style={{ background: ga }} />
+        <div className="absolute left-7 top-0 h-32 w-3 -rotate-[35deg]" style={{ background: gb }} />
+        <div className="absolute -right-16 -bottom-16 h-48 w-56 rotate-12" style={{ background: ga }} />
+        <div className="absolute bottom-0 right-7 h-32 w-3 -rotate-[35deg]" style={{ background: gb }} />
       </div>;
     case 'institutional-crest':
       return <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-7 right-7 top-0 h-28" style={{ background: a, clipPath: 'polygon(0 0,100% 0,100% 64%,72% 88%,50% 100%,28% 88%,0 64%)' }} />
+        <div className="absolute left-7 right-7 top-0 h-28" style={{ background: ga, clipPath: 'polygon(0 0,100% 0,100% 64%,72% 88%,50% 100%,28% 88%,0 64%)' }} />
         <div className="absolute inset-4 border-[5px]" style={{ borderColor: b }} />
         <div className="absolute left-1/2 top-20 h-20 w-20 -translate-x-1/2 rounded-full border-[6px] bg-white/95" style={{ borderColor: b }} />
       </div>;
@@ -43,9 +45,9 @@ export function CertificateTemplateDecorations({ preset }: DecorationProps) {
       </div>;
     case 'emerald-modern':
       return <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-20 top-0 h-full w-44 -skew-x-12" style={{ background: a }} />
-        <div className="absolute left-9 top-0 h-full w-3 -skew-x-12" style={{ background: b }} />
-        <div className="absolute bottom-6 right-6 top-6 w-px" style={{ background: a }} />
+        <div className="absolute -left-20 top-0 h-full w-44 -skew-x-12" style={{ background: ga }} />
+        <div className="absolute left-9 top-0 h-full w-3 -skew-x-12" style={{ background: gb }} />
+        <div className="absolute bottom-6 right-6 top-6 w-px" style={{ background: ga }} />
       </div>;
     case 'maroon-classic':
       return <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -58,19 +60,19 @@ export function CertificateTemplateDecorations({ preset }: DecorationProps) {
     case 'minimal-clean':
       return <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute inset-5 border border-slate-400" />
-        <div className="absolute left-8 right-8 top-8 h-1" style={{ background: a }} />
-        <div className="absolute bottom-8 left-8 right-8 h-px" style={{ background: b }} />
+        <div className="absolute left-8 right-8 top-8 h-1" style={{ background: ga }} />
+        <div className="absolute bottom-8 left-8 right-8 h-px" style={{ background: gb }} />
       </div>;
     case 'urdu-heritage':
       return <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute inset-4 border-[5px] border-double" style={{ borderColor: a }} />
-        <div className="absolute left-4 right-4 top-4 h-9" style={{ background: b }} />
-        <div className="absolute bottom-4 left-4 right-4 h-7" style={{ background: a }} />
+        <div className="absolute left-4 right-4 top-4 h-9" style={{ background: gb }} />
+        <div className="absolute bottom-4 left-4 right-4 h-7" style={{ background: ga }} />
       </div>;
     case 'medal-column':
       return <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute inset-5 border-2" style={{ borderColor: b }} />
-        <div className="absolute bottom-0 left-[13%] top-0 w-[18%]" style={{ background: a }} />
+        <div className="absolute bottom-0 left-[13%] top-0 w-[18%]" style={{ background: ga }} />
         <div className="absolute bottom-0 left-[16%] top-0 w-[5%] bg-slate-700" />
         <div className="absolute left-[10.5%] top-[34%] flex h-24 w-24 items-center justify-center rounded-full border-[7px] bg-[#e8c35a] shadow-xl" style={{ borderColor: b }}>
           <Medal className="h-10 w-10" style={{ color: a }} />
@@ -78,9 +80,9 @@ export function CertificateTemplateDecorations({ preset }: DecorationProps) {
       </div>;
     case 'wave-modern':
       return <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-12 -top-8 h-28 w-[120%] -rotate-3 rounded-[50%]" style={{ background: a }} />
-        <div className="absolute -left-8 top-12 h-12 w-[120%] -rotate-3 rounded-[50%] opacity-90" style={{ background: b }} />
-        <div className="absolute -bottom-14 -right-12 h-28 w-[120%] rotate-2 rounded-[50%]" style={{ background: a }} />
+        <div className="absolute -left-12 -top-8 h-28 w-[120%] -rotate-3 rounded-[50%]" style={{ background: ga }} />
+        <div className="absolute -left-8 top-12 h-12 w-[120%] -rotate-3 rounded-[50%] opacity-90" style={{ background: gb }} />
+        <div className="absolute -bottom-14 -right-12 h-28 w-[120%] rotate-2 rounded-[50%]" style={{ background: ga }} />
       </div>;
     case 'laurel-classic':
       return <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -93,8 +95,8 @@ export function CertificateTemplateDecorations({ preset }: DecorationProps) {
     case 'corner-ribbon':
       return <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute inset-5 border-2" style={{ borderColor: b }} />
-        <div className="absolute -left-8 top-0 h-full w-28 -skew-x-6" style={{ background: a }} />
-        <div className="absolute left-8 top-0 h-full w-5 -skew-x-6" style={{ background: b }} />
+        <div className="absolute -left-8 top-0 h-full w-28 -skew-x-6" style={{ background: ga }} />
+        <div className="absolute left-8 top-0 h-full w-5 -skew-x-6" style={{ background: gb }} />
         <div className="absolute right-0 top-0 h-20 w-24" style={{ background: `linear-gradient(135deg, ${b}, transparent 72%)` }} />
       </div>;
     case 'split-luxury':
@@ -115,20 +117,109 @@ export function CertificateTemplateDecorations({ preset }: DecorationProps) {
       </div>;
     case 'academic-banner':
       return <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-0 right-0 top-0 h-24" style={{ background: a }} />
-        <div className="absolute left-0 right-0 top-24 h-2" style={{ background: b }} />
-        <div className="absolute bottom-8 left-8 right-8 h-px" style={{ background: a }} />
+        <div className="absolute left-0 right-0 top-0 h-24" style={{ background: ga }} />
+        <div className="absolute left-0 right-0 top-24 h-2" style={{ background: gb }} />
+        <div className="absolute bottom-8 left-8 right-8 h-px" style={{ background: ga }} />
       </div>;
     case 'soft-geometric':
       return <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-14 -top-16 h-52 w-52 rotate-12 rounded-[36%] opacity-95" style={{ background: b }} />
-        <div className="absolute -left-24 top-10 h-52 w-52 rotate-12 rounded-[36%]" style={{ background: a }} />
-        <div className="absolute -bottom-20 -right-14 h-52 w-52 -rotate-12 rounded-[36%] opacity-95" style={{ background: b }} />
-        <div className="absolute -bottom-24 -right-24 h-52 w-52 -rotate-12 rounded-[36%]" style={{ background: a }} />
+        <div className="absolute -left-14 -top-16 h-52 w-52 rotate-12 rounded-[36%] opacity-95" style={{ background: gb }} />
+        <div className="absolute -left-24 top-10 h-52 w-52 rotate-12 rounded-[36%]" style={{ background: ga }} />
+        <div className="absolute -bottom-20 -right-14 h-52 w-52 -rotate-12 rounded-[36%] opacity-95" style={{ background: gb }} />
+        <div className="absolute -bottom-24 -right-24 h-52 w-52 -rotate-12 rounded-[36%]" style={{ background: ga }} />
       </div>;
     default:
       return null;
   }
+}
+
+const clampColor = (n: number) => Math.max(0, Math.min(255, Math.round(n)));
+const mixColor = (hex: string, target: number, amount: number) => {
+  if (!/^#?[0-9a-f]{3}$|^#?[0-9a-f]{6}$/i.test(String(hex || ''))) return hex;
+  const raw = String(hex).replace('#', '');
+  const full = raw.length === 3 ? raw.split('').map(c => c + c).join('') : raw;
+  const n = parseInt(full, 16);
+  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  return 'rgb(' + clampColor(r + (target - r) * amount) + ',' + clampColor(g + (target - g) * amount) + ',' + clampColor(b + (target - b) * amount) + ')';
+};
+const gradientOf = (hex: string) => {
+  const light = mixColor(hex, 255, 0.28);
+  if (light === hex) return hex;
+  return 'linear-gradient(135deg, ' + light + ' 0%, ' + hex + ' 48%, ' + mixColor(hex, 0, 0.28) + ' 100%)';
+};
+
+const PREMIUM_FULL_LAYOUTS = ['institutional-crest', 'ornate-heritage', 'laurel-classic', 'maroon-classic', 'midnight-gold', 'diamond-frame', 'split-luxury', 'minimal-clean', 'urdu-heritage', 'medal-column'];
+const PREMIUM_BAND_LAYOUTS = ['minimal-clean', 'laurel-classic', 'diamond-frame'];
+
+const wavePath = (x0: number, y0: number, length: number, amp: number, phase: number, vertical: boolean) => {
+  const points: string[] = [];
+  for (let t = 0; t <= length; t += 5) {
+    const w = Math.sin(t * 0.09 + phase) * amp;
+    points.push((vertical ? x0 + w : x0 + t) + ' ' + (vertical ? y0 + t : y0 + w));
+  }
+  return 'M' + points.join(' L');
+};
+
+function PremiumFoilOverlay({ preset }: DecorationProps) {
+  const landscape = preset.orientation !== 'portrait';
+  const W = landscape ? 1000 : 707;
+  const H = landscape ? 707 : 1000;
+  const uid = 'pf' + String(preset.id).replace(/[^a-zA-Z0-9]/g, '');
+  const foil = 'url(#' + uid + 'foil)';
+  const full = PREMIUM_FULL_LAYOUTS.includes(preset.layout);
+  const bands = PREMIUM_BAND_LAYOUTS.includes(preset.layout);
+  const accent = preset.accent;
+  const gold = preset.secondary;
+  const rosette: Array<{ cx: number; cy: number }> = [];
+  for (let k = 0; k < 36; k += 1) {
+    const t = (k / 36) * Math.PI * 2;
+    rosette.push({ cx: Math.cos(t) * 105, cy: Math.sin(t) * 105 });
+  }
+  const corner = (tx: number, ty: number, sx: number, sy: number, key: string) => (
+    <g key={key} transform={'translate(' + tx + ' ' + ty + ') scale(' + sx + ' ' + sy + ')'}>
+      <path d="M0 80 V16 Q0 0 16 0 H80" fill="none" stroke={foil} strokeWidth="3.4" />
+      <path d="M14 62 V30 Q14 14 30 14 H62" fill="none" stroke={accent} strokeWidth="1.3" opacity="0.8" />
+      <circle cx="30" cy="30" r="5.5" fill={foil} />
+      <path d="M44 30 Q52 24 60 30 Q52 36 44 30 Z" fill={foil} />
+      <path d="M30 44 Q24 52 30 60 Q36 52 30 44 Z" fill={foil} />
+    </g>
+  );
+  return (
+    <svg viewBox={'0 0 ' + W + ' ' + H} preserveAspectRatio="none" className="absolute inset-0 h-full w-full" aria-hidden="true">
+      <defs>
+        <linearGradient id={uid + 'foil'} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#f8ecbb" />
+          <stop offset="28%" stopColor={gold} />
+          <stop offset="55%" stopColor="#8f6c24" />
+          <stop offset="78%" stopColor={gold} />
+          <stop offset="100%" stopColor="#f6e6a8" />
+        </linearGradient>
+      </defs>
+      <g transform={'translate(' + W / 2 + ' ' + H / 2 + ')'} opacity="0.07">
+        {rosette.map((c, k) => <circle key={k} cx={c.cx} cy={c.cy} r="105" fill="none" stroke={accent} strokeWidth="0.9" />)}
+      </g>
+      {bands && [0, 2.1, 4.2].map((phase, k) => (
+        <g key={k} fill="none" stroke={gold} strokeWidth="0.9" opacity="0.7">
+          <path d={wavePath(70, 34, W - 140, 5, phase, false)} />
+          <path d={wavePath(70, H - 34, W - 140, 5, phase, false)} />
+          <path d={wavePath(34, 70, H - 140, 5, phase, true)} />
+          <path d={wavePath(W - 34, 70, H - 140, 5, phase, true)} />
+        </g>
+      ))}
+      <rect x="8" y="8" width={W - 16} height={H - 16} rx="3" fill="none" stroke={foil} strokeWidth="3" />
+      <rect x="14" y="14" width={W - 28} height={H - 28} rx="2" fill="none" stroke={accent} strokeWidth="0.9" opacity="0.75" />
+      {full && [corner(22, 22, 1, 1, 'tl'), corner(W - 22, 22, -1, 1, 'tr'), corner(22, H - 22, 1, -1, 'bl'), corner(W - 22, H - 22, -1, -1, 'br')]}
+    </svg>
+  );
+}
+
+export function CertificateTemplateDecorations({ preset }: DecorationProps) {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      <LayoutDecorations preset={preset} />
+      <PremiumFoilOverlay preset={preset} />
+    </div>
+  );
 }
 
 interface ThumbProps {
