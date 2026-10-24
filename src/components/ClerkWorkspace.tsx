@@ -423,6 +423,7 @@ export default function ClerkWorkspace({ lang, user, classes, onRefreshData, ini
   const [bulkAdmissionUploading, setBulkAdmissionUploading] = useState(false);
   const [bulkAdmissionMessage, setBulkAdmissionMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
   const [bulkAdmissionErrors, setBulkAdmissionErrors] = useState<string[]>([]);
+  const [bulkDocumentFiles, setBulkDocumentFiles] = useState<File[]>([]);
 
   // Normalize legacy/null no-division class records into the explicit UI value used by the
   // required Division selector. This keeps the visible form state and submit validation aligned.
@@ -476,16 +477,145 @@ export default function ClerkWorkspace({ lang, user, classes, onRefreshData, ini
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement('a');
       anchor.href = url;
-      anchor.download = 'Classtago_Bulk_Admission_Template_R4_9_6.xlsx';
+      anchor.download = 'Classtago_Bulk_Admission_Template_R4_9_7.xlsx';
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();
       window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-      setBulkAdmissionMessage({ type: 'success', text: 'R4.9.6 Excel template downloaded — 22 dropdown fields + 2 validated date fields, active from Row 5.' });
+      setBulkAdmissionMessage({ type: 'success', text: 'R4.9.7 Excel template downloaded — 22 dropdown fields + 2 validated date fields, active from Row 5.' });
     } catch (error: any) {
       console.error('Bulk admission template download failed', error);
       setBulkAdmissionMessage({ type: 'error', text: error?.message || 'Excel template could not be downloaded.' });
     }
+  };
+
+  const packBulkAdmissionFile = async (file: File): Promise<{ dataUrl: string; mimeType: string; size: number; fileName: string }> => {
+    const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+    if (isPdf) {
+      const pdfUrl = await readAdmissionDocument(file);
+      return { dataUrl: pdfUrl, mimeType: 'application/pdf', size: file.size, fileName: file.name };
+    }
+    const objectUrl = URL.createObjectURL(file);
+    try {
+      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const el = new Image();
+        el.onload = () => resolve(el);
+        el.onerror = () => reject(new Error(file.name + ' could not be read as an image.'));
+        el.src = objectUrl;
+      });
+      const scale = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight, 1));
+      const width = Math.max(1, Math.round(img.naturalWidth * scale));
+      const height = Math.max(1, Math.round(img.naturalHeight * scale));
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext('2d');
+      if (!context) throw new Error('Image processing is not available on this device.');
+      context.fillStyle = '#ffffff';
+      context.fillRect(0, 0, width, height);
+      context.drawImage(img, 0, 0, width, height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+      return { dataUrl, mimeType: 'image/jpeg', size: Math.floor((dataUrl.length - 23) * 3 / 4), fileName: file.name.replace(/\.(png|webp|jpe?g)$/i, '') + '.jpg' };
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
+  };
+
+  const submitBulkAdmissionsWithDocuments = async (payloadRows: any[], rawRows: Record<string, any>[]) => {
+    const fileMap = new Map<string, File>();
+    bulkDocumentFiles.forEach(file => fileMap.set(file.name.trim().toLowerCase(), file));
+    if (!fileMap.size) throw new Error('Document file names are filled in the Excel, but no files are selected. Tap "Select Photos & Documents" first.');
+    const optionalDefs = admissionDocumentDefinitions.filter((item: any) => !item.required);
+    const errors: string[] = [];
+    const plans = payloadRows.map((row: any, index: number) => {
+      const raw = rawRows[index] || {};
+      const items: Array<{ documentName: string; file: File }> = [];
+      const pick = (label: string, fileName: string, documentName: string, imageOnly: boolean, required: boolean) => {
+        if (!fileName) {
+          if (required) errors.push('Row ' + row.excelRow + ': ' + label + ' is required.');
+          return;
+        }
+        const file = fileMap.get(fileName.toLowerCase());
+        if (!file) { errors.push('Row ' + row.excelRow + ': file "' + fileName + '" was not selected.'); return; }
+        const isImage = /^image\/(jpeg|png|webp)$/.test(file.type) || /\.(jpe?g|png|webp)$/i.test(file.name);
+        const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+        if (!isImage && !isPdf) { errors.push('Row ' + row.excelRow + ': "' + fileName + '" must be JPG, PNG, WEBP or PDF.'); return; }
+        if (imageOnly && !isImage) { errors.push('Row ' + row.excelRow + ': the photograph "' + fileName + '" must be an image.'); return; }
+        if (isPdf && file.size > 3 * 1024 * 1024) { errors.push('Row ' + row.excelRow + ': PDF "' + fileName + '" must be 3 MB or smaller.'); return; }
+        items.push({ documentName, file });
+      };
+      pick('Photo File', String(raw['Photo File *'] ?? '').trim(), 'Passport Size Photograph', true, true);
+      pick('Aadhaar File', String(raw['Aadhaar File *'] ?? '').trim(), 'Aadhaar Card', false, true);
+      pick('LC File', String(raw['LC File *'] ?? '').trim(), 'Leaving Certificate (LC)', false, true);
+      String(raw['Other Document Files'] ?? '').split(';').map(entry => entry.trim()).filter(Boolean).forEach(entry => {
+        const colon = entry.indexOf(':');
+        if (colon < 1) { errors.push('Row ' + row.excelRow + ': Other Document "' + entry + '" must be written as Document Name:file.pdf'); return; }
+        const docName = entry.slice(0, colon).trim();
+        const def = optionalDefs.find((item: any) => String(item.name).trim().toLowerCase() === docName.toLowerCase());
+        if (!def) { errors.push('Row ' + row.excelRow + ': document "' + docName + '" is not configured in Admission setup.'); return; }
+        pick(docName, entry.slice(colon + 1).trim(), def.name, false, true);
+      });
+      return items;
+    });
+    if (errors.length) {
+      setBulkAdmissionErrors(errors.slice(0, 50));
+      throw new Error(errors.length + ' document issue' + (errors.length === 1 ? '' : 's') + ' found. No admission form was submitted.');
+    }
+
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session?.access_token) throw sessionError || new Error('Secure session unavailable. Please sign in again.');
+    const failures: string[] = [];
+    let created = 0;
+    const today = new Date().toISOString().slice(0, 10);
+    for (let index = 0; index < payloadRows.length; index += 1) {
+      const row = payloadRows[index];
+      setBulkAdmissionMessage({ type: 'info', text: 'Submitting admission ' + (index + 1) + ' of ' + payloadRows.length + ' with documents…' });
+      try {
+        const documentUploads: Array<{ documentName: string; fileName: string; mimeType: string; size: number; dataUrl: string }> = [];
+        for (const item of plans[index]) {
+          const packed = await packBulkAdmissionFile(item.file);
+          documentUploads.push({ documentName: item.documentName, fileName: packed.fileName, mimeType: packed.mimeType, size: packed.size, dataUrl: packed.dataUrl });
+        }
+        let gr = String(row.office?.proposedGrNumber || '').trim();
+        let adm = String(row.office?.proposedAdmissionNumber || '').trim();
+        if (!gr || !adm) {
+          const ids = await fetchCloudAdmissionIdentifiers();
+          if (!ids) throw new Error('Next GR / Admission number could not be generated.');
+          gr = gr || ids.grNumber;
+          adm = adm || ids.admissionNumber;
+        }
+        const documentChecklist = Object.fromEntries(admissionDocumentDefinitions.map((def: any) => {
+          const uploaded = documentUploads.find(upload => upload.documentName === def.name);
+          return [def.name, { name: def.name, required: def.required, uploaded: Boolean(uploaded), fileName: uploaded ? uploaded.fileName : '', date: uploaded ? today : '' }];
+        }));
+        const { excelRow, ...body } = row;
+        const response = await fetch('/api/school-website/clerk-admission-intake', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
+          body: JSON.stringify({
+            ...body,
+            student: { ...body.student, dateOfBirthInWords: convertDateToWords(body.student.dateOfBirth) },
+            office: { ...body.office, proposedGrNumber: gr, proposedAdmissionNumber: adm },
+            documentChecklist,
+            documentUploads
+          })
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || 'The server rejected this admission.');
+        created += 1;
+      } catch (error: any) {
+        failures.push('Row ' + row.excelRow + ' (' + row.student.fullName + '): ' + (error?.message || 'could not be submitted.'));
+      }
+    }
+    setBulkAdmissionErrors(failures.slice(0, 50));
+    if (failures.length) {
+      setBulkAdmissionMessage({ type: created ? 'info' : 'error', text: created + ' admission(s) submitted with documents, ' + failures.length + ' failed. Fix only the failed rows in a new Excel and upload again; do not re-upload the submitted rows.' });
+    } else {
+      setBulkDocumentFiles([]);
+      setBulkAdmissionMessage({ type: 'success', text: created + ' admission forms submitted with photo and documents. They are now in Admission Applications for Headmaster confirmation.' });
+    }
+    await loadClerkDashboard();
+    onRefreshData?.();
   };
 
   const handleBulkAdmissionWorkbook = async (file: File | null) => {
@@ -571,6 +701,13 @@ export default function ClerkWorkspace({ lang, user, classes, onRefreshData, ini
       if (validationErrors.length) {
         setBulkAdmissionErrors(validationErrors.slice(0, 50));
         throw new Error(`${validationErrors.length} validation issue${validationErrors.length === 1 ? '' : 's'} found. No admission form was submitted.`);
+      }
+
+      const docColumns = ['Photo File *', 'Aadhaar File *', 'LC File *', 'Other Document Files'];
+      const docsMode = rows.some(row => docColumns.some(col => String(row[col] ?? '').trim() !== ''));
+      if (docsMode) {
+        await submitBulkAdmissionsWithDocuments(payloadRows, rows);
+        return;
       }
 
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
@@ -1240,12 +1377,13 @@ export default function ClerkWorkspace({ lang, user, classes, onRefreshData, ini
           <div className="lg:col-span-12 overflow-hidden rounded-2xl border border-indigo-200 bg-gradient-to-r from-indigo-50 via-white to-cyan-50 shadow-sm">
             <div className="flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between">
               <div className="max-w-3xl">
-                <div className="flex flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-[.18em] text-indigo-600"><FileUp className="h-4 w-4"/>Bulk Admission <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-[9px] tracking-normal text-white">R4.9.6 · 24 controlled fields</span></div>
+                <div className="flex flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-[.18em] text-indigo-600"><FileUp className="h-4 w-4"/>Bulk Admission <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-[9px] tracking-normal text-white">R4.9.7 · 24 controlled fields</span></div>
                 <h3 className="mt-1 text-lg font-black text-slate-900">Excel Admission Form — Download, Fill & Upload</h3>
                 <p className="mt-1 text-xs leading-5 text-slate-600">The workbook mirrors the admission form. Every valid Excel row becomes a separate cloud Admission Application. Bulk upload never creates Student Master, login/password or fees directly.</p>
               </div>
               <div className="flex flex-wrap gap-2">
                 <button type="button" onClick={downloadBulkAdmissionTemplate} className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-black text-white shadow-sm hover:bg-indigo-700"><Download className="h-4 w-4"/>Download Excel Template</button>
+                <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-black text-white shadow-sm"><FileUp className="h-4 w-4"/>{bulkDocumentFiles.length ? bulkDocumentFiles.length + " document files selected" : "Select Photos & Documents"}<input type="file" multiple accept="image/jpeg,image/png,image/webp,application/pdf,.pdf,.jpg,.jpeg,.png,.webp" className="hidden" onChange={event => { setBulkDocumentFiles(Array.from(event.target.files || [])); event.target.value = ""; }} /></label>
                 <label className={`inline-flex items-center gap-2 rounded-xl bg-slate-950 px-4 py-2.5 text-xs font-black text-white shadow-sm ${bulkAdmissionUploading ? 'cursor-wait opacity-60' : 'cursor-pointer hover:bg-indigo-700'}`}>
                   <FileUp className={`h-4 w-4 ${bulkAdmissionUploading ? 'animate-pulse' : ''}`}/>{bulkAdmissionUploading ? 'Validating & Submitting…' : 'Upload Completed Excel'}
                   <input type="file" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" className="hidden" disabled={bulkAdmissionUploading} onChange={event => { const file = event.target.files?.[0] || null; void handleBulkAdmissionWorkbook(file); event.currentTarget.value = ''; }}/>
