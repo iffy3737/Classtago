@@ -1,3 +1,4 @@
+import { saveNativeBlob } from "../lib/smartPrint";
 import React, { useEffect, useRef, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "../lib/supabase";
@@ -132,6 +133,7 @@ export default function StudentIdCards() {
         jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
         pagebreak: { mode: ["css"] }
       }).from(el).outputPdf("blob");
+      if (await saveNativeBlob(blob, filename, "application/pdf")) return;
       const file = new File([blob], filename, { type: "application/pdf" });
       const nav: any = navigator;
       if (nav.canShare && nav.canShare({ files: [file] })) {

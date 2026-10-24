@@ -121,3 +121,44 @@ export async function saveNativePdf(base64Data: string, filename: string): Promi
   URL.revokeObjectURL(url);
   return { savedTo: 'Downloads/' + filename };
 }
+
+/**
+ * Save any base64-encoded file (Excel, PDF, image...) to the device Downloads folder through the
+ * Android native bridge. Falls back to a normal browser download when the bridge is unavailable.
+ */
+export async function saveNativeFile(base64Data: string, filename: string, mimeType: string): Promise<{ savedTo: string; native: boolean }> {
+  const bridge = (window as any).AndroidDownloader;
+  if (bridge && typeof bridge.saveBase64 === 'function') {
+    bridge.saveBase64(base64Data, filename, mimeType);
+    return { savedTo: 'Downloads/' + filename, native: true };
+  }
+  const byteChars = atob(base64Data);
+  const byteArray = new Uint8Array(byteChars.length);
+  for (let i = 0; i < byteChars.length; i++) byteArray[i] = byteChars.charCodeAt(i);
+  const blob = new Blob([byteArray], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  return { savedTo: 'Downloads/' + filename, native: false };
+}
+
+/** Saves a Blob through the Android native bridge. Returns false when the bridge is not available. */
+export async function saveNativeBlob(blob: Blob, filename: string, mimeType: string): Promise<boolean> {
+  const bridge = (window as any).AndroidDownloader;
+  if (!bridge || typeof bridge.saveBase64 !== 'function') return false;
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(new Error('The file could not be prepared for saving.'));
+    reader.readAsDataURL(blob);
+  });
+  const comma = dataUrl.indexOf(',');
+  if (comma < 0) throw new Error('The file could not be prepared for saving.');
+  bridge.saveBase64(dataUrl.slice(comma + 1), filename, mimeType);
+  return true;
+}

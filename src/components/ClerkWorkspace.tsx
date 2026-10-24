@@ -1,3 +1,4 @@
+import { saveNativeFile } from "../lib/smartPrint";
 import StudentIdCards from "./StudentIdCards";
 /**
  * @license
@@ -468,20 +469,9 @@ export default function ClerkWorkspace({ lang, user, classes, onRefreshData, ini
     return '';
   };
 
-  const downloadBulkAdmissionTemplate = () => {
+  const downloadBulkAdmissionTemplate = async () => {
     try {
-      const binary = window.atob(BULK_ADMISSION_TEMPLATE_BASE64);
-      const bytes = new Uint8Array(binary.length);
-      for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
-      const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement('a');
-      anchor.href = url;
-      anchor.download = 'Classtago_Bulk_Admission_Template_R4_9_7.xlsx';
-      document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      await saveNativeFile(BULK_ADMISSION_TEMPLATE_BASE64, 'Classtago_Bulk_Admission_Template_R4_9_7.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       setBulkAdmissionMessage({ type: 'success', text: 'R4.9.7 Excel template downloaded — 22 dropdown fields + 2 validated date fields, active from Row 5.' });
     } catch (error: any) {
       console.error('Bulk admission template download failed', error);
