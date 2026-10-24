@@ -436,17 +436,35 @@ export default function ClerkWorkspace({ lang, user, classes, onRefreshData, ini
 
   const normalizeBulkAdmissionDate = (value: any): string => {
     if (value === null || value === undefined || value === '') return '';
-    if (typeof value === 'number') {
-      const parsed = XLSX.SSF.parse_date_code(value);
-      if (!parsed) return '';
-      return `${parsed.y}-${String(parsed.m).padStart(2, '0')}-${String(parsed.d).padStart(2, '0')}`;
-    }
-    const text = String(value).trim();
-    if (/^\d{4}-\d{2}-\d{2}$/.test(text)) return text;
-    const slash = text.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
-    if (slash) return `${slash[3]}-${slash[2].padStart(2, '0')}-${slash[1].padStart(2, '0')}`;
-    const parsed = new Date(text);
-    return Number.isNaN(parsed.getTime()) ? '' : parsed.toISOString().slice(0, 10);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const build = (y: number, mo: number, d: number): string => {
+      if (!Number.isInteger(y) || !Number.isInteger(mo) || !Number.isInteger(d)) return '';
+      if (y < 1900 || y > 2100 || mo < 1 || mo > 12 || d < 1 || d > 31) return '';
+      const check = new Date(Date.UTC(y, mo - 1, d));
+      if (check.getUTCFullYear() !== y || check.getUTCMonth() !== mo - 1 || check.getUTCDate() !== d) return '';
+      return y + '-' + pad(mo) + '-' + pad(d);
+    };
+    const fromSerial = (n: number): string => {
+      const parsed = XLSX.SSF.parse_date_code(n);
+      return parsed ? build(parsed.y, parsed.m, parsed.d) : '';
+    };
+    if (value instanceof Date) return Number.isNaN(value.getTime()) ? '' : build(value.getFullYear(), value.getMonth() + 1, value.getDate());
+    if (typeof value === 'number') return fromSerial(value);
+    let text = String(value).trim().replace(/\s+/g, ' ');
+    text = text.replace(/[T ]\d{1,2}:\d{2}(:\d{2})?(\.\d+)?\s*(AM|PM)?Z?$/i, '').trim();
+    if (!text) return '';
+    if (/^\d{5}$/.test(text)) return fromSerial(Number(text));
+    const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+    const fullYear = (raw: string) => { const y = Number(raw); return raw.length === 2 ? (y > 30 ? 1900 + y : 2000 + y) : y; };
+    let m = text.match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/);
+    if (m) return build(Number(m[1]), Number(m[2]), Number(m[3]));
+    m = text.match(/^(\d{1,2})[\/\-. ](\d{1,2})[\/\-. ](\d{2}|\d{4})$/);
+    if (m) return build(fullYear(m[3]), Number(m[2]), Number(m[1]));
+    m = text.match(/^(\d{1,2})(?:st|nd|rd|th)?[ \-\/.,]+([A-Za-z]{3,9})[ \-\/.,]+(\d{2}|\d{4})$/);
+    if (m) { const mi = months.indexOf(m[2].slice(0, 3).toLowerCase()); return mi >= 0 ? build(fullYear(m[3]), mi + 1, Number(m[1])) : ''; }
+    m = text.match(/^([A-Za-z]{3,9})[ \-\/.,]+(\d{1,2})(?:st|nd|rd|th)?[ ,\-\/.]+(\d{4})$/);
+    if (m) { const mi = months.indexOf(m[1].slice(0, 3).toLowerCase()); return mi >= 0 ? build(Number(m[3]), mi + 1, Number(m[2])) : ''; }
+    return '';
   };
 
   const downloadBulkAdmissionTemplate = () => {
