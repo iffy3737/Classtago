@@ -1227,7 +1227,7 @@ export default function ClerkWorkspace({ lang, user, classes, onRefreshData, ini
                 <p className="mt-1 text-xs leading-5 text-slate-600">The workbook mirrors the admission form. Every valid Excel row becomes a separate cloud Admission Application. Bulk upload never creates Student Master, login/password or fees directly.</p>
               </div>
               <div className="flex flex-wrap gap-2">
-                <button type="button" onClick={downloadBulkAdmissionTemplate} className="inline-flex items-center gap-2 rounded-xl border border-indigo-200 bg-white px-4 py-2.5 text-xs font-black text-indigo-700 shadow-sm hover:bg-indigo-50"><Download className="h-4 w-4"/>Download Excel Template</button>
+                <button type="button" onClick={downloadBulkAdmissionTemplate} className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-black text-white shadow-sm hover:bg-indigo-700"><Download className="h-4 w-4"/>Download Excel Template</button>
                 <label className={`inline-flex items-center gap-2 rounded-xl bg-slate-950 px-4 py-2.5 text-xs font-black text-white shadow-sm ${bulkAdmissionUploading ? 'cursor-wait opacity-60' : 'cursor-pointer hover:bg-indigo-700'}`}>
                   <FileUp className={`h-4 w-4 ${bulkAdmissionUploading ? 'animate-pulse' : ''}`}/>{bulkAdmissionUploading ? 'Validating & Submitting…' : 'Upload Completed Excel'}
                   <input type="file" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" className="hidden" disabled={bulkAdmissionUploading} onChange={event => { const file = event.target.files?.[0] || null; void handleBulkAdmissionWorkbook(file); event.currentTarget.value = ''; }}/>
