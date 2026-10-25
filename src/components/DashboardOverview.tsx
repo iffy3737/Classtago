@@ -174,7 +174,7 @@ export default function DashboardOverview({ lang, user, onRefreshData }: Dashboa
   const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
   const [activeFeatureId, setActiveFeatureId] = useState<string | null>(null);
-  const routeStackRef = useRef<Array<{ tab: DashboardTab; moduleId: string | null; featureId: string | null }>>([]);
+  const inAppDepthRef = useRef(0);
 
   // Change Password States (For ALL logged-in users)
   const [currentPasswordOwn, setCurrentPasswordOwn] = useState('');
@@ -669,18 +669,16 @@ export default function DashboardOverview({ lang, user, onRefreshData }: Dashboa
     if (moduleId) hash.set('view', moduleId);
     if (featureId) hash.set('feature', featureId);
     
-        const routeEntry = { tab, moduleId: moduleId || null, featureId: featureId || null };
-    if (tab === 'overview' && !moduleId) {
-      routeStackRef.current = [];
+        url.hash = hash.toString();
+    const nextUrl = url.pathname + url.search + url.hash;
+    const currentUrl = window.location.pathname + window.location.search + window.location.hash;
+    const isInitialHome = tab === 'overview' && !moduleId && !/module=/.test(window.location.hash);
+    if (nextUrl === currentUrl || isInitialHome) {
+      window.history.replaceState(window.history.state, '', nextUrl);
     } else {
-      const lastRoute = routeStackRef.current[routeStackRef.current.length - 1];
-      if (!lastRoute || lastRoute.tab !== routeEntry.tab || lastRoute.moduleId !== routeEntry.moduleId || lastRoute.featureId !== routeEntry.featureId) {
-        routeStackRef.current.push(routeEntry);
-        if (routeStackRef.current.length > 50) routeStackRef.current.shift();
-      }
+      window.history.pushState(null, '', nextUrl);
+      inAppDepthRef.current += 1;
     }
-    url.hash = hash.toString();
-    window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
   };
 
   const requestTab = (tab: DashboardTab) => {
@@ -778,32 +776,32 @@ export default function DashboardOverview({ lang, user, onRefreshData }: Dashboa
     return true;
   };
 
-  // Android back button: step back through the in-app module route before the app is minimized.
+  // Android/WebView back: workspace route changes create real history entries, so history back steps through them.
   useEffect(() => {
     const onNativeBack = (event: Event) => {
       if (event.defaultPrevented) return;
       if (document.querySelector('[role="dialog"], [data-edunixo-modal="true"]')) return;
-      const stack = routeStackRef.current;
-      if (stack.length === 0) return;
+      if (inAppDepthRef.current <= 0) return;
       event.preventDefault();
-      stack.pop();
-      const prev = stack[stack.length - 1];
-      setActiveTab(prev ? prev.tab : 'overview');
-      setActiveModuleId(prev ? prev.moduleId : null);
-      setActiveFeatureId(prev ? prev.featureId : null);
-      try {
-        const url = new URL(window.location.href);
-        const hash = new URLSearchParams();
-        hash.set('module', prev ? prev.tab : 'overview');
-        if (prev && prev.moduleId) hash.set('view', prev.moduleId);
-        if (prev && prev.featureId) hash.set('feature', prev.featureId);
-        url.hash = hash.toString();
-        window.history.replaceState(null, '', url.pathname + url.search + url.hash);
-      } catch { /* route hash is cosmetic */ }
-      window.requestAnimationFrame(() => window.scrollTo({ top: 0 }));
+      window.history.back();
+    };
+    const onPopState = () => {
+      if (inAppDepthRef.current <= 0) return;
+      inAppDepthRef.current -= 1;
+      const params = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+      if (!params.get('module')) {
+        setActiveTab('overview');
+        setActiveModuleId(null);
+        setActiveFeatureId(null);
+        window.requestAnimationFrame(() => window.scrollTo({ top: 0 }));
+      }
     };
     window.addEventListener('edunixo:native-back', onNativeBack);
-    return () => window.removeEventListener('edunixo:native-back', onNativeBack);
+    window.addEventListener('popstate', onPopState);
+    return () => {
+      window.removeEventListener('edunixo:native-back', onNativeBack);
+      window.removeEventListener('popstate', onPopState);
+    };
   }, []);
 
   // R2.5.96 Maria direct navigation bridge: expose the exact same guarded opener
