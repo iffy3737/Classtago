@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -54,7 +55,19 @@ export default function TopBar({
 }: TopBarProps) {
   const t = translations[lang];
 
-  if (mobileApp) {
+  // On narrow browser screens, logged-in school users get the same compact one-line bar as the app.
+  const [narrowScreen, setNarrowScreen] = useState<boolean>(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const query = window.matchMedia('(max-width: 1023px)');
+    const update = () => setNarrowScreen(query.matches);
+    update();
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
+  const compact = mobileApp || (Boolean(user) && user?.role !== 'super_admin' && narrowScreen);
+
+  if (compact) {
     return (
       <header className="edx-mobile-topbar no-print">
         <div className="edx-mobile-topbar-inner">
