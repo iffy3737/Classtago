@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { takePendingMariaNavigations } from '../lib/mariaClientBridge';
 import { 
   Users, BookOpen, AlertCircle, FileText, Calendar, Plus, 
@@ -174,6 +174,7 @@ export default function DashboardOverview({ lang, user, onRefreshData }: Dashboa
   const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
   const [activeFeatureId, setActiveFeatureId] = useState<string | null>(null);
+  const routeStackRef = useRef<Array<{ tab: DashboardTab; moduleId: string | null; featureId: string | null }>>([]);
 
   // Change Password States (For ALL logged-in users)
   const [currentPasswordOwn, setCurrentPasswordOwn] = useState('');
@@ -667,6 +668,17 @@ export default function DashboardOverview({ lang, user, onRefreshData }: Dashboa
     hash.set('module', tab);
     if (moduleId) hash.set('view', moduleId);
     if (featureId) hash.set('feature', featureId);
+    
+        const routeEntry = { tab, moduleId: moduleId || null, featureId: featureId || null };
+    if (tab === 'overview' && !moduleId) {
+      routeStackRef.current = [];
+    } else {
+      const lastRoute = routeStackRef.current[routeStackRef.current.length - 1];
+      if (!lastRoute || lastRoute.tab !== routeEntry.tab || lastRoute.moduleId !== routeEntry.moduleId || lastRoute.featureId !== routeEntry.featureId) {
+        routeStackRef.current.push(routeEntry);
+        if (routeStackRef.current.length > 50) routeStackRef.current.shift();
+      }
+    }
     url.hash = hash.toString();
     window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
   };
@@ -765,6 +777,34 @@ export default function DashboardOverview({ lang, user, onRefreshData }: Dashboa
     else openRoleModule(module);
     return true;
   };
+
+  // Android back button: step back through the in-app module route before the app is minimized.
+  useEffect(() => {
+    const onNativeBack = (event: Event) => {
+      if (event.defaultPrevented) return;
+      if (document.querySelector('[role="dialog"], [data-edunixo-modal="true"]')) return;
+      const stack = routeStackRef.current;
+      if (stack.length === 0) return;
+      event.preventDefault();
+      stack.pop();
+      const prev = stack[stack.length - 1];
+      setActiveTab(prev ? prev.tab : 'overview');
+      setActiveModuleId(prev ? prev.moduleId : null);
+      setActiveFeatureId(prev ? prev.featureId : null);
+      try {
+        const url = new URL(window.location.href);
+        const hash = new URLSearchParams();
+        hash.set('module', prev ? prev.tab : 'overview');
+        if (prev && prev.moduleId) hash.set('view', prev.moduleId);
+        if (prev && prev.featureId) hash.set('feature', prev.featureId);
+        url.hash = hash.toString();
+        window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+      } catch { /* route hash is cosmetic */ }
+      window.requestAnimationFrame(() => window.scrollTo({ top: 0 }));
+    };
+    window.addEventListener('edunixo:native-back', onNativeBack);
+    return () => window.removeEventListener('edunixo:native-back', onNativeBack);
+  }, []);
 
   // R2.5.96 Maria direct navigation bridge: expose the exact same guarded opener
   // used by the visible role menu. Maria never gets a second routing authority.
