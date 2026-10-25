@@ -694,16 +694,16 @@ export default function RoleModuleMenu({
       )}
 
       {brandInfo && typeof document !== 'undefined' && createPortal(
-        <div className="fixed inset-0 z-[2147483600] flex items-end justify-center bg-slate-950/55 p-3 backdrop-blur-sm sm:items-center" onClick={() => setBrandInfo(null)}>
-          <section className="w-full max-w-md overflow-hidden rounded-[1.8rem] border border-white/70 bg-white shadow-[0_30px_100px_rgba(15,23,42,.3)]" onClick={event => event.stopPropagation()}>
-            <div className="flex items-start justify-between gap-4 bg-gradient-to-br from-indigo-50 via-white to-cyan-50 p-5">
+        <div className="fixed inset-0 z-[2147483600] flex items-end justify-center bg-slate-950/55 px-3 backdrop-blur-sm sm:items-center" style={{ paddingTop: 104, paddingBottom: 'calc(84px + env(safe-area-inset-bottom, 0px))' }} onClick={() => setBrandInfo(null)}>
+          <section className="flex max-h-full w-full max-w-md flex-col overflow-hidden rounded-[1.8rem] border border-white/70 bg-white shadow-[0_30px_100px_rgba(15,23,42,.3)]" onClick={event => event.stopPropagation()}>
+            <div className="flex shrink-0 items-start justify-between gap-4 bg-gradient-to-br from-indigo-50 via-white to-cyan-50 p-5">
               <div>
                 <p className="text-[9px] font-black uppercase tracking-[0.25em] text-indigo-600">Classtago</p>
                 <h3 className="mt-1 text-xl font-black tracking-tight text-slate-900">{brandInfoContent[brandInfo].title}</h3>
               </div>
               <button type="button" onClick={() => setBrandInfo(null)} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm"><X className="h-4 w-4" /></button>
             </div>
-            <div className="p-5 text-sm font-medium leading-6 text-slate-600">{brandInfoContent[brandInfo].body}</div>
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-5 text-sm font-medium leading-6 text-slate-600">{brandInfoContent[brandInfo].body}</div>
           </section>
         </div>,
         document.body
