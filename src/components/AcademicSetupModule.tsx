@@ -1879,7 +1879,7 @@ export default function AcademicSetupModule({
           <div className="space-y-8 animate-fade-in">
             {/* Academic Year master list */}
             <div className="bg-slate-50/50 border border-slate-200/80 rounded-2xl p-6 space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 text-emerald-600 h-4" />
                   <h3 className="text-sm font-bold text-slate-800">📚 Academic Year Registry</h3>
@@ -1905,7 +1905,7 @@ export default function AcademicSetupModule({
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs font-sans">
+                <table className="w-full min-w-[720px] text-left text-xs font-sans">
                   <thead>
                     <tr className="border-b border-slate-200 text-slate-400 font-bold">
                       <th className="py-2">Academic Year</th>
@@ -1978,7 +1978,7 @@ export default function AcademicSetupModule({
             {/* School Registration Details */}
             {(!focusedMode || focusedFeatureId !== 'medium-language-settings') && (<>
             <div className="bg-slate-50/50 border border-slate-200/80 rounded-2xl p-6 space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
                 <div className="flex items-center gap-2">
                   <Info className="w-4 text-blue-600 h-4" />
                   <h3 className="text-sm font-bold text-slate-800">🏛 Affiliations, Board & Medium Masters</h3>
@@ -2036,7 +2036,7 @@ export default function AcademicSetupModule({
             <div className={focusedMode && focusedFeatureId === 'medium-language-settings' ? "grid grid-cols-1 gap-6" : "grid grid-cols-1 md:grid-cols-2 gap-6"}>
               {/* Mediums config */}
               <div className="bg-slate-50/50 border border-slate-200/80 rounded-2xl p-5 space-y-4">
-                <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
                   <h4 className="text-xs font-bold text-slate-800">Mediums of Instruction</h4>
                   {isHeadmaster && (
                     <div className="flex gap-1.5">
@@ -2075,7 +2075,7 @@ export default function AcademicSetupModule({
               {/* Boards Affiliation Config */}
               {(!focusedMode || focusedFeatureId !== 'medium-language-settings') && (<>
               <div className="bg-slate-50/50 border border-slate-200/80 rounded-2xl p-5 space-y-4">
-                <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
                   <h4 className="text-xs font-bold text-slate-800">Education Board Configurations</h4>
                   {isHeadmaster && (
                     <div className="flex gap-1.5">
@@ -2167,7 +2167,7 @@ export default function AcademicSetupModule({
 
             {/* Division Config */}
             <div className="bg-slate-50/50 border border-slate-200/80 rounded-2xl p-6 space-y-4 max-w-xl">
-              <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
                 <div className="flex items-center gap-2">
                   <Plus className="w-4 h-4 text-blue-600" />
                   <h4 className="text-xs font-bold text-slate-800">Division Registry Configurator</h4>
@@ -2341,7 +2341,7 @@ export default function AcademicSetupModule({
             {/* Subject Groups — faculty/curriculum classification only. */}
             {showSubjectGroups && (<>
             <div className="bg-slate-50/50 border border-slate-200/80 rounded-2xl p-6 space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
                 <div className="flex items-center gap-2">
                   <Layers className="w-4 text-purple-600 h-4" />
                   <div>
@@ -2404,7 +2404,7 @@ export default function AcademicSetupModule({
             {/* Subject Master Form Trigger */}
             {showSubjectRegistry && (<>
             <div className="bg-slate-50/50 border border-slate-200/80 rounded-2xl p-6 space-y-6">
-              <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
                 <div className="flex items-center gap-2">
                   <BookOpen className="w-4 text-blue-600 h-4" />
                   <h3 className="text-sm font-bold text-slate-800">3.2 Master Subject Registry</h3>
@@ -2570,7 +2570,7 @@ export default function AcademicSetupModule({
 
               {/* Subject master list */}
               <div className="overflow-x-auto border border-slate-200/80 rounded-xl">
-                <table className="w-full text-left text-xs font-sans">
+                <table className="w-full min-w-[720px] text-left text-xs font-sans">
                   <thead>
                     <tr className="border-b border-slate-200 text-slate-400 font-bold bg-slate-50/50">
                       <th className="p-3">Order</th>
@@ -2654,7 +2654,7 @@ export default function AcademicSetupModule({
             {/* Class Subject Mapping Grid Panel (Item 8) */}
             {showSubjectClassMapping && (<>
             <div className="bg-slate-50/50 border border-slate-200/80 rounded-2xl p-6 space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
                 <div className="flex items-center gap-2">
                   <Layers className="w-4 text-emerald-600 h-4" />
                   <h3 className="text-sm font-bold text-slate-800">3.3 Dynamic Class-Subject Mapping Grid</h3>
@@ -2715,7 +2715,7 @@ export default function AcademicSetupModule({
             {/* Exam terms list */}
             {(!focusedMode || focusedFeatureId !== 'grading-passing-rules') && (<>
             <div className="bg-slate-50/50 border border-slate-200/80 rounded-2xl p-6 space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
                 <div className="flex items-center gap-2">
                   <Award className="w-4 text-blue-600 h-4" />
                   <h3 className="text-sm font-bold text-slate-800">4.1 Academic Exam Terms</h3>
@@ -2873,7 +2873,7 @@ export default function AcademicSetupModule({
 
                 {/* Grade scales table */}
                 <div className="md:col-span-2 overflow-x-auto border border-slate-200 rounded-xl bg-white">
-                  <table className="w-full text-left text-xs font-sans">
+                  <table className="w-full min-w-[720px] text-left text-xs font-sans">
                     <thead>
                       <tr className="border-b border-slate-200 text-slate-400 bg-slate-50 font-bold">
                         <th className="p-2.5">Grade</th>
@@ -3328,7 +3328,7 @@ export default function AcademicSetupModule({
 
                 {/* Holidays list */}
                 <div className="md:col-span-2 overflow-x-auto border border-slate-200 rounded-xl bg-white max-h-80 overflow-y-auto">
-                  <table className="w-full text-left text-xs font-sans">
+                  <table className="w-full min-w-[720px] text-left text-xs font-sans">
                     <thead>
                       <tr className="border-b border-slate-200 text-slate-400 bg-slate-50 font-bold">
                         <th className="p-2.5">Occasion Title</th>
@@ -3378,13 +3378,13 @@ export default function AcademicSetupModule({
         {activeCategory === 'docs' && (
           <div className="space-y-8">
             <div className="bg-slate-50/50 border border-slate-200/80 rounded-2xl p-6 space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
                 <div className="flex items-center gap-2">
                   <FileText className="w-4 text-blue-600 h-4" />
                   <h3 className="text-sm font-bold text-slate-800">6.1 Required Admission Documents Master Checklist</h3>
                 </div>
                 {isHeadmaster && (
-                  <div className="flex gap-2">
+                  <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
                     <input
                       type="text"
                       placeholder="e.g. Birth Certificate"
