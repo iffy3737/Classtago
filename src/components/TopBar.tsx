@@ -93,6 +93,9 @@ export default function TopBar({
     <header className="sticky top-0 z-40 border-b border-white/10 bg-[#050816]/92 px-3 py-3 text-white shadow-[0_18px_60px_rgba(2,6,23,.28)] backdrop-blur-2xl no-print sm:px-5">
       <div className="mx-auto flex max-w-[96rem] flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
         <div className="flex items-center justify-between gap-4">
+          {user && user.role !== 'super_admin' && (
+            <button type="button" id="website-hamburger" onClick={() => window.dispatchEvent(new CustomEvent('edunixo:open-menu'))} aria-label="Open menu" className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-white/15 bg-gradient-to-br from-cyan-400 to-violet-500 text-slate-950 shadow-lg"><Menu className="h-5 w-5" /></button>
+          )}
           <button className="flex min-w-0 items-center gap-3 text-left" onClick={() => onNavigate(user?.role === 'super_admin' ? 'erp' : 'website')}>
             <div className="relative grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-br from-cyan-400 to-violet-500 text-slate-950 shadow-[0_12px_35px_rgba(34,211,238,.22)]">
               {user?.role === 'super_admin' ? <ShieldAlert className="h-5 w-5" /> : <GraduationCap className="h-5 w-5" />}
@@ -110,17 +113,17 @@ export default function TopBar({
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-2 xl:justify-end">
-          <div className="flex rounded-xl border border-white/10 bg-white/[0.045] p-1 text-xs shadow-inner">
+          {!(user && user.role !== 'super_admin') && <div className="flex rounded-xl border border-white/10 bg-white/[0.045] p-1 text-xs shadow-inner">
             <button onClick={() => onNavigate('website')} id="tab-website-view" className={`flex items-center gap-2 rounded-lg px-3 py-2 font-black transition-all ${currentView === 'website' ? 'bg-white text-slate-950 shadow-lg' : 'text-slate-400 hover:bg-slate-900 hover:text-white'}`}><Globe2 className="h-3.5 w-3.5" />{t.website}</button>
             <button onClick={user ? () => onNavigate('erp') : onOpenLogin} id="tab-erp-view" className={`flex items-center gap-2 rounded-lg px-3 py-2 font-black transition-all ${currentView === 'erp' ? 'bg-gradient-to-r from-cyan-300 to-violet-400 text-slate-950 shadow-lg' : 'text-slate-400 hover:bg-slate-900 hover:text-white'}`}><Sparkles className="h-3.5 w-3.5" />{t.erpPortal}</button>
-          </div>
+          </div>}
 
           <div className="hidden items-center gap-2 xl:flex">
             <LanguageSelector value={lang} options={languages} onChange={onLangChange} loading={languagesLoading} compact label="Interface language" purpose="interface" />
             <FontSelector value={interfaceFontCode} options={interfaceFonts} onChange={onInterfaceFontChange} usage="interface" loading={fontsLoading} compactIconOnly />
           </div>
 
-          {user?.role !== 'super_admin' && <button onClick={() => onNavigate('database')} id="btn-db-setup" className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-[10px] font-black uppercase tracking-wide transition ${currentView === 'database' ? 'border-cyan-300/30 bg-cyan-300/15 text-cyan-200' : 'border-white/10 bg-white/[0.045] text-slate-400 hover:border-white/20 hover:text-white'}`} title={t.databaseSettings}><Database className="h-3.5 w-3.5" />{t.dbSetupShort}</button>}
+          {false && <button onClick={() => onNavigate('database')} id="btn-db-setup" className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-[10px] font-black uppercase tracking-wide transition ${currentView === 'database' ? 'border-cyan-300/30 bg-cyan-300/15 text-cyan-200' : 'border-white/10 bg-white/[0.045] text-slate-400 hover:border-white/20 hover:text-white'}`} title={t.databaseSettings}><Database className="h-3.5 w-3.5" />{t.dbSetupShort}</button>}
 
           {user ? <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.045] p-1.5 pl-2.5">
             {user.photoUrl ? (
