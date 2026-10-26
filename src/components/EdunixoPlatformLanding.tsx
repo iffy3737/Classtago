@@ -116,6 +116,21 @@ const DEMO_ROLE_OPTIONS: Array<{ value: DemoRole; label: string }> = [
   { value: 'super_admin', label: 'Super Admin' }
 ];
 
+const planCycle = (plan: PublicPlan): 'annual' | 'monthly' | 'other' => {
+  const cycle = String(plan.billingCycle || '');
+  if (/year|annual/i.test(cycle)) return 'annual';
+  if (/month/i.test(cycle)) return 'monthly';
+  return 'other';
+};
+
+const money = (amount: number, currency?: string | null): string => {
+  try {
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: currency || 'INR', maximumFractionDigits: 0 }).format(amount);
+  } catch {
+    return '₹' + Math.round(amount).toLocaleString('en-IN');
+  }
+};
+
 export default function EdunixoPlatformLanding({
   lang, onLangChange, languages, languagesLoading = false, interfaceFontCode, interfaceFonts,
   fontsLoading = false, onInterfaceFontChange, onOpenPlatformLogin, onOpenSchool,
@@ -130,6 +145,7 @@ export default function EdunixoPlatformLanding({
   const finderRequestId = useRef(0);
   const [plans, setPlans] = useState<PublicPlan[]>([]);
   const [plansLoading, setPlansLoading] = useState(true);
+  const [billing, setBilling] = useState<'monthly' | 'annual'>('annual');
   const [finderLoading, setFinderLoading] = useState(false);
   const [finderAttempted, setFinderAttempted] = useState(false);
   const [finderError, setFinderError] = useState('');
@@ -182,6 +198,22 @@ export default function EdunixoPlatformLanding({
     if (code === 'mr') return 'योजना';
     return 'Plans';
   }, [lang]);
+
+  const planView = useMemo(() => {
+    const launch = plans.find((plan) => /launch/i.test(plan.planName)) || null;
+    const tiers: Array<{ name: string; monthly?: PublicPlan; annual?: PublicPlan; other?: PublicPlan }> = [];
+    plans.filter((plan) => plan !== launch).forEach((plan) => {
+      let tier = tiers.find((item) => item.name.toLowerCase() === plan.planName.toLowerCase());
+      if (!tier) { tier = { name: plan.planName }; tiers.push(tier); }
+      const cycle = planCycle(plan);
+      if (cycle === 'annual') tier.annual = plan;
+      else if (cycle === 'monthly') tier.monthly = plan;
+      else tier.other = plan;
+    });
+    const sample = tiers.find((tier) => tier.monthly && tier.annual && tier.monthly.basePrice && tier.annual.basePrice);
+    const freeMonths = sample ? Math.round(12 - (sample.annual!.basePrice as number) / (sample.monthly!.basePrice as number)) : 0;
+    return { launch, tiers, freeMonths };
+  }, [plans]);
 
   const formatPlanPrice = (plan: PublicPlan) => {
     if (plan.basePrice === null || plan.basePrice === undefined || !Number.isFinite(plan.basePrice)) return selectedCopy.register;
@@ -424,148 +456,153 @@ export default function EdunixoPlatformLanding({
       </header>
 
       <main id="top" className="relative z-10">
-        <section id="platform" className="mx-auto grid min-h-[760px] max-w-7xl items-center gap-14 px-5 py-20 lg:grid-cols-[1.05fr_.95fr] lg:px-8 lg:py-28">
+        <section id="platform" className="cs-land mx-auto grid max-w-7xl items-center gap-12 px-5 py-14 lg:grid-cols-[1.05fr_.95fr] lg:px-8 lg:py-24">
           <div>
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-300/25 bg-cyan-300/10 px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.18em] text-cyan-200">
-              <Sparkles className="h-3.5 w-3.5" /> {selectedCopy.heroBadge}
+            <div className="cs-l-chip"><Sparkles className="h-4 w-4" /> {selectedCopy.heroBadge}</div>
+            <h1 className="cs-l-h1">{selectedCopy.heroTitleA}{' '}<span className="cs-l-grad">{selectedCopy.heroTitleB}</span></h1>
+            <p className="cs-l-lead">{selectedCopy.heroText}</p>
+            <div className="cs-l-actions">
+              <button type="button" onClick={() => openInterest('registration')} className="cs-l-btn">{selectedCopy.register}<ArrowRight className="h-4 w-4" /></button>
+              <button type="button" onClick={() => openInterest('demo')} className="cs-l-btn cs-l-btn-ghost"><Zap className="h-4 w-4" />Try Live Demo</button>
             </div>
-            <h1 className="max-w-4xl text-5xl font-black leading-[1.02] tracking-[-0.05em] text-white sm:text-6xl lg:text-7xl">
-              {selectedCopy.heroTitleA}{' '}
-              <span className="bg-gradient-to-r from-cyan-300 via-sky-400 to-indigo-400 bg-clip-text text-transparent">{selectedCopy.heroTitleB}</span>
-            </h1>
-            <p className="mt-7 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">{selectedCopy.heroText}</p>
-
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <button onClick={() => openInterest('registration')} className="group flex items-center justify-center gap-2 rounded-2xl bg-cyan-300 px-6 py-4 text-sm font-black text-slate-950 shadow-xl shadow-cyan-500/15 transition hover:-translate-y-0.5 hover:bg-cyan-200">
-                {selectedCopy.register}<ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-              </button>
-              <button onClick={() => openInterest('demo')} className="flex items-center justify-center gap-2 rounded-2xl border border-cyan-300/30 bg-cyan-300/10 px-6 py-4 text-sm font-extrabold text-white transition hover:border-cyan-300/60 hover:bg-cyan-300/15">
-                <Zap className="h-4 w-4 text-amber-300" />Try Live Demo
-              </button>
-            </div>
-
-            <div className="edx-public-readable-card mt-8 flex items-start gap-3 rounded-2xl border border-emerald-300/20 bg-emerald-300/10 p-4 text-sm leading-6 text-emerald-100">
-              <CircleDollarSign className="mt-0.5 h-5 w-5 shrink-0 text-emerald-300" />
-              <div><strong className="text-white">{selectedCopy.studentPricing}:</strong> {selectedCopy.studentFree}</div>
-            </div>
+            <div className="cs-l-note"><CircleDollarSign className="h-5 w-5 shrink-0" /><div><strong>{selectedCopy.studentPricing}:</strong> {selectedCopy.studentFree}</div></div>
           </div>
-
-          <div className="relative mx-auto w-full max-w-xl">
-            <div className="absolute -inset-10 rounded-full bg-cyan-400/10 blur-3xl" />
-            <div className="relative overflow-hidden rounded-[2rem] border border-white/15 bg-white/[0.07] p-3 shadow-2xl shadow-black/40 backdrop-blur-xl">
-              <div className="rounded-[1.5rem] border border-white/10 bg-slate-900 p-5">
-                <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="grid h-10 w-10 place-items-center rounded-xl bg-cyan-300 text-slate-950"><LayoutDashboard className="h-5 w-5" /></div>
-                    <div><div className="text-sm font-extrabold">{selectedCopy.unifiedCommand}</div><div className="text-[10px] text-slate-400">{selectedCopy.workspacePreview}</div></div>
-                  </div>
-                  <div className="flex items-center gap-2 text-[10px] font-bold text-emerald-300"><span className="h-2 w-2 animate-pulse rounded-full bg-emerald-300" />{selectedCopy.secureCloud}</div>
-                </div>
-
-                <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                  {[
-                    [selectedCopy.students, '2,480', UsersRound], [selectedCopy.attendance, '94.8%', BadgeCheck], [selectedCopy.classes, '48', BookOpenCheck], [selectedCopy.notices, '12', MessageSquareText]
-                  ].map(([label, value, Icon]: any) => (
-                    <div key={label} className="rounded-xl border border-white/10 bg-slate-900 p-3">
-                      <Icon className="h-4 w-4 text-cyan-300" /><div className="mt-3 text-lg font-black">{value}</div><div className="text-[9px] uppercase tracking-wider text-slate-500">{label}</div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-4 grid gap-4 sm:grid-cols-[1.2fr_.8fr]">
-                  <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-sky-500/15 to-indigo-500/10 p-4">
-                    <div className="flex items-center justify-between"><div><p className="text-[10px] font-bold uppercase tracking-wider text-sky-300">{selectedCopy.smartTimetable}</p><h3 className="mt-1 text-base font-black">{selectedCopy.wholeSchoolGenerated}</h3></div><CalendarClock className="h-6 w-6 text-sky-300" /></div>
-                    <div className="mt-4 space-y-2">
-                      {[82, 68, 92].map((width, index) => <div key={width} className="h-2 rounded-full bg-slate-800"><div className="h-2 rounded-full bg-gradient-to-r from-cyan-300 to-blue-400" style={{ width: `${width}%`, animationDelay: `${index * 120}ms` }} /></div>)}
-                    </div>
-                    <div className="mt-4 flex items-center gap-2 text-[10px] font-bold text-emerald-300"><Check className="h-3.5 w-3.5" />{selectedCopy.noClashes}</div>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-slate-900 p-4">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-violet-300">{selectedCopy.languageLayer}</p>
-                    <div className="mt-3 space-y-2 text-xs font-bold">
-                      <div className="rounded-lg bg-slate-900 px-3 py-2">English · हिन्दी</div>
-                      <div className="rounded-lg bg-slate-900 px-3 py-2 text-right">اردو · मराठी</div>
-                      <div className="rounded-lg bg-slate-900 px-3 py-2">ગુજરાતી · தமிழ்</div>
-                    </div>
-                    <div className="mt-3 text-[10px] leading-5 text-slate-400">{selectedCopy.languageLayerText}</div>
-                  </div>
-                </div>
+          <div className="cs-l-panel">
+            <div className="cs-l-panel-head">
+              <div className="flex items-center gap-3">
+                <div className="cs-l-logo"><LayoutDashboard className="h-5 w-5" /></div>
+                <div><p className="cs-l-strong">{selectedCopy.unifiedCommand}</p><p className="cs-l-small">{selectedCopy.workspacePreview}</p></div>
+              </div>
+              <div className="cs-l-live"><span className="cs-l-dot" />{selectedCopy.secureCloud}</div>
+            </div>
+            <div className="cs-l-tiles">
+              {[
+                [selectedCopy.students, '2,480', UsersRound], [selectedCopy.attendance, '94.8%', BadgeCheck], [selectedCopy.classes, '48', BookOpenCheck], [selectedCopy.notices, '12', MessageSquareText]
+              ].map(([label, value, Icon]: any) => (
+                <div key={label} className="cs-l-tile"><Icon className="h-4 w-4" /><div className="cs-l-tile-v">{value}</div><p className="cs-l-small">{label}</p></div>
+              ))}
+            </div>
+            <div className="cs-l-split">
+              <div className="cs-l-box">
+                <p className="cs-l-strong">{selectedCopy.smartTimetable}</p>
+                {[82, 68, 92].map((width) => <div key={width} className="cs-l-bar"><i style={{ width: width + '%' }} /></div>)}
+                <div className="cs-l-live" style={{ marginTop: '.8rem' }}><Check className="h-3.5 w-3.5" />{selectedCopy.noClashes}</div>
+              </div>
+              <div className="cs-l-box">
+                <p className="cs-l-eyebrow">{selectedCopy.languageLayer}</p>
+                <div className="cs-l-lang">English · हिन्दी</div>
+                <div className="cs-l-lang" style={{ textAlign: 'right' }}>اردو · मराठी</div>
+                <div className="cs-l-lang">ગુજરાતી · தமிழ்</div>
+                <p className="cs-l-small" style={{ marginTop: '.6rem' }}>{selectedCopy.languageLayerText}</p>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="border-y border-white/10 bg-white/[0.03]">
-          <div className="mx-auto grid max-w-7xl grid-cols-2 gap-px px-5 md:grid-cols-4 lg:px-8">
+        <section className="cs-land cs-l-stats">
+          <div className="mx-auto grid max-w-7xl grid-cols-2 gap-3 px-5 py-4 md:grid-cols-4 lg:px-8">
             {selectedCopy.stats.map(([value, label]) => (
-              <div key={label} className="px-4 py-8 text-center"><div className="text-3xl font-black text-cyan-300">{value}</div><div className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">{label}</div></div>
+              <div key={label} className="cs-l-stat"><div className="cs-l-stat-v">{value}</div><div className="cs-l-stat-l">{label}</div></div>
             ))}
           </div>
         </section>
 
-        <section id="about" className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
+        <section id="about" className="cs-land mx-auto max-w-7xl px-5 py-16 lg:px-8">
           <div className="max-w-3xl">
-            <p className="text-xs font-black uppercase tracking-[0.22em] text-cyan-300">{selectedCopy.whyChoose}</p>
-            <h2 className="mt-4 text-4xl font-black tracking-[-0.04em] sm:text-5xl">{selectedCopy.advantagesTitle}</h2>
-            <p className="mt-5 text-base leading-8 text-slate-400">{selectedCopy.advantagesText}</p>
+            <p className="cs-l-eyebrow">{selectedCopy.whyChoose}</p>
+            <h2 className="cs-l-h2">{selectedCopy.advantagesTitle}</h2>
+            <p className="cs-l-lead">{selectedCopy.advantagesText}</p>
           </div>
-          <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {cards.map(({ icon: Icon, eyebrow, title, text }) => (
-              <article key={title} className="group rounded-3xl border border-white/10 bg-white/[0.045] p-6 transition hover:-translate-y-1 hover:border-cyan-300/25 hover:bg-white/[0.07]">
-                <div className="flex items-start justify-between"><div className="rounded-2xl bg-cyan-300/10 p-3 text-cyan-300"><Icon className="h-6 w-6" /></div><ChevronRight className="h-5 w-5 text-slate-700 transition group-hover:translate-x-1 group-hover:text-cyan-300" /></div>
-                <p className="mt-6 text-[10px] font-extrabold uppercase tracking-[0.18em] text-cyan-300">{eyebrow}</p>
-                <h3 className="mt-2 text-xl font-black tracking-tight">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-slate-400">{text}</p>
+          <div className="cs-l-cards">
+            {cards.map(({ icon: Icon, eyebrow, title, text }, cardIndex) => (
+              <article key={title} className="cs-l-card">
+                <div className={'cs-l-ic cs-l-ic-' + (cardIndex % 4)}><Icon className="h-6 w-6" /></div>
+                <p className="cs-l-eyebrow" style={{ marginTop: '1.1rem' }}>{eyebrow}</p>
+                <h3 className="cs-l-ct">{title}</h3>
+                <p className="cs-l-cp">{text}</p>
               </article>
             ))}
           </div>
         </section>
 
-        <section id="student-promise" className="mx-auto max-w-7xl px-5 py-10 lg:px-8">
-          <div className="relative overflow-hidden rounded-[2.25rem] border border-emerald-300/20 bg-gradient-to-br from-emerald-400/15 via-slate-900 to-cyan-400/10 p-8 sm:p-12 lg:p-16">
-            <div className="absolute right-0 top-0 h-80 w-80 rounded-full bg-emerald-300/10 blur-3xl" />
-            <div className="relative grid gap-10 lg:grid-cols-[.8fr_1.2fr] lg:items-center">
-              <div className="grid h-28 w-28 place-items-center rounded-[2rem] border border-emerald-200/20 bg-emerald-300/10 text-emerald-300"><GraduationCap className="h-14 w-14" /></div>
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.22em] text-emerald-300">{selectedCopy.promiseEyebrow}</p>
-                <h2 className="mt-4 text-4xl font-black tracking-[-0.04em] sm:text-5xl">{selectedCopy.promiseTitle}</h2>
-                <p className="mt-6 max-w-3xl text-base leading-8 text-emerald-50/75">{selectedCopy.promiseText}</p>
-                <div className="mt-7 flex flex-wrap gap-2">
-                  {selectedCopy.promiseBadges.map((item) => <span key={item} className="rounded-full border border-emerald-200/20 bg-emerald-100/10 px-3 py-2 text-xs font-bold text-emerald-100"><Check className="mr-1 inline h-3.5 w-3.5" />{item}</span>)}
-                </div>
+        <section id="student-promise" className="cs-land mx-auto max-w-7xl px-5 py-8 lg:px-8">
+          <div className="cs-l-promise">
+            <div className="cs-l-promise-ic"><GraduationCap className="h-11 w-11" /></div>
+            <div style={{ flex: '1 1 16rem', minWidth: 0 }}>
+              <p className="cs-l-promise-eyebrow">{selectedCopy.promiseEyebrow}</p>
+              <h2 className="cs-l-promise-h">{selectedCopy.promiseTitle}</h2>
+              <p className="cs-l-promise-p">{selectedCopy.promiseText}</p>
+              <div className="cs-l-badges">
+                {selectedCopy.promiseBadges.map((item) => <span key={item} className="cs-l-badge"><Check className="h-3.5 w-3.5" />{item}</span>)}
               </div>
             </div>
           </div>
         </section>
 
-        <section id="plans" className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+        <section id="plans" className="cs-land mx-auto max-w-7xl px-5 py-16 lg:px-8">
+          <div className="cs-l-head">
             <div className="max-w-3xl">
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-cyan-300">{planLabel}</p>
-              <h2 className="mt-4 text-4xl font-black tracking-[-0.04em] sm:text-5xl">{selectedCopy.studentPricing}</h2>
-              <p className="mt-5 text-base leading-8 text-slate-400">{selectedCopy.studentFree}</p>
+              <p className="cs-l-eyebrow">{planLabel}</p>
+              <h2 className="cs-l-h2">{selectedCopy.studentPricing}</h2>
+              <p className="cs-l-lead">{selectedCopy.studentFree}</p>
             </div>
-            <button onClick={() => openInterest('demo')} className="rounded-2xl border border-white/15 bg-slate-900 px-6 py-3.5 text-sm font-black text-white transition hover:border-cyan-300/30 hover:bg-cyan-300/10">{selectedCopy.demo}</button>
+            <button type="button" onClick={() => openInterest('demo')} className="cs-l-btn cs-l-btn-ghost">{selectedCopy.demo}</button>
           </div>
-          <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {plansLoading && [0,1,2].map((item) => <div key={item} className="h-64 animate-pulse rounded-[1.75rem] border border-white/10 bg-white/[0.04]" />)}
-            {!plansLoading && plans.map((plan, index) => (
-              <article key={plan.id} className={`relative overflow-hidden rounded-[1.75rem] border p-7 ${index === 1 ? 'border-cyan-300/35 bg-cyan-300/[0.08]' : 'border-white/10 bg-white/[0.045]'}`}>
-                {index === 1 && <div className="absolute right-5 top-5 rounded-full bg-cyan-300 px-3 py-1 text-[9px] font-black uppercase tracking-wider text-slate-950">Classtago</div>}
-                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-300">{plan.billingCycle || planLabel}</p>
-                <h3 className="mt-3 text-2xl font-black tracking-tight text-white">{plan.planName}</h3>
-                <p className="mt-3 min-h-14 text-sm leading-6 text-slate-400">{plan.description || selectedCopy.advantagesText}</p>
-                <div className="mt-7 text-3xl font-black text-white">{formatPlanPrice(plan)}</div>
-                <div className="mt-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">{plan.moduleCount || 0} modules{plan.trialDays ? ` · ${plan.trialDays} day trial` : ''}</div>
-                <button onClick={() => openInterest('registration')} className="mt-7 flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-xs font-black text-slate-950 transition hover:bg-cyan-100">{selectedCopy.register}<ArrowRight className="h-3.5 w-3.5" /></button>
-              </article>
-            ))}
+
+          {planView.launch && (
+            <div className="cs-l-launch">
+              <div>
+                <span className="cs-l-launch-tag">{planView.launch.planName}</span>
+                <div className="cs-l-launch-price">{formatPlanPrice(planView.launch)}<span>{planCycle(planView.launch) === 'monthly' ? ' / month' : ' / year'}</span></div>
+                <p>{planView.launch.description || selectedCopy.advantagesText}</p>
+              </div>
+              <button type="button" onClick={() => openInterest('registration')} className="cs-l-launch-btn">{selectedCopy.register}<ArrowRight className="h-4 w-4" /></button>
+            </div>
+          )}
+
+          {planView.tiers.some((tier) => tier.monthly && tier.annual) && (
+            <div className="cs-l-toggle-wrap">
+              <div className="cs-l-toggle" role="group" aria-label="Billing cycle">
+                <button type="button" className={billing === 'monthly' ? 'on' : ''} onClick={() => setBilling('monthly')}>Monthly</button>
+                <button type="button" className={billing === 'annual' ? 'on' : ''} onClick={() => setBilling('annual')}>Annual{planView.freeMonths > 0 && <em>{planView.freeMonths} months free</em>}</button>
+              </div>
+            </div>
+          )}
+
+          <div className="cs-l-plans">
+            {plansLoading && [0, 1, 2].map((item) => <div key={item} className="cs-l-skel animate-pulse" />)}
+            {!plansLoading && planView.tiers.map((tier, index) => {
+              const monthly = tier.monthly || null;
+              const annual = tier.annual || null;
+              const active = billing === 'annual' ? (annual || monthly || tier.other) : (monthly || annual || tier.other);
+              if (!active) return null;
+              const cycle = planCycle(active);
+              const popular = planView.tiers.length > 1 && index === Math.min(1, planView.tiers.length - 1);
+              const saving = cycle === 'annual' && monthly && annual && typeof monthly.basePrice === 'number' && typeof annual.basePrice === 'number' ? monthly.basePrice * 12 - annual.basePrice : 0;
+              const perMonth = cycle === 'annual' && typeof active.basePrice === 'number' ? money(active.basePrice / 12, active.currency) : '';
+              const bullets: string[] = [];
+              if (active.moduleCount) bullets.push(active.moduleCount + ' modules included');
+              if (active.trialDays) bullets.push(active.trialDays + '-day free trial');
+              return (
+                <article key={tier.name} className={'cs-l-plan' + (popular ? ' pop' : '')}>
+                  {popular && <span className="cs-l-pop">Most popular</span>}
+                  <h3 className="cs-l-plan-name">{active.planName}</h3>
+                  <p className="cs-l-plan-desc">{active.description || selectedCopy.advantagesText}</p>
+                  <div className="cs-l-price">{formatPlanPrice(active)}{saving > 0 && <span className="cs-l-save">Save {money(saving, active.currency)}</span>}</div>
+                  <p className="cs-l-per">{cycle === 'annual' ? 'per year' + (perMonth ? ', about ' + perMonth + ' per month' : '') : cycle === 'monthly' ? 'per month' : String(active.billingCycle || '')}</p>
+                  <ul className="cs-l-feats">
+                    {bullets.map((item) => <li key={item}><Check className="h-4 w-4" /><span>{item}</span></li>)}
+                  </ul>
+                  <button type="button" onClick={() => openInterest('registration')} className="cs-l-btn">{selectedCopy.register}</button>
+                </article>
+              );
+            })}
             {!plansLoading && plans.length === 0 && (
-              <div className="lg:col-span-3 rounded-[1.75rem] border border-white/10 bg-white/[0.045] p-8 text-center">
-                <CircleDollarSign className="mx-auto h-8 w-8 text-cyan-300" />
-                <h3 className="mt-4 text-xl font-black text-white">{selectedCopy.studentPricing}</h3>
-                <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-400">{selectedCopy.studentFree}</p>
-                <button onClick={() => openInterest('demo')} className="mt-6 rounded-xl bg-cyan-300 px-5 py-3 text-xs font-black text-slate-950">{selectedCopy.demo}</button>
+              <div className="cs-l-card" style={{ textAlign: 'center', gridColumn: '1 / -1' }}>
+                <CircleDollarSign className="mx-auto h-8 w-8" />
+                <h3 className="cs-l-ct">{selectedCopy.studentPricing}</h3>
+                <p className="cs-l-cp">{selectedCopy.studentFree}</p>
+                <button type="button" onClick={() => openInterest('demo')} className="cs-l-btn" style={{ marginTop: '1rem' }}>{selectedCopy.demo}</button>
               </div>
             )}
           </div>
