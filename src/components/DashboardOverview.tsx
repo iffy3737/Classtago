@@ -1,3 +1,4 @@
+import { initialsAvatar } from "../lib/avatarFallback";
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -2195,7 +2196,7 @@ export default function DashboardOverview({ lang, user, onRefreshData }: Dashboa
         <div className="flex items-center gap-4 text-center sm:text-left">
           <div className="relative shrink-0">
             <img
-              src={profilePhotoUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"}
+              src={profilePhotoUrl || initialsAvatar(user.name)} onError={(event) => { const img = event.currentTarget; if (img.dataset.fb !== '1') { img.dataset.fb = '1'; img.src = initialsAvatar(user.name); } }}
               alt={user.name}
               className="w-16 h-16 rounded-2xl object-cover border-2 border-white/20 shadow-xl"
             />
@@ -2371,7 +2372,7 @@ export default function DashboardOverview({ lang, user, onRefreshData }: Dashboa
               <div className="rounded-xl border border-slate-200 p-3 bg-slate-50">
                 <div className="flex items-center gap-3">
                   <img
-                    src={profilePhotoDataUrl || profilePhotoUrl || user.photoUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"}
+                    src={profilePhotoDataUrl || profilePhotoUrl || user.photoUrl || initialsAvatar(user.name)} onError={(event) => { const img = event.currentTarget; if (img.dataset.fb !== '1') { img.dataset.fb = '1'; img.src = initialsAvatar(user.name); } }}
                     alt="Profile preview"
                     className="w-16 h-16 rounded-full object-cover border-2 border-white shadow"
                   />

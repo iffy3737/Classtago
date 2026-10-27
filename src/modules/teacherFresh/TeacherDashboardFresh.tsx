@@ -186,7 +186,7 @@ export default function TeacherDashboardFresh({ context, loading, error, onNavig
         stats={[
           { value: subjectAssignments.length, label: 'Subjects' },
           { value: new Set(subjectAssignments.map(classScopeKey)).size, label: 'Classes' },
-          { value: String(context.academicYear || '').replace(/\D/g, '').slice(0, 2) + '-' + String(context.academicYear || '').replace(/\D/g, '').slice(-2), label: 'Year' },
+          { value: (() => { const raw = String(context.academicYear || '').trim(); const m = raw.match(/(\d{4})\D*(\d{2,4})$/); return m ? m[1] + '-' + m[2].slice(-2) : (raw || '—'); })(), label: 'Year' },
         ]}
         ctaLabel="View My Academic Assignment"
         onCtaClick={() => onNavigate?.('tr-my-assignments')}
