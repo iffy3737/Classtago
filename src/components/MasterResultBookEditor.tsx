@@ -370,7 +370,7 @@ export default function MasterResultBookEditor({ user, language }: MasterResultB
       s[XLSX.utils.encode_cell({ r: 1, c: 0 })].s.font.color = { rgb: 'ffffff' };
     }
 
-    setCell(2, 0, `Academic Year: ${academicYear || ''} | Permanent Master Student Ledger Template (${targetClassName})`, 's', undefined, false, 'center', '475569', 9);
+    setCell(2, 0, `Permanent Master Student Ledger Template (${targetClassName})`, 's', undefined, false, 'center', '475569', 9);
     if (s[XLSX.utils.encode_cell({ r: 2, c: 0 })]?.s?.font) {
       s[XLSX.utils.encode_cell({ r: 2, c: 0 })].s.font.color = { rgb: 'ffffff' };
     }
