@@ -534,9 +534,9 @@ export default function ClerkWorkspace({ lang, user, classes, onRefreshData, ini
         if (isPdf && file.size > 3 * 1024 * 1024) { errors.push('Row ' + row.excelRow + ': PDF "' + fileName + '" must be 3 MB or smaller.'); return; }
         items.push({ documentName, file });
       };
-      pick('Photo File', String(raw['Photo File *'] ?? '').trim(), 'Passport Size Photograph', true, true);
-      pick('Aadhaar File', String(raw['Aadhaar File *'] ?? '').trim(), 'Aadhaar Card', false, true);
-      pick('LC File', String(raw['LC File *'] ?? '').trim(), 'Leaving Certificate (LC)', false, true);
+      pick('Photo File', String(raw['Photo File *'] ?? '').trim(), 'Passport Size Photograph', true, false);
+      pick('Aadhaar File', String(raw['Aadhaar File *'] ?? '').trim(), 'Aadhaar Card', false, false);
+      pick('LC File', String(raw['LC File *'] ?? '').trim(), 'Leaving Certificate (LC)', false, false);
       String(raw['Other Document Files'] ?? '').split(';').map(entry => entry.trim()).filter(Boolean).forEach(entry => {
         const colon = entry.indexOf(':');
         if (colon < 1) { errors.push('Row ' + row.excelRow + ': Other Document "' + entry + '" must be written as Document Name:file.pdf'); return; }
@@ -587,7 +587,8 @@ export default function ClerkWorkspace({ lang, user, classes, onRefreshData, ini
             student: { ...body.student, dateOfBirthInWords: convertDateToWords(body.student.dateOfBirth) },
             office: { ...body.office, proposedGrNumber: gr, proposedAdmissionNumber: adm },
             documentChecklist,
-            documentUploads
+            documentUploads,
+            bulkIntake: true
           })
         });
         const result = await response.json().catch(() => ({}));

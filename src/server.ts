@@ -3752,6 +3752,7 @@ async function startServer() {
         { key: 'aadhaar', name: 'Aadhaar Card' },
         { key: 'photo', name: 'Passport Size Photograph' }
       ];
+      const isBulkIntake = req.body?.bulkIntake === true;
       const requiredDocumentKeys = new Set(requiredAdmissionDocuments.map(item => item.key));
       const submittedDocumentEntries = Object.entries(submittedChecklist as Record<string, any>).slice(0, 40);
       const hasDocumentUploadPayload = Array.isArray(req.body?.documentUploads);
@@ -3779,7 +3780,7 @@ async function startServer() {
         .map(([key, value]: [string, any]) => normalizeDocumentName(value?.name || key))
         .filter(Boolean));
       let legacyRequiredDocuments: string[] = [];
-      if (hasDocumentUploadPayload) {
+      if (hasDocumentUploadPayload && !isBulkIntake) {
         const missingRequiredDocuments = requiredAdmissionDocuments.filter(item => !receivedDocumentKeys.has(item.key)).map(item => item.name);
         if (missingRequiredDocuments.length > 0) {
           return res.status(400).json({
