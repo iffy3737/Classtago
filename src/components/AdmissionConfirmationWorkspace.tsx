@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { BadgeCheck, CheckCircle2, ChevronRight, CircleAlert, GraduationCap, KeyRound, Loader2, RefreshCw, ShieldCheck } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { requestActionConfirm } from '../lib/actionConfirm';
+import AdmissionBulkApprovePanel from './AdmissionBulkApprovePanel';
 
 type Application = {
   id:string; referenceCode:string; studentName:string; guardianName:string; mobile:string; classApplying:string;
@@ -45,6 +46,7 @@ export default function AdmissionConfirmationWorkspace({activeFeatureId}:Props){
   const [admissionDate,setAdmissionDate]=useState(new Date().toISOString().slice(0,10));
   const [decisionNote,setDecisionNote]=useState('');
   const [loading,setLoading]=useState(true);
+  const [view,setView]=useState<'single'|'bulk'>(featureToSection[activeFeatureId||'']?'single':'bulk');
   const [working,setWorking]=useState(false);
   const [message,setMessage]=useState<{type:'success'|'error';text:string}|null>(null);
 
@@ -72,7 +74,7 @@ export default function AdmissionConfirmationWorkspace({activeFeatureId}:Props){
   };
 
   useEffect(()=>{void load();},[]);
-  useEffect(()=>{if(activeFeatureId&&featureToSection[activeFeatureId])setSection(featureToSection[activeFeatureId]);},[activeFeatureId]);
+  useEffect(()=>{if(activeFeatureId&&featureToSection[activeFeatureId]){setSection(featureToSection[activeFeatureId]);setView('single');}},[activeFeatureId]);
   useEffect(()=>{
     if(!selected){
       setGr('');setClassId('');setDivisionId('');setRoll('');setDecisionNote('');
@@ -193,7 +195,11 @@ export default function AdmissionConfirmationWorkspace({activeFeatureId}:Props){
 
     {message&&<div className={`rounded-xl border p-4 text-sm font-bold ${message.type==='success'?'border-emerald-200 bg-emerald-50 text-emerald-800':'border-rose-200 bg-rose-50 text-rose-800'}`}>{message.text}</div>}
 
-    {applications.length===0?<div className="rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center"><CheckCircle2 className="mx-auto h-10 w-10 text-emerald-500"/><h2 className="mt-4 font-black text-slate-950">No verified or approved applications</h2><p className="mt-2 text-xs text-slate-500">Clerk-verified applications will appear here for the Headmaster decision.</p></div>:<div className="grid gap-5 xl:grid-cols-[320px_1fr]">
+    {applications.length>0&&<div className="flex gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
+      <button type="button" onClick={()=>setView('bulk')} className={'flex-1 rounded-xl px-4 py-3 text-xs font-black '+(view==='bulk'?'bg-slate-950 text-white':'bg-slate-50 text-slate-600')}>Bulk approve ({applications.filter(x=>!x.confirmation).length})</button>
+      <button type="button" onClick={()=>setView('single')} className={'flex-1 rounded-xl px-4 py-3 text-xs font-black '+(view==='single'?'bg-slate-950 text-white':'bg-slate-50 text-slate-600')}>One by one</button>
+    </div>}
+    {view==='bulk'&&applications.length>0?<AdmissionBulkApprovePanel applications={applications} classes={classes} divisions={divisions} onRowUpdate={(id:string,patch:Record<string,any>)=>setApplications(current=>current.map(item=>item.id===id?{...item,...patch}:item))} onFinished={()=>window.dispatchEvent(new Event('refresh_notifications'))}/>:applications.length===0?<div className="rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center"><CheckCircle2 className="mx-auto h-10 w-10 text-emerald-500"/><h2 className="mt-4 font-black text-slate-950">No verified or approved applications</h2><p className="mt-2 text-xs text-slate-500">Clerk-verified applications will appear here for the Headmaster decision.</p></div>:<div className="grid gap-5 xl:grid-cols-[320px_1fr]">
       <aside className="space-y-3">
         <label className="block xl:hidden"><span className="mb-2 block text-[10px] font-black uppercase tracking-wide text-slate-500">Choose application</span><select value={selected?.id||''} onChange={e=>setSelectedId(e.target.value)} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold">{applications.map(x=><option key={x.id} value={x.id}>{x.referenceCode} · {x.studentName}</option>)}</select></label>
         <div className="hidden space-y-3 xl:block">{applications.map(x=><button key={x.id} onClick={()=>setSelectedId(x.id)} className={`w-full rounded-2xl border p-4 text-left ${selected?.id===x.id?'border-cyan-400 bg-cyan-50 shadow-lg':'border-slate-200 bg-white'}`}><div className="flex items-start justify-between gap-3"><div><div className="font-mono text-[10px] font-black text-cyan-700">{x.referenceCode}</div><div className="mt-2 text-sm font-black text-slate-950">{x.studentName}</div><div className="mt-1 text-xs text-slate-500">{x.classApplying} · {x.status}</div></div>{x.confirmation?<CheckCircle2 className="h-5 w-5 text-emerald-600"/>:<ChevronRight className="h-5 w-5 text-slate-300"/>}</div></button>)}</div>
