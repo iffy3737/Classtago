@@ -15,6 +15,7 @@ import { supabase } from '../lib/supabase';
 import PremiumSchoolPortal, { PremiumResolvedSchool, PublicSiteSection } from './PremiumSchoolPortal';
 import AdmissionCampaignWorkspace from './AdmissionCampaignWorkspace';
 import AdmissionConfirmationWorkspace from './AdmissionConfirmationWorkspace';
+import AdmissionApplicationsBulkHub from './AdmissionApplicationsBulkHub';
 
 interface SchoolWebsiteStudioProps {
   userRole: string;
@@ -609,7 +610,7 @@ export default function SchoolWebsiteStudio({ userRole, userName, initialTab = '
 
           {activeTab === 'preview' && <div id="edx-studio-private-website-preview" className="scroll-mt-24 space-y-5"><SectionHeader icon={Eye} eyebrow="Private draft preview" title="Review the experience before the public sees it." text="This preview uses the current unsaved draft. Publishing remains inside the Clerk-owned Website Design workflow." /><div className="overflow-hidden rounded-[1.75rem] border border-slate-300 bg-slate-950 shadow-2xl"><div className="flex items-center gap-2 border-b border-white/10 bg-slate-900 px-4 py-3"><span className="h-2.5 w-2.5 rounded-full bg-rose-400" /><span className="h-2.5 w-2.5 rounded-full bg-amber-300" /><span className="h-2.5 w-2.5 rounded-full bg-emerald-400" /><span className="ml-3 truncate rounded-lg bg-slate-900 px-3 py-1 text-[10px] text-slate-500">/school/{draft.slug || 'your-school'} · private draft</span></div><div className="max-h-[850px] overflow-y-auto"><PremiumSchoolPortal school={previewSchool} onOpenERP={() => alert('Login opens from the live school portal.')} onBackToPlatform={() => undefined} /></div></div></div>}
 
-          {activeTab === 'applications' && <AdmissionCampaignWorkspace mode="applications" userRole={userRole} focusFeatureId={activeFeatureId} onModeChange={next=>openStudioTab(next==='campaigns'?'admissions':'applications')} />}
+          {activeTab === 'applications' && <AdmissionApplicationsBulkHub><AdmissionCampaignWorkspace mode="applications" userRole={userRole} focusFeatureId={activeFeatureId} onModeChange={next=>openStudioTab(next==='campaigns'?'admissions':'applications')} /></AdmissionApplicationsBulkHub>}
 
           {activeTab === 'confirmation' && <AdmissionConfirmationWorkspace activeFeatureId={activeFeatureId} />}
 

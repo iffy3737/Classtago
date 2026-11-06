@@ -165,9 +165,10 @@ export default function AdmissionBulkApprovePanel({ applications, classes, divis
         <div>
           <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[.2em] text-cyan-700"><BadgeCheck className="h-4 w-4" />Bulk approve</div>
           <h2 className="mt-2 text-xl font-black text-slate-950">{openRows.length} waiting for the Headmaster</h2>
-          <p className="mt-1 text-xs leading-5 text-slate-500">{readyAll} ready · {openRows.length - readyAll} need attention (listed first). A missing GR number can be typed right in the row.</p>
+          <p className="mt-1 text-xs leading-5 text-slate-500">{readyAll} ready · {openRows.length - readyAll} need attention (listed first). A missing GR number can be typed right in the row. GR and class are needed only for Approve + Confirm; Approve only works without them.</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <button type="button" disabled={running || !shown.some(r => !r.a.confirmation)} onClick={() => { const n: Record<string, boolean> = {}; shown.forEach(r => { if (!r.a.confirmation) n[r.a.id] = true; }); setSel(n); }} className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-black text-slate-800 disabled:opacity-40">Select all ({shown.filter(r => !r.a.confirmation).length})</button>
           <button type="button" disabled={running || !readyShown.length} onClick={() => { const n: Record<string, boolean> = {}; readyShown.forEach(r => { n[r.a.id] = true; }); setSel(n); }} className="rounded-xl bg-slate-950 px-4 py-2.5 text-xs font-black text-white disabled:opacity-40">Select all ready ({readyShown.length})</button>
           <button type="button" disabled={running || !chosen.length} onClick={() => setSel({})} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-black text-slate-700 disabled:opacity-40">Clear</button>
         </div>
