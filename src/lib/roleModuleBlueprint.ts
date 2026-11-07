@@ -1902,6 +1902,7 @@ export const ROLE_MODULE_BLUEPRINT: Record<string, RoleModuleCategory[]> = {
       "id": "teacher-attendance-main",
       "label": "Attendance",
       "modules": [
+        { "id": "tr-attendance-scan", "label": "QR Scan Attendance", "tab": "attendance", "description": "Back camera se student ID card ka QR scan karo. Present apne aap save hota hai aur parents ko message queue me jata hai.", "features": [] },
         { "id": "tr-attendance-daily", "label": "Daily Attendance", "tab": "attendance", "description": "P/A marking only for the Headmaster-assigned Class Teacher Class / Division.", "features": [] },
         { "id": "tr-attendance-catalogue", "label": "Monthly Catalogue", "tab": "attendance", "description": "Three-page monthly attendance catalogue for the Headmaster-assigned Class Teacher Class / Division.", "features": [] },
         { "id": "tr-attendance-history", "label": "Attendance History", "tab": "attendance", "description": "Permanent Class Teacher attendance history; no silent overwrite.", "features": [] },

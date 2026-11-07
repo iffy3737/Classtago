@@ -13622,6 +13622,537 @@ const R33_9_QUESTION_PAPER_SCHEMA:any={type:'object',properties:{title:{type:'st
 
   const teacherRuntimeMissing = (error: any) => /does not exist|schema cache|could not find|relation .* does not exist/i.test(String(error?.message || error || ''));
 
+  // ===== QR attendance + parent alerts (v1) =====
+  // Class Teacher scans the student ID-card QR, attendance is saved, parent alerts are queued.
+  // Sending is pluggable: manual (teacher taps), built-in OpenWA, or an external worker via /api/attendance-alerts/worker/*.
+  const QA_TZ = process.env.SCHOOL_TIMEZONE || 'Asia/Kolkata';
+  const QA_DEFAULTS: any = {
+    present_enabled: true,
+    absent_enabled: true,
+    absent_after_periods: 2,
+    review_minutes: 10,
+    late_after: null,
+    fallback_start: '08:00',
+    fallback_period_minutes: 45,
+    present_template: '{school}: {student} ({class}) aaj {time} par school me present mark hua hai.',
+    absent_template: '{school}: {student} ({class}) aaj {date} ko school me absent hai. Koi karan ho to kripya school ko batayein.'
+  };
+  const qaSleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  const qaNow = (d: Date = new Date()) => {
+    const p: Record<string, string> = {};
+    new Intl.DateTimeFormat('en-GB', { timeZone: QA_TZ, hour12: false, hour: '2-digit', minute: '2-digit' }).formatToParts(d).forEach(x => { p[x.type] = x.value; });
+    const hh = p.hour === '24' ? '00' : p.hour;
+    return { minutes: Number(hh) * 60 + Number(p.minute), hhmm: `${hh}:${p.minute}` };
+  };
+  const qaHM = (value: any): number | null => {
+    const m = /(\d{1,2}):(\d{2})/.exec(String(value || ''));
+    return m ? Number(m[1]) * 60 + Number(m[2]) : null;
+  };
+  const qaFmt12 = (hhmm: string) => {
+    const [h, m] = hhmm.split(':').map(Number);
+    return `${((h + 11) % 12) + 1}:${String(m).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`;
+  };
+  const qaDmy = (date: string) => String(date).slice(0, 10).split('-').reverse().join('/');
+  const qaPhone = (value: any): string | null => {
+    let n = String(value == null ? '' : value).replace(/\D/g, '');
+    if (n.length === 13 && n.startsWith('091')) n = n.slice(3);
+    else if (n.length === 12 && n.startsWith('91')) n = n.slice(2);
+    else if (n.length === 11 && n.startsWith('0')) n = n.slice(1);
+    return /^[6-9]\d{9}$/.test(n) ? `91${n}` : null;
+  };
+  const qaFill = (tpl: any, vars: Record<string, string>) => String(tpl || '').replace(/\{(\w+)\}/g, (_m: string, k: string) => vars[k] ?? '');
+  const qaFail = (res: any, error: any) => {
+    const message = String(error?.message || 'QR attendance request failed.');
+    if (/does not exist|schema cache/i.test(message)) return res.status(503).json({ error: 'QR attendance ke database tables abhi nahi bane. Pehle SQL chalao.' });
+    return res.status(Number(error?.status) || 500).json({ error: message });
+  };
+  const qaProvider = () => String(process.env.ATT_WA_PROVIDER || 'manual').toLowerCase();
+  const qaMemo = new Map<string, { at: number; v: any }>();
+  const qaCached = async (key: string, ttl: number, fn: () => Promise<any>): Promise<any> => {
+    const hit = qaMemo.get(key);
+    if (hit && Date.now() - hit.at < ttl) return hit.v;
+    const v = await fn();
+    qaMemo.set(key, { at: Date.now(), v });
+    if (qaMemo.size > 600) qaMemo.delete(qaMemo.keys().next().value as string);
+    return v;
+  };
+  const qaSettings = (schoolId: string) => qaCached(`set|${schoolId}`, 30_000, async () => {
+    const r: any = await supabaseAdmin!.from('edunixo_attendance_alert_settings').select('*').eq('school_id', schoolId).maybeSingle();
+    const merged: any = { ...QA_DEFAULTS };
+    if (!r.error && r.data) Object.keys(r.data).forEach(k => { if (r.data[k] !== null && r.data[k] !== undefined) merged[k] = r.data[k]; });
+    return merged;
+  });
+  const qaAbsentMinute = (schoolId: string, st: any): Promise<number> => qaCached(`abs|${schoolId}|${st.absent_after_periods}|${st.fallback_start}|${st.fallback_period_minutes}`, 120_000, async () => {
+    const n = Math.max(1, Number(st.absent_after_periods || 2));
+    try {
+      const y: any = await supabaseAdmin!.from('school_academic_years').select('id').eq('school_id', schoolId).eq('is_active', true).limit(1).maybeSingle();
+      let q: any = supabaseAdmin!.from('school_periods').select('period_name,period_number,starts_at,ends_at,period_type,sort_order').eq('school_id', schoolId).eq('is_active', true).order('sort_order', { ascending: true });
+      if (y?.data?.id) q = q.eq('academic_year_id', y.data.id);
+      const r: any = await q;
+      const rows = (r.data || []).filter((p: any) => !/break|recess|lunch|interval|assembly|prayer/i.test(`${p.period_type || ''} ${p.period_name || ''}`));
+      if (!r.error && rows.length >= n) {
+        const end = qaHM(rows[n - 1].ends_at);
+        if (end !== null) return end;
+      }
+    } catch (e) { /* fall back to the configured start time */ }
+    return (qaHM(st.fallback_start) ?? 480) + n * Math.max(20, Number(st.fallback_period_minutes || 45));
+  });
+  const qaSchoolName = (schoolId: string) => qaCached(`sch|${schoolId}`, 600_000, async () => {
+    const r: any = await supabaseAdmin!.from('schools').select('school_name').eq('id', schoolId).maybeSingle();
+    return String(r?.data?.school_name || 'School').split(',')[0].trim() || 'School';
+  });
+  const qaClassLabel = (classId: string, divisionId: string | null) => qaCached(`cls|${classId}|${divisionId || ''}`, 600_000, async () => {
+    const c: any = await supabaseAdmin!.from('school_classes').select('class_name').eq('id', classId).maybeSingle();
+    let label = String(c?.data?.class_name || '').trim();
+    if (divisionId) {
+      const d: any = await supabaseAdmin!.from('school_divisions').select('division_name').eq('id', divisionId).maybeSingle();
+      const dn = String(d?.data?.division_name || '').trim();
+      if (dn) label = `${label}-${dn}`;
+    }
+    return label || 'Class';
+  });
+  const qaStudentInfo = async (schoolId: string, ids: string[]) => {
+    const out = new Map<string, any>();
+    if (!ids.length) return out;
+    const [stu, prof]: any[] = await Promise.all([
+      supabaseAdmin!.from('students').select('*').eq('school_id', schoolId).in('id', ids),
+      supabaseAdmin!.from('edunixo_student_profiles').select('student_id,mobile_number,alternate_mobile,guardian_name').eq('school_id', schoolId).in('student_id', ids)
+    ]);
+    const pm = new Map<string, any>();
+    (prof.data || []).forEach((p: any) => pm.set(String(p.student_id), p));
+    (stu.data || []).forEach((s: any) => {
+      const p: any = pm.get(String(s.id)) || {};
+      const phone = [p.mobile_number, p.alternate_mobile, s.mobile_number, s.contact_number, s.parent_mobile, s.guardian_mobile].map(qaPhone).find(Boolean) || null;
+      out.set(String(s.id), { id: String(s.id), name: String(s.full_name || '').trim(), gr: String(s.gr_number || ''), roll: s.roll_number ?? null, phone });
+    });
+    return out;
+  };
+  const qaPhotoUrl = (schoolId: string, studentId: string) => qaCached(`ph|${schoolId}|${studentId}`, 3_000_000, async () => {
+    try {
+      const p: any = await supabaseAdmin!.from('edunixo_student_profiles').select('source_application_id').eq('school_id', schoolId).eq('student_id', studentId).maybeSingle();
+      const appId = p?.data?.source_application_id;
+      if (!appId) return null;
+      const d: any = await supabaseAdmin!.from('school_admission_application_documents').select('storage_bucket,storage_path').eq('school_id', schoolId).eq('application_id', appId).eq('document_type', 'photo').order('created_at', { ascending: false }).limit(1).maybeSingle();
+      if (!d?.data?.storage_path) return null;
+      const s: any = await supabaseAdmin!.storage.from(d.data.storage_bucket).createSignedUrl(d.data.storage_path, 3600);
+      return s?.data?.signedUrl || null;
+    } catch (e) { return null; }
+  });
+  const qaDayLock = (schoolId: string, date: string) => qaCached(`lock|${schoolId}|${date}`, 120_000, async (): Promise<string | null> => {
+    const c: any = await supabaseAdmin!.from('edunixo_academic_calendar_days').select('is_working_day,locked,label').eq('school_id', schoolId).eq('calendar_date', date).maybeSingle();
+    if (!c.error && c.data && (c.data.is_working_day === false || c.data.locked === true)) return `This date is locked${c.data.label ? `: ${c.data.label}` : ' as a holiday'}.`;
+    const h: any = await supabaseAdmin!.from('school_holidays').select('holiday_name').eq('school_id', schoolId).lte('starts_on', date).gte('ends_on', date).limit(1).maybeSingle();
+    if (!h.error && h.data) return `This date is a holiday: ${h.data.holiday_name || 'Holiday'}.`;
+    return null;
+  });
+  const qaActiveOn = (student: any, date: string) => {
+    const inactive = new Set(['inactive', 'disabled', 'passout', 'passed out', 'archived', 'transferred']);
+    const ad = String(student.admissionDate || '').trim();
+    const ld = String(student.leavingDate || '').trim();
+    const st = String(student.status || 'Active').toLowerCase();
+    if (ad && date < ad) return false;
+    if (ld && date > ld) return false;
+    if (inactive.has(st) && !ld) return false;
+    return true;
+  };
+  const qaScope = (src: any) => ({
+    classId: String(src?.classId || '').trim(),
+    className: String(src?.className || '').trim() || undefined,
+    divisionId: String(src?.divisionId || '').trim() || null,
+    divisionName: String(src?.divisionName || '').trim() || undefined,
+    subjectId: null,
+    academicYearId: String(src?.academicYearId || '').trim() || null
+  });
+  const qaContext = async (req: ActiveUserRequest, src: any) => {
+    const au: any = req.activeUser;
+    const sc: any = qaScope(src);
+    if (!sc.classId) { const e: any = new Error('Class select karo.'); e.status = 400; throw e; }
+    const roster: any = await qaCached(`roster|${au.userId}|${sc.classId}|${sc.divisionId || ''}|${sc.academicYearId || ''}`, 45_000, () => loadTeacherAuthorizedRoster(au, sc));
+    if (roster.authorization !== 'class_teacher') { const e: any = new Error('QR attendance sirf assigned Class Teacher ke liye hai.'); e.status = 403; throw e; }
+    const date = edunixoSchoolDateKey();
+    const students: any[] = (roster.students || []).filter((s: any) => qaActiveOn(s, date));
+    const classId = String(roster.canonicalScope?.classId || '').trim();
+    const divisionId = String(roster.canonicalScope?.divisionId || '').trim() || null;
+    const academicYearId = String(roster.academicYearId || src?.academicYearId || '').trim();
+    if (!classId || !academicYearId) { const e: any = new Error('Class ya Academic Year resolve nahi hua.'); e.status = 409; throw e; }
+    const teacher: any = await resolveTeacherRecordForActiveUser(au);
+    if (!teacher?.id) { const e: any = new Error('Teacher Master record is login se linked nahi hai.'); e.status = 409; throw e; }
+    return { au, date, students, classId, divisionId, academicYearId, teacherId: String(teacher.id) };
+  };
+  const qaFindSession = async (schoolId: string, classId: string, divisionId: string | null, date: string) => {
+    let q: any = supabaseAdmin!.from('edunixo_attendance_scan_sessions').select('*').eq('school_id', schoolId).eq('class_id', classId).eq('session_date', date);
+    q = divisionId ? q.eq('division_id', divisionId) : q.is('division_id', null);
+    const r: any = await q.maybeSingle();
+    if (r.error) throw r.error;
+    return r.data || null;
+  };
+  const qaEnsureSession = async (x: any, date: string) => {
+    const found = await qaFindSession(x.schoolId, x.classId, x.divisionId, date);
+    if (found) {
+      const a = JSON.stringify([...(found.student_ids || [])].map(String).sort());
+      const b = JSON.stringify([...x.studentIds].sort());
+      if (a !== b && !found.absent_processed_at) await supabaseAdmin!.from('edunixo_attendance_scan_sessions').update({ student_ids: x.studentIds }).eq('id', found.id);
+      return found;
+    }
+    const ins: any = await supabaseAdmin!.from('edunixo_attendance_scan_sessions').insert({ school_id: x.schoolId, class_id: x.classId, division_id: x.divisionId, academic_year_id: x.academicYearId, session_date: date, student_ids: x.studentIds, class_label: x.classLabel, teacher_id: x.teacherId, started_by: x.userId }).select('*').single();
+    if (ins.error) {
+      const again = await qaFindSession(x.schoolId, x.classId, x.divisionId, date);
+      if (again) return again;
+      throw ins.error;
+    }
+    return ins.data;
+  };
+  const qaQueueAlert = async (a: any) => {
+    const status = !a.phone ? 'no_number' : a.hold ? 'held' : 'queued';
+    const row: any = {
+      school_id: a.schoolId, student_id: a.studentId, class_id: a.classId, division_id: a.divisionId || null,
+      academic_year_id: a.academicYearId || null, teacher_id: a.teacherId || null, attendance_date: a.date,
+      kind: a.kind, channel: 'whatsapp', phone: a.phone || null, message_body: a.message, status,
+      send_after: (a.sendAfter || new Date()).toISOString(), created_by: a.createdBy || null
+    };
+    const r: any = await supabaseAdmin!.from('edunixo_attendance_alerts').upsert(row, { onConflict: 'school_id,student_id,attendance_date,kind', ignoreDuplicates: true });
+    if (r.error) console.warn('Attendance alert queue warning:', r.error.message);
+  };
+
+  const qaMark = async (req: ActiveUserRequest, res: any, method: 'qr' | 'manual') => {
+    res.setHeader('Cache-Control', 'no-store');
+    if (!req.activeUser || !supabaseAdmin) return res.status(503).json({ error: 'Teacher attendance service is unavailable.' });
+    if (!['teacher', 'class_teacher'].includes(req.activeUser.role)) return res.status(403).json({ error: 'Teacher account required.' });
+    try {
+      const body: any = req.body || {};
+      let studentId = '';
+      if (method === 'qr') {
+        const m = /^CLASSTAGO:ST:([A-Za-z0-9_-]{6,64})$/.exec(String(body.code || '').trim());
+        if (!m) return res.status(400).json({ ok: false, code: 'bad_qr', error: 'Ye ClassTago student card ka QR nahi hai.' });
+        studentId = m[1];
+      } else {
+        studentId = String(body.studentId || '').trim();
+      }
+      if (!studentId) return res.status(400).json({ error: 'Student missing.' });
+      const c = await qaContext(req, body);
+      const schoolId = c.au.schoolId;
+      const locked = await qaDayLock(schoolId, c.date);
+      if (locked) return res.status(409).json({ ok: false, code: 'locked', error: locked });
+      const found = c.students.find((s: any) => String(s.studentId).toLowerCase() === studentId.toLowerCase());
+      if (!found) {
+        const o: any = await supabaseAdmin.from('students').select('full_name').eq('school_id', schoolId).eq('id', studentId).maybeSingle();
+        const nm = String(o?.data?.full_name || '').trim();
+        return res.status(404).json({ ok: false, code: 'not_in_class', error: nm ? `${nm} is class ka student nahi hai.` : 'Ye card is class ya school ka nahi hai.' });
+      }
+      studentId = String(found.studentId);
+      const settings: any = await qaSettings(schoolId);
+      const nowP = qaNow();
+      const classLabel: string = await qaClassLabel(c.classId, c.divisionId);
+      const ids = c.students.map((s: any) => String(s.studentId));
+      await qaEnsureSession({ schoolId, userId: c.au.userId, teacherId: c.teacherId, classId: c.classId, divisionId: c.divisionId, academicYearId: c.academicYearId, classLabel, studentIds: ids }, c.date);
+      const [infoMap, photoUrl, existing]: any[] = await Promise.all([
+        qaStudentInfo(schoolId, [studentId]),
+        qaPhotoUrl(schoolId, studentId),
+        supabaseAdmin.from('edunixo_attendance_entries').select('status,updated_at').eq('school_id', schoolId).eq('student_id', studentId).eq('attendance_date', c.date).maybeSingle()
+      ]);
+      const info: any = infoMap.get(studentId) || { name: 'Student', gr: '', roll: null, phone: null };
+      const student = { id: studentId, name: info.name, gr: info.gr, roll: info.roll, photoUrl, classLabel };
+      if (existing.data && existing.data.status === 'P') {
+        const f: any = await supabaseAdmin.from('edunixo_attendance_scans').select('scanned_at').eq('school_id', schoolId).eq('student_id', studentId).eq('attendance_date', c.date).order('scanned_at', { ascending: true }).limit(1).maybeSingle();
+        return res.json({ ok: true, duplicate: true, student, at: f?.data?.scanned_at || existing.data.updated_at });
+      }
+      const lateAt = qaHM(settings.late_after);
+      const late = lateAt !== null && nowP.minutes > lateAt;
+      const base: any = { school_id: schoolId, academic_year_id: c.academicYearId, class_id: c.classId, division_id: c.divisionId, student_id: studentId, attendance_date: c.date, status: 'P', marked_by_user_id: c.au.userId, marked_by_teacher_id: c.teacherId, updated_at: new Date().toISOString() };
+      let saved: any = await supabaseAdmin.from('edunixo_attendance_entries').upsert({ ...base, source: 'qr' }, { onConflict: 'school_id,student_id,attendance_date' });
+      if (saved.error && /check|violat|source/i.test(String(saved.error.message || ''))) saved = await supabaseAdmin.from('edunixo_attendance_entries').upsert({ ...base, source: 'manual' }, { onConflict: 'school_id,student_id,attendance_date' });
+      if (saved.error) throw saved.error;
+      const at = new Date().toISOString();
+      const logged: any = await supabaseAdmin.from('edunixo_attendance_scans').insert({ school_id: schoolId, student_id: studentId, class_id: c.classId, division_id: c.divisionId, attendance_date: c.date, scanned_by: c.au.userId, method, is_late: late, scanned_at: at });
+      if (logged.error) console.warn('Attendance scan log warning:', logged.error.message);
+      const school: string = await qaSchoolName(schoolId);
+      const meta = { schoolId, studentId, classId: c.classId, divisionId: c.divisionId, academicYearId: c.academicYearId, teacherId: c.teacherId, date: c.date, phone: info.phone, createdBy: c.au.userId };
+      const prev: any = await supabaseAdmin.from('edunixo_attendance_alerts').select('id,status').eq('school_id', schoolId).eq('student_id', studentId).eq('attendance_date', c.date).eq('kind', 'absent').maybeSingle();
+      const prevStatus = String(prev?.data?.status || '');
+      if (prevStatus === 'queued' || prevStatus === 'held') {
+        await supabaseAdmin.from('edunixo_attendance_alerts').update({ status: 'cancelled', last_error: 'Student present mark ho gaya', updated_at: new Date().toISOString() }).eq('id', prev.data.id).in('status', ['queued', 'held']);
+      }
+      if (prevStatus === 'sent') {
+        await qaQueueAlert({ ...meta, kind: 'present_after_absent', message: `${school}: ${info.name} (${classLabel}) ab ${qaFmt12(nowP.hhmm)} par school pahunch gaya hai. Pehle bheje gaye absent message ko ignore karein.` });
+      } else if (settings.present_enabled) {
+        await qaQueueAlert({ ...meta, kind: 'present', message: qaFill(settings.present_template, { school, student: info.name, class: classLabel, time: qaFmt12(nowP.hhmm), date: qaDmy(c.date) }) + (late ? ' (late)' : '') });
+      }
+      return res.json({ ok: true, duplicate: false, late, student, at, method });
+    } catch (error: any) {
+      return qaFail(res, error);
+    }
+  };
+
+  app.get('/api/teacher/attendance/qr/state', verifyActiveUserAuth, async (req: ActiveUserRequest, res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    if (!req.activeUser || !supabaseAdmin) return res.status(503).json({ error: 'Teacher attendance service is unavailable.' });
+    if (!['teacher', 'class_teacher'].includes(req.activeUser.role)) return res.status(403).json({ error: 'Teacher account required.' });
+    try {
+      const c = await qaContext(req, req.query);
+      const schoolId = c.au.schoolId;
+      const ids: string[] = c.students.map((s: any) => String(s.studentId));
+      const settings: any = await qaSettings(schoolId);
+      const empty: any = { data: [] };
+      const [info, ent, scans, alerts, sess, absentMin]: any[] = await Promise.all([
+        qaStudentInfo(schoolId, ids),
+        ids.length ? supabaseAdmin.from('edunixo_attendance_entries').select('student_id,status,updated_at').eq('school_id', schoolId).eq('attendance_date', c.date).in('student_id', ids) : Promise.resolve(empty),
+        ids.length ? supabaseAdmin.from('edunixo_attendance_scans').select('student_id,scanned_at,is_late').eq('school_id', schoolId).eq('attendance_date', c.date).in('student_id', ids).order('scanned_at', { ascending: true }) : Promise.resolve(empty),
+        ids.length ? supabaseAdmin.from('edunixo_attendance_alerts').select('*').eq('school_id', schoolId).eq('attendance_date', c.date).in('student_id', ids).order('created_at', { ascending: true }) : Promise.resolve(empty),
+        qaFindSession(schoolId, c.classId, c.divisionId, c.date),
+        qaAbsentMinute(schoolId, settings)
+      ]);
+      for (const r of [ent, scans, alerts]) { if (r.error) throw r.error; }
+      const status = new Map<string, string>();
+      (ent.data || []).forEach((r: any) => status.set(String(r.student_id), String(r.status)));
+      const first = new Map<string, any>();
+      (scans.data || []).forEach((r: any) => { const k = String(r.student_id); if (!first.has(k)) first.set(k, r); });
+      const list = ids.map((id: string) => {
+        const i: any = info.get(id) || {};
+        const f: any = first.get(id);
+        return { id, name: i.name || 'Student', gr: i.gr || '', roll: i.roll ?? null, hasPhone: !!i.phone, status: status.get(id) || null, scannedAt: f ? f.scanned_at : null, late: f ? !!f.is_late : false };
+      });
+      list.sort((a: any, b: any) => (Number(a.roll) || 9999) - (Number(b.roll) || 9999) || String(a.name).localeCompare(String(b.name)));
+      const alertRows = (alerts.data || []).map((a: any) => ({ id: a.id, studentId: a.student_id, name: info.get(String(a.student_id))?.name || '', kind: a.kind, status: a.status, phone: a.phone, message: a.message_body, sendAfter: a.send_after, sentAt: a.sent_at, error: a.last_error }));
+      void qaTick(schoolId);
+      return res.json({
+        date: c.date,
+        now: qaNow().hhmm,
+        total: list.length,
+        present: list.filter((s: any) => s.status === 'P').length,
+        students: list,
+        alerts: alertRows,
+        settings: {
+          presentEnabled: !!settings.present_enabled,
+          absentEnabled: !!settings.absent_enabled,
+          lateAfter: settings.late_after || null,
+          reviewMinutes: Number(settings.review_minutes || 0),
+          absentAt: `${String(Math.floor(absentMin / 60)).padStart(2, '0')}:${String(absentMin % 60).padStart(2, '0')}`
+        },
+        session: { started: !!sess, processed: !!(sess && sess.absent_processed_at) },
+        provider: qaProvider()
+      });
+    } catch (error: any) {
+      return qaFail(res, error);
+    }
+  });
+  app.post('/api/teacher/attendance/qr/scan', verifyActiveUserAuth, async (req: ActiveUserRequest, res) => { await qaMark(req, res, 'qr'); });
+  app.post('/api/teacher/attendance/qr/manual', verifyActiveUserAuth, async (req: ActiveUserRequest, res) => { await qaMark(req, res, 'manual'); });
+  app.post('/api/teacher/attendance/qr/alerts', verifyActiveUserAuth, async (req: ActiveUserRequest, res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    if (!req.activeUser || !supabaseAdmin) return res.status(503).json({ error: 'Teacher attendance service is unavailable.' });
+    if (!['teacher', 'class_teacher'].includes(req.activeUser.role)) return res.status(403).json({ error: 'Teacher account required.' });
+    try {
+      const body: any = req.body || {};
+      const c = await qaContext(req, body);
+      const ids: string[] = c.students.map((s: any) => String(s.studentId));
+      const action = String(body.action || '');
+      const nowIso = new Date().toISOString();
+      if (action === 'confirm_held' || action === 'cancel_held') {
+        const next: any = action === 'confirm_held' ? { status: 'queued', send_after: new Date(Date.now() + 60_000).toISOString() } : { status: 'cancelled', last_error: 'Teacher ne cancel kiya' };
+        const r: any = await supabaseAdmin.from('edunixo_attendance_alerts').update({ ...next, updated_at: nowIso }).eq('school_id', c.au.schoolId).eq('attendance_date', c.date).eq('kind', 'absent').eq('status', 'held').in('student_id', ids);
+        if (r.error) throw r.error;
+        return res.json({ ok: true });
+      }
+      const alertId = String(body.alertId || '').trim();
+      const a: any = await supabaseAdmin.from('edunixo_attendance_alerts').select('id,student_id,status').eq('id', alertId).eq('school_id', c.au.schoolId).maybeSingle();
+      if (!a?.data || !ids.includes(String(a.data.student_id))) return res.status(404).json({ error: 'Message nahi mila.' });
+      const st = String(a.data.status);
+      if (action === 'cancel') {
+        if (!['queued', 'held', 'failed', 'no_number'].includes(st)) return res.status(409).json({ error: 'Ye message ab cancel nahi ho sakta.' });
+        await supabaseAdmin.from('edunixo_attendance_alerts').update({ status: 'cancelled', last_error: 'Teacher ne cancel kiya', updated_at: nowIso }).eq('id', alertId);
+      } else if (action === 'mark_sent') {
+        if (!['queued', 'failed'].includes(st)) return res.status(409).json({ error: 'Ye message ab mark nahi ho sakta.' });
+        await supabaseAdmin.from('edunixo_attendance_alerts').update({ status: 'sent', provider: 'manual', sent_at: nowIso, last_error: null, updated_at: nowIso }).eq('id', alertId);
+      } else {
+        return res.status(400).json({ error: 'Unknown action.' });
+      }
+      return res.json({ ok: true });
+    } catch (error: any) {
+      return qaFail(res, error);
+    }
+  });
+
+  const qaAbsentForSession = async (s: any) => {
+    const done = () => supabaseAdmin!.from('edunixo_attendance_scan_sessions').update({ absent_processed_at: new Date().toISOString() }).eq('id', s.id);
+    const settings: any = await qaSettings(s.school_id);
+    if (!settings.absent_enabled) { await done(); return; }
+    const absentAt: number = await qaAbsentMinute(s.school_id, settings);
+    const nowP = qaNow();
+    if (nowP.minutes < absentAt) return;
+    if (qaNow(new Date(s.started_at)).minutes >= absentAt) { await done(); return; }
+    const ids: string[] = (s.student_ids || []).map(String);
+    if (!ids.length) { await done(); return; }
+    const ent: any = await supabaseAdmin!.from('edunixo_attendance_entries').select('student_id,status').eq('school_id', s.school_id).eq('attendance_date', s.session_date).in('student_id', ids);
+    if (ent.error) throw ent.error;
+    const present = new Set((ent.data || []).filter((r: any) => r.status === 'P').map((r: any) => String(r.student_id)));
+    const absent = ids.filter(id => !present.has(id));
+    const infoMap = await qaStudentInfo(s.school_id, absent);
+    const school: string = await qaSchoolName(s.school_id);
+    const hold = ids.length >= 8 && (ids.length - absent.length) / ids.length < 0.3;
+    const sendAfter = new Date(Date.now() + Math.max(0, Number(settings.review_minutes || 0)) * 60_000);
+    for (const id of absent) {
+      const i: any = infoMap.get(id) || {};
+      await qaQueueAlert({
+        schoolId: s.school_id, studentId: id, classId: s.class_id, divisionId: s.division_id, academicYearId: s.academic_year_id,
+        teacherId: s.teacher_id, date: String(s.session_date).slice(0, 10), kind: 'absent', phone: i.phone || null, hold, sendAfter, createdBy: s.started_by,
+        message: qaFill(settings.absent_template, { school, student: i.name || 'Student', class: s.class_label || '', time: qaFmt12(nowP.hhmm), date: qaDmy(s.session_date) })
+      });
+    }
+    await done();
+  };
+  const qaReleaseEntries = async (today: string, schoolId?: string) => {
+    let q: any = supabaseAdmin!.from('edunixo_attendance_alerts').select('id,school_id,student_id,class_id,division_id,academic_year_id,teacher_id,attendance_date,created_by')
+      .eq('kind', 'absent').eq('attendance_date', today).eq('entry_written', false)
+      .in('status', ['queued', 'sending', 'sent', 'failed', 'no_number']).lte('send_after', new Date().toISOString()).limit(300);
+    if (schoolId) q = q.eq('school_id', schoolId);
+    const r: any = await q;
+    if (r.error) throw r.error;
+    const rows: any[] = r.data || [];
+    if (!rows.length) return;
+    const nowIso = new Date().toISOString();
+    const entries = rows.filter(a => a.academic_year_id && a.class_id && a.created_by && a.teacher_id).map(a => ({
+      school_id: a.school_id, academic_year_id: a.academic_year_id, class_id: a.class_id, division_id: a.division_id, student_id: a.student_id,
+      attendance_date: a.attendance_date, status: 'A', marked_by_user_id: a.created_by, marked_by_teacher_id: a.teacher_id, updated_at: nowIso
+    }));
+    if (entries.length) {
+      let up: any = await supabaseAdmin!.from('edunixo_attendance_entries').upsert(entries.map(e => ({ ...e, source: 'qr' })), { onConflict: 'school_id,student_id,attendance_date', ignoreDuplicates: true });
+      if (up.error && /check|violat|source/i.test(String(up.error.message || ''))) up = await supabaseAdmin!.from('edunixo_attendance_entries').upsert(entries.map(e => ({ ...e, source: 'manual' })), { onConflict: 'school_id,student_id,attendance_date', ignoreDuplicates: true });
+      if (up.error) throw up.error;
+    }
+    await supabaseAdmin!.from('edunixo_attendance_alerts').update({ entry_written: true, updated_at: nowIso }).in('id', rows.map(a => a.id));
+  };
+  const qaSendDue = async (today: string) => {
+    if (qaProvider() !== 'openwa') return;
+    const base = String(process.env.OPENWA_URL || '').replace(/\/+$/, '');
+    const key = String(process.env.OPENWA_API_KEY || '');
+    const sid = String(process.env.OPENWA_SESSION_ID || '');
+    if (!base || !key || !sid) return;
+    const perRun = Math.max(1, Math.min(20, Number(process.env.ATT_WA_PER_RUN || 4)));
+    const cap = Math.max(1, Number(process.env.ATT_WA_DAILY_CAP || 150));
+    const sentCount: any = await supabaseAdmin!.from('edunixo_attendance_alerts').select('id', { count: 'exact', head: true }).eq('attendance_date', today).eq('provider', 'openwa').eq('status', 'sent');
+    const budget = Math.min(perRun, cap - Number(sentCount?.count || 0));
+    if (budget <= 0) return;
+    const due: any = await supabaseAdmin!.from('edunixo_attendance_alerts').select('*').eq('status', 'queued').eq('channel', 'whatsapp').eq('attendance_date', today).lte('send_after', new Date().toISOString()).not('phone', 'is', null).order('send_after', { ascending: true }).limit(40);
+    if (due.error) throw due.error;
+    const rows = (due.data || []).sort((a: any, b: any) => (a.kind === 'absent' ? 0 : 1) - (b.kind === 'absent' ? 0 : 1)).slice(0, budget);
+    let fails = 0;
+    for (const row of rows) {
+      const claim: any = await supabaseAdmin!.from('edunixo_attendance_alerts').update({ status: 'sending', provider: 'openwa', attempts: Number(row.attempts || 0) + 1, updated_at: new Date().toISOString() }).eq('id', row.id).eq('status', 'queued').select('id').maybeSingle();
+      if (!claim?.data) continue;
+      try {
+        const resp = await fetch(`${base}/api/sessions/${encodeURIComponent(sid)}/messages/send-text`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-API-Key': key },
+          body: JSON.stringify({ chatId: `${row.phone}@c.us`, text: row.message_body }),
+          signal: AbortSignal.timeout(20_000)
+        });
+        const text = await resp.text();
+        let js: any = null;
+        try { js = JSON.parse(text); } catch (e) { js = null; }
+        if (!resp.ok) throw new Error(`OpenWA ${resp.status}: ${text.slice(0, 160)}`);
+        await supabaseAdmin!.from('edunixo_attendance_alerts').update({ status: 'sent', sent_at: new Date().toISOString(), provider_message_id: String(js?.id || js?.messageId || js?.data?.id || '') || null, last_error: null, updated_at: new Date().toISOString() }).eq('id', row.id);
+        fails = 0;
+      } catch (e: any) {
+        fails += 1;
+        const attempts = Number(row.attempts || 0) + 1;
+        const msg = String(e?.message || e).slice(0, 300);
+        await supabaseAdmin!.from('edunixo_attendance_alerts').update(attempts >= 3
+          ? { status: 'failed', last_error: msg, updated_at: new Date().toISOString() }
+          : { status: 'queued', send_after: new Date(Date.now() + attempts * 3 * 60_000).toISOString(), last_error: msg, updated_at: new Date().toISOString() }).eq('id', row.id);
+        if (fails >= 2) break;
+      }
+      await qaSleep(7000 + Math.random() * 7000);
+    }
+  };
+  let qaTickRunning = false;
+  let qaWarned = false;
+  const qaTick = async (onlySchoolId?: string) => {
+    if (!supabaseAdmin || qaTickRunning) return;
+    qaTickRunning = true;
+    try {
+      const today = edunixoSchoolDateKey();
+      const nowIso = new Date().toISOString();
+      await supabaseAdmin.from('edunixo_attendance_alerts').update({ status: 'expired', updated_at: nowIso }).in('status', ['queued', 'held', 'sending']).lt('attendance_date', today);
+      await supabaseAdmin.from('edunixo_attendance_alerts').update({ status: 'queued', updated_at: nowIso }).eq('status', 'sending').lt('updated_at', new Date(Date.now() - 10 * 60_000).toISOString());
+      let sq: any = supabaseAdmin.from('edunixo_attendance_scan_sessions').select('*').eq('session_date', today).is('absent_processed_at', null);
+      if (onlySchoolId) sq = sq.eq('school_id', onlySchoolId);
+      const sess: any = await sq;
+      if (sess.error) throw sess.error;
+      for (const s of (sess.data || [])) {
+        try { await qaAbsentForSession(s); } catch (e: any) { console.warn('Attendance absent run warning:', e?.message || e); }
+      }
+      await qaReleaseEntries(today, onlySchoolId);
+      await qaSendDue(today);
+      qaWarned = false;
+    } catch (e: any) {
+      const m = String(e?.message || e);
+      if (!qaWarned || !/does not exist|schema cache/i.test(m)) console.warn('Attendance alert worker warning:', m);
+      qaWarned = true;
+    } finally {
+      qaTickRunning = false;
+    }
+  };
+
+  // External sender API (OpenWA, n8n, a phone agent, ...). Set ATT_WORKER_KEY (16+ chars) in the server environment.
+  const qaWorkerOk = (req: any) => {
+    const key = String(process.env.ATT_WORKER_KEY || '');
+    const got = String(req.headers['x-worker-key'] || '');
+    if (key.length < 16 || got.length !== key.length) return false;
+    let diff = 0;
+    for (let i = 0; i < key.length; i++) diff |= key.charCodeAt(i) ^ got.charCodeAt(i);
+    return diff === 0;
+  };
+  app.post('/api/attendance-alerts/worker/claim', async (req: any, res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    if (!supabaseAdmin) return res.status(503).json({ error: 'Service unavailable.' });
+    if (!qaWorkerOk(req)) return res.status(401).json({ error: 'Invalid worker key.' });
+    try {
+      const limit = Math.max(1, Math.min(20, Number(req.body?.limit || 5)));
+      let q: any = supabaseAdmin.from('edunixo_attendance_alerts').select('*').eq('status', 'queued').eq('channel', 'whatsapp').eq('attendance_date', edunixoSchoolDateKey()).lte('send_after', new Date().toISOString()).not('phone', 'is', null).order('send_after', { ascending: true }).limit(60);
+      const sid = safePublicText(req.body?.schoolId, 80);
+      if (sid) q = q.eq('school_id', sid);
+      const r: any = await q;
+      if (r.error) throw r.error;
+      const rows = (r.data || []).sort((a: any, b: any) => (a.kind === 'absent' ? 0 : 1) - (b.kind === 'absent' ? 0 : 1)).slice(0, limit);
+      const out: any[] = [];
+      for (const row of rows) {
+        const c: any = await supabaseAdmin.from('edunixo_attendance_alerts').update({ status: 'sending', provider: 'external', attempts: Number(row.attempts || 0) + 1, updated_at: new Date().toISOString() }).eq('id', row.id).eq('status', 'queued').select('id').maybeSingle();
+        if (c?.data) out.push({ id: row.id, phone: row.phone, chatId: `${row.phone}@c.us`, text: row.message_body, kind: row.kind });
+      }
+      return res.json({ messages: out });
+    } catch (error: any) {
+      return qaFail(res, error);
+    }
+  });
+  app.post('/api/attendance-alerts/worker/report', async (req: any, res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    if (!supabaseAdmin) return res.status(503).json({ error: 'Service unavailable.' });
+    if (!qaWorkerOk(req)) return res.status(401).json({ error: 'Invalid worker key.' });
+    try {
+      const id = safePublicText(req.body?.id, 80);
+      const row: any = await supabaseAdmin.from('edunixo_attendance_alerts').select('id,attempts').eq('id', id).maybeSingle();
+      if (!row?.data) return res.status(404).json({ error: 'Message not found.' });
+      const nowIso = new Date().toISOString();
+      if (req.body?.ok === true) {
+        await supabaseAdmin.from('edunixo_attendance_alerts').update({ status: 'sent', sent_at: nowIso, provider_message_id: safePublicText(req.body?.providerMessageId, 120) || null, last_error: null, updated_at: nowIso }).eq('id', id);
+      } else {
+        const attempts = Number(row.data.attempts || 1);
+        const msg = safePublicText(req.body?.error, 300) || 'Sender failed';
+        await supabaseAdmin.from('edunixo_attendance_alerts').update(attempts >= 3
+          ? { status: 'failed', last_error: msg, updated_at: nowIso }
+          : { status: 'queued', send_after: new Date(Date.now() + attempts * 3 * 60_000).toISOString(), last_error: msg, updated_at: nowIso }).eq('id', id);
+      }
+      return res.json({ ok: true });
+    } catch (error: any) {
+      return qaFail(res, error);
+    }
+  });
+
+  const qaTimer = setInterval(() => { void qaTick(); }, 60_000);
+  (qaTimer as any).unref?.();
+  setTimeout(() => { void qaTick(); }, 30_000);
+  // ===== end QR attendance =====
+
   app.get('/api/teacher/attendance/corrections', verifyActiveUserAuth, async (req: ActiveUserRequest, res) => {
     res.setHeader('Cache-Control', 'no-store');
     if (!req.activeUser || !supabaseAdmin) return res.status(503).json({ error: 'Attendance Correction service is unavailable.' });

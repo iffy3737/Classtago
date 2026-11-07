@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import TeacherDashboardFresh from '../modules/teacherFresh/TeacherDashboardFresh';
 import TeacherAssignmentsFresh from '../modules/teacherFresh/TeacherAssignmentsFresh';
 import TeacherAttendanceFresh, { type AttendanceView } from '../modules/teacherFresh/TeacherAttendanceFresh';
+import AttendanceQrScanner from '../modules/teacherFresh/AttendanceQrScanner';
 import { loadTeacherCloudContext } from '../modules/teacherFresh/teacherFreshService';
 import type { TeacherCloudContext } from '../modules/teacherFresh/types';
 import { StudyMaterialPage } from '../modules/teacherAcademicFresh/pages/StudyMaterialPage';
@@ -169,6 +170,9 @@ export default function TeacherWorkspace({ user, initialModule = 'dashboard', in
     return <TeacherAssignmentsFresh context={context} loading={loading} error={contextError} onNavigate={onNavigate} />;
   }
 
+  if (initialModule === 'tr-attendance-scan') {
+    return <div className="edx-teacher-ai"><AttendanceQrScanner context={context} loading={loading} error={contextError} /></div>;
+  }
   if (attendanceMap[initialModule]) {
     return <div className="edx-teacher-ai"><TeacherAttendanceFresh context={context} loading={loading} error={contextError} view={attendanceMap[initialModule]} /></div>;
   }

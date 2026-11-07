@@ -3,6 +3,7 @@ import type { RoleVisibleModule, RoleModuleFeature } from './roleModuleBlueprint
 export type TeacherWorkspaceModule =
   | 'dashboard'
   | 'tr-my-assignments'
+  | 'tr-attendance-scan'
   | 'tr-attendance-daily'
   | 'tr-attendance-catalogue'
   | 'tr-attendance-history'
@@ -41,6 +42,7 @@ const teacherModuleMap: Record<string, TeacherWorkspaceModule> = {
   'tr-home': 'dashboard',
   'tr-dashboard': 'dashboard',
   'tr-my-assignments': 'tr-my-assignments',
+  'tr-attendance-scan': 'tr-attendance-scan',
   'tr-attendance-daily': 'tr-attendance-daily',
   'tr-attendance-catalogue': 'tr-attendance-catalogue',
   'tr-attendance-history': 'tr-attendance-history',
