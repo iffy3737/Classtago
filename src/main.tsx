@@ -14,6 +14,7 @@ import AppErrorBoundary from './components/AppErrorBoundary';
 import {installMobileRuntime} from './lib/mobileRuntime';
 import {installNativeAppRuntime} from './lib/nativeAppRuntime';
 import './index.css';
+import './uiExtras.css';
 
 
 installMobileRuntime();

@@ -1,0 +1,13 @@
+/* Utilities used by newer screens that are missing from the precompiled index.css. */
+.aspect-square{aspect-ratio:1/1}
+.bg-black{background-color:#000}
+.bg-black\/60{background-color:rgb(0 0 0 / .6)}
+.border-sky-300{border-color:#7dd3fc}
+.border-white\/80{border-color:rgb(255 255 255 / .8)}
+.h-3\/5{height:60%}
+.w-3\/5{width:60%}
+.rounded-t-3xl{border-top-left-radius:1.5rem;border-top-right-radius:1.5rem}
+.z-\[200\]{z-index:200}
+.accent-cyan-600{accent-color:#0891b2}
+.min-h-\[320px\]{min-height:320px}
+@media (min-width:40rem){.sm\:rounded-3xl{border-radius:1.5rem}}
