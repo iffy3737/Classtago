@@ -1,0 +1,46 @@
+/* Script-aware typography for non-Latin UI languages.
+   lib/uiLanguageEngine.ts sets <html data-script="deva|beng|gujr|guru|knda|mlym|orya|taml|telu|olck|mtei|arab|latn">. */
+
+/* Letter-spacing detaches vowel signs and breaks joined letters in Indic and Perso-Arabic scripts. */
+html[data-script]:not([data-script="latn"]) [class*="tracking-"] { letter-spacing: normal; }
+
+/* Indic scripts: bigger floor for tiny text and taller line boxes so vowel signs are never clipped. */
+html[data-script]:not([data-script="latn"]):not([data-script="arab"]) {
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-xs--line-height: 1.7;
+  --text-sm--line-height: 1.65;
+  --text-base--line-height: 1.6;
+  --text-lg--line-height: 1.5;
+  --text-xl--line-height: 1.45;
+  --text-2xl--line-height: 1.4;
+  --text-3xl--line-height: 1.35;
+}
+html[data-script]:not([data-script="latn"]):not([data-script="arab"]) .text-\[8px\],
+html[data-script]:not([data-script="latn"]):not([data-script="arab"]) .text-\[9px\] { font-size: 11.5px; }
+html[data-script]:not([data-script="latn"]):not([data-script="arab"]) .text-\[10px\] { font-size: 12px; }
+html[data-script]:not([data-script="latn"]):not([data-script="arab"]) .text-\[11px\] { font-size: 12.5px; }
+html[data-script]:not([data-script="latn"]):not([data-script="arab"]) .leading-none { line-height: 1.4; }
+html[data-script]:not([data-script="latn"]):not([data-script="arab"]) .leading-tight { line-height: 1.45; }
+html[data-script]:not([data-script="latn"]):not([data-script="arab"]) .leading-snug { line-height: 1.5; }
+
+/* Perso-Arabic scripts (Urdu, Kashmiri, Sindhi): larger sizes and generous line height. */
+html[data-script="arab"] {
+  --text-xs: 0.875rem;
+  --text-sm: 1rem;
+  --text-base: 1.125rem;
+  --text-xs--line-height: 2;
+  --text-sm--line-height: 2;
+  --text-base--line-height: 2;
+  --text-lg--line-height: 1.9;
+  --text-xl--line-height: 1.8;
+  --text-2xl--line-height: 1.7;
+  --text-3xl--line-height: 1.6;
+}
+html[data-script="arab"] .text-\[8px\],
+html[data-script="arab"] .text-\[9px\],
+html[data-script="arab"] .text-\[10px\] { font-size: 12.5px; }
+html[data-script="arab"] .text-\[11px\] { font-size: 13px; }
+html[data-script="arab"] .leading-none { line-height: 1.7; }
+html[data-script="arab"] .leading-tight { line-height: 1.8; }
+html[data-script="arab"] .leading-snug { line-height: 1.9; }

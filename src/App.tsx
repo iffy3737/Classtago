@@ -21,6 +21,7 @@ import AppearanceSwitcher from './components/AppearanceSwitcher';
 import BottomNav from './components/BottomNav';
 import { FALLBACK_LANGUAGE_CATALOGUE, LanguageOption, getLanguageOption, mergeLanguageCatalogues, normalizeLanguageCode, resolvedDirection } from './lib/languageCatalog';
 import { FALLBACK_FONT_CATALOGUE, FontOption, ensureWebFontLoaded, fontCssStack, getFontsForLanguage, normalizeFontCode, resolveFont } from './lib/fontCatalog';
+import { applyUiLanguage } from './lib/uiLanguageEngine';
 import { EdunixoAppearance, persistAppearance, readStoredAppearance } from './lib/appearance';
 import { IS_EDUNIXO_APP_RUNTIME, IS_EDUNIXO_NATIVE_APP, EDUNIXO_MOBILE_SCHOOL_NAME } from './lib/mobileRuntime';
 import { writeAppSchoolContext } from './lib/appSchoolContext';
@@ -104,6 +105,11 @@ export default function App() {
   const [isAuthInitializing, setIsAuthInitializing] = useState(true);
   const [languageOptions, setLanguageOptions] = useState<LanguageOption[]>(FALLBACK_LANGUAGE_CATALOGUE);
   const [languagesLoading, setLanguagesLoading] = useState(true);
+  // UI language engine: sets <html lang/dir/data-script> and translates hard-coded UI text from public/i18n/<code>.json.
+  useEffect(() => {
+    const opt = languageOptions.find(o => o.code === lang);
+    void applyUiLanguage(lang, opt ? { scriptCode: opt.scriptCode, direction: opt.direction } : undefined);
+  }, [lang, languageOptions]);
   const [fontOptions, setFontOptions] = useState<FontOption[]>(FALLBACK_FONT_CATALOGUE);
   const [interfaceFontCode, setInterfaceFontCode] = useState<string>(() => normalizeFontCode(localStorage.getItem('edunixo.interface_font')) || 'noto-sans');
   const [fontsLoading, setFontsLoading] = useState(true);

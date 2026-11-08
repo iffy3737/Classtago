@@ -15,8 +15,11 @@ import {installMobileRuntime} from './lib/mobileRuntime';
 import {installNativeAppRuntime} from './lib/nativeAppRuntime';
 import './index.css';
 import './uiExtras.css';
+import './uiLanguage.css';
+import { bootUiLanguage } from './lib/uiLanguageEngine';
 
 
+bootUiLanguage();
 installMobileRuntime();
 void installNativeAppRuntime();
 
