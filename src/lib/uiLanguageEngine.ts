@@ -193,7 +193,8 @@ function patchDialogs(): void {
 
 async function loadDict(code: string): Promise<Dict | null> {
   try {
-    const res = await fetch(new URL('i18n/' + code + '.json', document.baseURI).toString());
+    const baseUrl = String(((import.meta as any).env && (import.meta as any).env.BASE_URL) || './');
+    const res = await fetch(new URL(baseUrl + 'i18n/' + code + '.json', document.baseURI).toString(), { cache: 'no-cache' });
     if (!res.ok) return null;
     const json: any = await res.json();
     if (!json || typeof json !== 'object') return null;

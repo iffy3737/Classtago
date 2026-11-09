@@ -17,6 +17,24 @@ const SKIP_DIRS = new Set(['node_modules', 'dist', 'mobile-dist', 'android', 'io
 const SKIP_FILE = /(\.d\.ts|\.bak)$|[A-Za-z]*Translations?\.tsx?$|translations?\.tsx?$|demoProcessCatalog|demoExperienceCatalog|demoLocaleData|DemoExperience|ProcessDemoHub|fontCatalog|languageCatalog|_BACKUP_/;
 const WL = new Set(['label', 'title', 'subtitle', 'description', 'detail', 'details', 'text', 'message', 'heading', 'hint', 'tooltip', 'placeholder', 'caption', 'summary', 'helper', 'helperText', 'emptyText', 'buttonLabel', 'confirmLabel', 'cancelLabel', 'successMessage', 'errorMessage', 'emptyMessage']);
 const WL_SERVER = new Set(['error', 'message', 'detail', 'hint']);
+const WIDE = process.argv.includes('--wide');
+const WIDE_SKIP_CALL = /^(console\.|fetch$|require$|.*\.(getItem|setItem|removeItem|querySelector|querySelectorAll|addEventListener|removeEventListener|dispatchEvent|getElementById|matchMedia|setAttribute|getAttribute|toggle|contains|includes|startsWith|endsWith|test|match|replace|replaceAll|split|join|indexOf|append|get|set|has|delete|localeCompare|normalize|padStart|padEnd))$/;
+function wideOk(node, sf) {
+  const p = node.parent;
+  if (!p) return false;
+  const pk = p.kind;
+  if (pk === K.ImportDeclaration || pk === K.ExportDeclaration || pk === K.LiteralType || pk === K.ExternalModuleReference || pk === K.ComputedPropertyName || pk === K.ElementAccessExpression || pk === K.JsxAttribute || pk === K.CaseClause || pk === K.TaggedTemplateExpression) return false;
+  if (pk === K.PropertyAssignment && p.name === node) return false;
+  if (pk === K.BinaryExpression) {
+    const t = p.operatorToken.kind;
+    if (t === K.EqualsEqualsEqualsToken || t === K.ExclamationEqualsEqualsToken || t === K.EqualsEqualsToken || t === K.ExclamationEqualsToken) return false;
+  }
+  if (pk === K.CallExpression || pk === K.NewExpression) {
+    const callee = p.expression.getText(sf);
+    if (p.expression !== node && (WIDE_SKIP_CALL.test(callee) || (pk === K.NewExpression && /^(Event|CustomEvent|RegExp|URL|URLSearchParams|Date|Map|Set)$/.test(callee)))) return false;
+  }
+  return true;
+}
 const CALLS = /^(set(Error|Err|Msg|Message|Notice|Note|Info|Warning|Success|Status|Toast|Banner|SaveMessage|PreviewErr|SignMsg|Feedback)|alert|confirm|toast|showToast|notify)$/;
 
 const files = [];
@@ -104,6 +122,7 @@ function scan(rel) {
   const names = mode === 'server' ? WL_SERVER : WL;
   const strs = (e, kind) => { const out = []; exprStrings(e, out); out.forEach((s) => add(s, rel, kind)); };
   const visit = (node) => {
+    if (WIDE && mode === 'app' && (node.kind === K.StringLiteral || node.kind === K.NoSubstitutionTemplateLiteral) && wideOk(node, sf)) add(node.text, rel, 'wide');
     if (mode === 'app') {
       if (node.kind === K.JsxText) add(node.text, rel, 'jsx-text');
       else if (node.kind === K.JsxAttribute) {
